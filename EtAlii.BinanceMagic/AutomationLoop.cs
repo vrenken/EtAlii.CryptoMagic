@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -49,14 +48,14 @@
                     var situation = _algorithm.GetSituation(target, cancellationToken);
                     ConsoleOutput.Write($"Current situation:");
                     ConsoleOutput.Write($"{target.SourceCoin}");
-                    ConsoleOutput.Write($"- Past    = {situation.SourceDelta.PastPrice * situation.SourcePurchaseQuantity} {MagicAlgorithm.ReferenceCoin}");
-                    ConsoleOutput.Write($"- Present = {situation.SourceDelta.PresentPrice * situation.SourcePurchaseQuantity} {MagicAlgorithm.ReferenceCoin}");
+                    ConsoleOutput.Write($"- Past    = {situation.SourceDelta.PastPrice * situation.SourceDelta.PastQuota} {MagicAlgorithm.ReferenceCoin}");
+                    ConsoleOutput.Write($"- Present = {situation.SourceDelta.PresentPrice * situation.SourceDelta.PastQuota} {MagicAlgorithm.ReferenceCoin}");
                     ConsoleOutput.Write($"- Fee     = {situation.SourceSellFee:P}");
                     ConsoleOutput.Write($"{target.TargetCoin}");
                     ConsoleOutput.Write($"- Past    = {situation.TargetDelta.PastPrice} {MagicAlgorithm.ReferenceCoin}");
                     ConsoleOutput.Write($"- Present = {situation.TargetDelta.PresentPrice} {MagicAlgorithm.ReferenceCoin}");
                     ConsoleOutput.Write($"- Fee     = {situation.TargetBuyFee:P}");
-                    ConsoleOutput.Write($"- Target  = {target.MinimalRequiredWinnings} {MagicAlgorithm.ReferenceCoin}");
+                    ConsoleOutput.Write($"- Target  = {target.MinimalRequiredGain} {MagicAlgorithm.ReferenceCoin}");
                     
                         
                     if (_algorithm.TransactionIsWorthIt(target, situation))
@@ -86,6 +85,7 @@
         {
             using var file = new FileStream(MagicAlgorithm.GambleFile, FileMode.Append, FileAccess.Write, FileShare.Read);
             using var sw = new StreamWriter(file);
+
             sw.Write("Hello");
         }
 

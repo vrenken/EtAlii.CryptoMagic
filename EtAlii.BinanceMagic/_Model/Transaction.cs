@@ -3,11 +3,13 @@
     using System;
     using System.IO;
 
-    public class Transaction
+    public record Transaction
     {
         public DateTime Moment { get; init; }
         public CoinSnapshot From { get; init; }
         public CoinSnapshot To { get; init; }
+        
+        public decimal Gain { get; init; }
 
         public static void Write(StringWriter sw, Transaction transaction)
         {
@@ -16,6 +18,8 @@
             CoinSnapshot.Write(sw, transaction.From);
             sw.Write("|");
             CoinSnapshot.Write(sw, transaction.To);
+            sw.Write("|");
+            sw.Write(transaction.Gain);
             sw.Write(Environment.NewLine);
         }
         
@@ -28,6 +32,7 @@
                 Moment = DateTime.Parse(parts[0]),
                 From = CoinSnapshot.Read(parts[1]),
                 To = CoinSnapshot.Read(parts[2]),
+                Gain = decimal.Parse(parts[3])
             };
         }
     }

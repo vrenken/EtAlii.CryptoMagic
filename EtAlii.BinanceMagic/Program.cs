@@ -4,7 +4,7 @@
 
     public static class Program
     {
-        static void Main(string[] args)
+        static void Main()//string[] args)
         {
             ConsoleOutput.Write("Starting Binance magic...");
             var loop = new AutomationLoop();

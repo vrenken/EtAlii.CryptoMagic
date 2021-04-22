@@ -69,6 +69,7 @@
             {
                 Coin = target.SourceCoin,
                 PastPrice = lastSourcePurchase?.Price ?? sourcePrice,
+                PastQuota = lastSourcePurchase?.Quantity ?? 0,
                 PresentPrice = sourcePrice,
             };
 
@@ -77,15 +78,12 @@
             {
                 Coin = target.TargetCoin,
                 PastPrice = lastTargetSell?.Price ?? targetPrice,
+                PastQuota = lastTargetSell?.Quantity ?? 0,
                 PresentPrice = targetPrice
             };
-            
-            var sourcePurchaseQuantity = lastSourcePurchase?.Quantity ?? InitialPurchaseQuantity;
-            
             return new Situation
             {
                 SourceDelta =sourceDelta,
-                SourcePurchaseQuantity = sourcePurchaseQuantity,
                 SourceSellFee = sourceTradeFees.MakerFee,
                 TargetDelta = targetDelta,
                 TargetBuyFee = targetTradeFees.TakerFee,
@@ -112,7 +110,7 @@
             {
                 SourceCoin = sourceCoin,
                 TargetCoin = targetCoin,
-                MinimalRequiredWinnings = minimalRequiredWinnings, 
+                MinimalRequiredGain = minimalRequiredWinnings, 
             };
         }
     }

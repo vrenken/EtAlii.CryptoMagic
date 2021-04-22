@@ -3,7 +3,7 @@
     using System;
     using System.IO;
 
-    public class CoinSnapshot
+    public record CoinSnapshot
     {
         public string Coin { get; init; }
         public decimal Quantity { get; init; }

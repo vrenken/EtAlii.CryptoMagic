@@ -4,9 +4,7 @@
     using System.Linq;
     using System.Threading;
     using Binance.Net;
-    using Binance.Net.Enums;
     using Binance.Net.Objects.Spot;
-    using Binance.Net.Objects.Spot.MarketData;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
 
@@ -30,7 +28,7 @@
                 ApiCredentials = new ApiCredentials(MagicAlgorithm.ApiKey, MagicAlgorithm.SecretKey),
             };
             _socketClient = new BinanceSocketClient(socketOptions);
-            var result = _socketClient.Spot.SubscribeToSymbolMiniTickerUpdates(new[] {""}, b => b.);
+            //var result = _socketClient.Spot.SubscribeToSymbolMiniTickerUpdates(new[] {""}, b => b.);
 
             var startResult = _client.Spot.UserStream.StartUserStream();
 
@@ -71,12 +69,12 @@
             }
 
             var fees = result.Data.First();
-            return (MakerFee: fees.MakerFee, TakerFee: fees.TakerFee);
+            return (fees.MakerFee, fees.TakerFee);
         }
         
         public bool TryConvert(Target target, Situation situation)
         {
-            var order = _client.Spot.Order.PlaceOrder()
+            //var order = _client.Spot.Order.PlaceOrder()
             //_client.Spot.Market.GetTradeFee().Order.PlaceOrder(target.TargetCoin, OrderSide.Buy,  )
 
             return false;
