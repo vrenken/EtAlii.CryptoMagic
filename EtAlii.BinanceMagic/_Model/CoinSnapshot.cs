@@ -1,6 +1,5 @@
 ﻿namespace EtAlii.BinanceMagic
 {
-    using System;
     using System.IO;
 
     public record CoinSnapshot
@@ -9,14 +8,13 @@
         public decimal Quantity { get; init; }
         public decimal Price { get; init; }
 
-        public static void Write(StringWriter sw, CoinSnapshot coinSnapshot)
+        public static void Write(StreamWriter sw, CoinSnapshot coinSnapshot)
         {
             sw.Write(coinSnapshot.Coin);
             sw.Write("=");
             sw.Write(coinSnapshot.Quantity);
             sw.Write("=");
             sw.Write(coinSnapshot.Price);
-            sw.Write(Environment.NewLine);
         }
 
         public static CoinSnapshot Read(string text)

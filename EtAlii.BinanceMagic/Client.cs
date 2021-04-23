@@ -11,7 +11,15 @@
     public class Client
     {
         private BinanceClient _client;
-        private BinanceSocketClient _socketClient;
+        //private BinanceSocketClient _socketClient;
+
+        private readonly Settings _settings;
+
+        public Client(Settings settings)
+        {
+            _settings = settings;
+        }
+
         public void Start()
         {
             ConsoleOutput.Write("Starting Binance client...");
@@ -19,15 +27,15 @@
             var options = new BinanceClientOptions
             {
                 RateLimitingBehaviour = RateLimitingBehaviour.Wait,
-                ApiCredentials = new ApiCredentials(MagicAlgorithm.ApiKey, MagicAlgorithm.SecretKey),
+                ApiCredentials = new ApiCredentials(_settings.ApiKey, _settings.SecretKey),
             };
             _client = new BinanceClient(options);
 
-            var socketOptions = new BinanceSocketClientOptions
-            {
-                ApiCredentials = new ApiCredentials(MagicAlgorithm.ApiKey, MagicAlgorithm.SecretKey),
-            };
-            _socketClient = new BinanceSocketClient(socketOptions);
+            // var socketOptions = new BinanceSocketClientOptions
+            // {
+            //     ApiCredentials = new ApiCredentials(_settings.ApiKey, _settings.SecretKey),
+            // };
+            //_socketClient = new BinanceSocketClient(socketOptions);
             //var result = _socketClient.Spot.SubscribeToSymbolMiniTickerUpdates(new[] {""}, b => b.);
 
             var startResult = _client.Spot.UserStream.StartUserStream();
@@ -45,7 +53,7 @@
 
         public decimal GetPrice(string coin, CancellationToken cancellationToken)
         {
-            var coinComparedToReference = $"{coin}{MagicAlgorithm.ReferenceCoin}"; 
+            var coinComparedToReference = $"{coin}{_settings.ReferenceCoin}"; 
             var result = _client.Spot.Market.GetPrice(coinComparedToReference, cancellationToken);
             if (result.Error != null)
             {
@@ -59,7 +67,7 @@
 
         public (decimal MakerFee, decimal TakerFee) GetTradeFees(string coin, CancellationToken cancellationToken)
         {
-            var coinComparedToReference = $"{coin}{MagicAlgorithm.ReferenceCoin}"; 
+            var coinComparedToReference = $"{coin}{_settings.ReferenceCoin}"; 
             var result = _client.Spot.Market.GetTradeFee(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
@@ -72,11 +80,12 @@
             return (fees.MakerFee, fees.TakerFee);
         }
         
-        public bool TryConvert(Target target, Situation situation)
+        public bool TryConvert(Target target, Situation situation, out Transaction transaction)
         {
             //var order = _client.Spot.Order.PlaceOrder()
             //_client.Spot.Market.GetTradeFee().Order.PlaceOrder(target.TargetCoin, OrderSide.Buy,  )
 
+            transaction = null;
             return false;
         }
 

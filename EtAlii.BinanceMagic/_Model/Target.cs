@@ -2,9 +2,9 @@
 {
     public record Target
     {
-        public string SourceCoin { get; init; }
-        public string TargetCoin { get; init; }
+        public string Source { get; init; }
+        public string Destination { get; init; }
         
-        public decimal MinimalRequiredGain { get; init; }
+        public decimal Profit { get; init; }
     }
 }

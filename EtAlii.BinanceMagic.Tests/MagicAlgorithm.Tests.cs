@@ -2,10 +2,10 @@ namespace EtAlii.BinanceMagic.Tests
 {
     using Xunit;
 
-    public class BinanceMagicTests
+    public class MagicAlgorithmTests
     {
         [Fact]
-        public void BinanceMagic_TransferWithProfit()
+        public void MagicAlgorithm_TransferWithProfit()
         {
         }
     }

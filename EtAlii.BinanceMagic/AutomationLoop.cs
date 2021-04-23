@@ -1,21 +1,24 @@
 ﻿namespace EtAlii.BinanceMagic
 {
     using System;
-    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
 
     public class AutomationLoop
     {
+        private readonly Settings _settings;
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private Task _task;
         private readonly MagicAlgorithm _algorithm;
+        private readonly DataProvider _data;
         private readonly Client _client;
 
-        public AutomationLoop()
+        public AutomationLoop(Settings settings)
         {
-            _client = new();
-            _algorithm = new(_client);
+            _settings = settings;
+            _client = new Client(settings);
+            _algorithm = new MagicAlgorithm();
+            _data = new DataProvider(_client, settings);
         }
         
         public void Stop()
@@ -33,45 +36,42 @@
             var cancellationToken = _cancellationTokenSource.Token;
 
             _client.Start();
-
-            _algorithm.Load();
+            _data.Load();
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var target = _algorithm.BuildTarget(cancellationToken);
-                ConsoleOutput.Write($"Found next target: {target.SourceCoin} -> {target.TargetCoin} using minimal increase: {MagicAlgorithm.MinimalIncrease:P}");
+                var target = _data.BuildTarget(cancellationToken);
+                ConsoleOutput.Write($"Found next target: {target.Source} -> {target.Destination} using minimal increase: {_settings.MinimalIncrease:P}");
 
                 var targetSucceeded = false;
 
                 while (!targetSucceeded)
                 {
-                    var situation = _algorithm.GetSituation(target, cancellationToken);
-                    ConsoleOutput.Write($"Current situation:");
-                    ConsoleOutput.Write($"{target.SourceCoin}");
-                    ConsoleOutput.Write($"- Past    = {situation.SourceDelta.PastPrice * situation.SourceDelta.PastQuota} {MagicAlgorithm.ReferenceCoin}");
-                    ConsoleOutput.Write($"- Present = {situation.SourceDelta.PresentPrice * situation.SourceDelta.PastQuota} {MagicAlgorithm.ReferenceCoin}");
-                    ConsoleOutput.Write($"- Fee     = {situation.SourceSellFee:P}");
-                    ConsoleOutput.Write($"{target.TargetCoin}");
-                    ConsoleOutput.Write($"- Past    = {situation.TargetDelta.PastPrice} {MagicAlgorithm.ReferenceCoin}");
-                    ConsoleOutput.Write($"- Present = {situation.TargetDelta.PresentPrice} {MagicAlgorithm.ReferenceCoin}");
-                    ConsoleOutput.Write($"- Fee     = {situation.TargetBuyFee:P}");
-                    ConsoleOutput.Write($"- Target  = {target.MinimalRequiredGain} {MagicAlgorithm.ReferenceCoin}");
-                    
-                        
+                    var situation = _data.GetSituation(target, cancellationToken);
+
+                    if (situation.IsInitialCycle)
+                    {
+                        ConsoleOutput.Write($"Initial cycle - Converting...");
+                        if (_client.TryConvert(target, situation, out var transaction))
+                        {
+                            ConsoleOutput.WritePositive($"Transaction done!");
+                            _data.AddTransaction(transaction);
+                            targetSucceeded = true;
+                        }
+                    }
                     if (_algorithm.TransactionIsWorthIt(target, situation))
                     {
                         ConsoleOutput.Write($"Feasible transaction found - Converting...");
-                        if (_client.TryConvert(target, situation))
+                        if (_client.TryConvert(target, situation, out var transaction))
                         {
                             ConsoleOutput.WritePositive($"Transaction done!");
-                            WriteGamble(situation);
-                            WriteProfit(situation);
+                            _data.AddTransaction(transaction);
                             targetSucceeded = true;
                         }
                     }
                     else
                     {
-                        var interval = MagicAlgorithm.SampleInterval;
+                        var interval = _settings.SampleInterval;
                         ConsoleOutput.WriteNegative($"No feasible transaction - Waiting until: {DateTime.Now + interval}");
                         Task.Delay(interval, cancellationToken).Wait(cancellationToken);
                     }
@@ -79,21 +79,6 @@
             }
 
             _client.Stop();
-        }
-
-        private void WriteGamble(Situation situation)
-        {
-            using var file = new FileStream(MagicAlgorithm.GambleFile, FileMode.Append, FileAccess.Write, FileShare.Read);
-            using var sw = new StreamWriter(file);
-
-            sw.Write("Hello");
-        }
-
-        private void WriteProfit(Situation situation)
-        {
-            using var file = new FileStream(MagicAlgorithm.ProfitFile, FileMode.Append, FileAccess.Write, FileShare.Read);
-            using var sw = new StreamWriter(file);
-            sw.Write("Hello");
         }
     }
 }
