@@ -6,5 +6,6 @@
         public string Destination { get; init; }
         
         public decimal Profit { get; init; }
+        public int TransactionId { get; init; }
     }
 }

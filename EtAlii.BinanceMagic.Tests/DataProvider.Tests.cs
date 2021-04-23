@@ -165,7 +165,7 @@ namespace EtAlii.BinanceMagic.Tests
             var secondCoin = settings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             data.AddTransaction(firstTransaction);
-            var cancellationToken = new CancellationToken();
+            var cancellationToken = CancellationToken.None;
             var target = data.BuildTarget();
             
             // Act.
@@ -191,7 +191,7 @@ namespace EtAlii.BinanceMagic.Tests
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             data.AddTransaction(firstTransaction);
             data.AddTransaction(secondTransaction);
-            var cancellationToken = new CancellationToken();
+            var cancellationToken = CancellationToken.None;
             var target = data.BuildTarget();
             
             // Act.

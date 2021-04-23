@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading;
     using Binance.Net;
+    using Binance.Net.Enums;
     using Binance.Net.Objects.Spot;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
@@ -20,6 +21,16 @@
             _settings = settings;
         }
 
+        private void HandleFail(string message)
+        {
+            if (_settings.IsTest)
+            {
+                throw new InvalidOperationException(message);
+            }
+
+            ConsoleOutput.WriteNegative(message);
+            Environment.Exit(-1);
+        }
         public void Start()
         {
             ConsoleOutput.Write("Starting Binance client...");
@@ -43,8 +54,7 @@
             if (!startResult.Success)
             {
                 var message = $"Failed to start user stream: {startResult.Error}";
-                ConsoleOutput.WriteNegative(message);
-                Environment.Exit(-1);
+                HandleFail(message);
             }
 
             ConsoleOutput.Write("Starting Binance client: Done");
@@ -58,8 +68,7 @@
             if (result.Error != null)
             {
                 var message = $"Failure fetching price for {coin}: {result.Error}";
-                ConsoleOutput.WriteNegative(message);
-                Environment.Exit(-1);
+                HandleFail(message);
             }
 
             return result.Data.Price;
@@ -72,20 +81,64 @@
             if (result.Error != null)
             {
                 var message = $"Failure fetching trade fees for {coin}: {result.Error}";
-                ConsoleOutput.WriteNegative(message);
-                Environment.Exit(-1);
+                HandleFail(message);
             }
 
             var fees = result.Data.First();
             return (fees.MakerFee, fees.TakerFee);
         }
         
-        public bool TryConvert(Target target, Situation situation, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, CancellationToken cancellationToken, out Transaction transaction)
         {
-            //var order = _client.Spot.Order.PlaceOrder()
-            //_client.Spot.Market.GetTradeFee().Order.PlaceOrder(target.TargetCoin, OrderSide.Buy,  )
+            var sellCoin = $"{sellAction.Coin}{_settings.ReferenceCoin}";
+            var sellOrder = _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, OrderType.TakeProfitLimit,
+                sellAction.Quantity, null, sellAction.TransactionId, sellAction.TargetPrice, TimeInForce.FillOrKill,
+                sellAction.TargetPrice, null, OrderResponseType.Result, null, cancellationToken);
 
-            transaction = null;
+            if (sellOrder.Error != null)
+            {
+                var message = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
+                HandleFail(message);
+            }
+            if (sellOrder.Data.Status != OrderStatus.Filled)
+            {
+                var message = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
+                HandleFail(message);
+            }
+
+            var buyCoin = $"{buyAction.Coin}{_settings.ReferenceCoin}";
+            var buyOrder = _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, OrderType.StopLossLimit,
+                buyAction.Quantity, null, buyAction.TransactionId, buyAction.TargetPrice, TimeInForce.FillOrKill,
+                buyAction.TargetPrice, null, OrderResponseType.Result, null, cancellationToken);
+
+            if (buyOrder.Error != null)
+            {
+                var message = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
+                HandleFail(message);
+            }
+            if (buyOrder.Data.Status != OrderStatus.Filled)
+            {
+                var message = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
+                HandleFail(message);
+            }
+
+            transaction = new Transaction
+            {
+                From = new CoinSnapshot
+                {
+                    Coin = sellOrder.Data.Symbol,
+                    Price = sellOrder.Data.Price,
+                    Quantity = sellOrder.Data.Quantity
+                },
+                To = new CoinSnapshot
+                {
+                    Coin = buyOrder.Data.Symbol,
+                    Price = buyOrder.Data.Price,
+                    Quantity = buyOrder.Data.Quantity
+                },
+                Moment = DateTime.Now,
+                TotalProfit =  (buyOrder.Data.Price * buyOrder.Data.Quantity) - (sellOrder.Data.Price * sellOrder.Data.Quantity) 
+            };
             return false;
         }
 

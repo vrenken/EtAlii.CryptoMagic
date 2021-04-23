@@ -113,7 +113,8 @@
             {
                 Source = source,
                 Destination = destination,
-                Profit = profit,  
+                Profit = profit,
+                TransactionId = _transactions.Count + 1,
             };
         }
         

@@ -17,7 +17,7 @@
         {
             _settings = settings;
             _client = new Client(settings);
-            _algorithm = new MagicAlgorithm();
+            _algorithm = new MagicAlgorithm(settings, _client);
             _data = new DataProvider(_client, settings);
         }
         
@@ -52,17 +52,19 @@
                     if (situation.IsInitialCycle)
                     {
                         ConsoleOutput.Write($"Initial cycle - Converting...");
-                        if (_client.TryConvert(target, situation, out var transaction))
+                        _algorithm.ToInitialConversionActions(target, cancellationToken, out var initialSellAction, out var initialBuyAction);
+
+                        if (_client.TryConvert(initialSellAction, initialBuyAction, cancellationToken, out var transaction))
                         {
                             ConsoleOutput.WritePositive($"Transaction done!");
                             _data.AddTransaction(transaction);
                             targetSucceeded = true;
                         }
                     }
-                    if (_algorithm.TransactionIsWorthIt(target, situation))
+                    if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
                     {
                         ConsoleOutput.Write($"Feasible transaction found - Converting...");
-                        if (_client.TryConvert(target, situation, out var transaction))
+                        if (_client.TryConvert(sellAction, buyAction, cancellationToken, out var transaction))
                         {
                             ConsoleOutput.WritePositive($"Transaction done!");
                             _data.AddTransaction(transaction);

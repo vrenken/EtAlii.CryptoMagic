@@ -4,6 +4,7 @@ namespace EtAlii.BinanceMagic.Tests
 
     public class TestContext
     {
+        public Random Random => _random;
         private readonly Random _random = new(Environment.TickCount);
         
         public Settings CreateSettings()
@@ -11,6 +12,7 @@ namespace EtAlii.BinanceMagic.Tests
             return new()
             {
                 TransactionsFile = $"Transactions_{_random.Next()}.txt",
+                IsTest = true,
             };
         }
 
