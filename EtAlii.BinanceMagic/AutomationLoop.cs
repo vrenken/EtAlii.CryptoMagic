@@ -40,7 +40,7 @@
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var target = _data.BuildTarget(cancellationToken);
+                var target = _data.BuildTarget();
                 ConsoleOutput.Write($"Found next target: {target.Source} -> {target.Destination} using minimal increase: {_settings.MinimalIncrease:P}");
 
                 var targetSucceeded = false;

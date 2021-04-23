@@ -81,7 +81,41 @@ namespace EtAlii.BinanceMagic.Tests
             // Assert.
             Assert.Equal(2, data.Transactions.Count);
         }
-                       
+
+        [Fact]
+        public void DataProvider_Build_Targets()
+        {
+            // Arrange.
+            var settings = _context.CreateSettings();
+            var client = new Client(settings);
+            var data = new DataProvider(client, settings);
+            data.Load();
+            var firstCoin = settings.AllowedCoins.First();
+            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, settings.InitialTargetProfit, 2);
+            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, settings.InitialTargetProfit * (1 + settings.MinimalIncrease), 2);
+            
+            // Act.
+            var firstTarget = data.BuildTarget();
+            data.AddTransaction(firstTransaction);
+            var secondTarget = data.BuildTarget();
+            data.AddTransaction(secondTransaction);
+            var thirdTarget = data.BuildTarget();
+
+            // Assert.
+            Assert.Equal(firstCoin, firstTarget.Source);
+            Assert.Equal(secondCoin, firstTarget.Destination);
+            Assert.Equal(settings.InitialTargetProfit, firstTarget.Profit);
+            
+            Assert.Equal(secondCoin, secondTarget.Source);
+            Assert.Equal(firstCoin, secondTarget.Destination);
+            Assert.Equal(firstTarget.Profit * (1 + settings.MinimalIncrease), secondTarget.Profit);
+
+            Assert.Equal(firstCoin, thirdTarget.Source);
+            Assert.Equal(secondCoin, thirdTarget.Destination);
+            Assert.Equal(secondTarget.Profit * (1 + settings.MinimalIncrease), thirdTarget.Profit);
+        }
+
         [Fact]
         public void DataProvider_Situation_Get()
         {
@@ -96,7 +130,7 @@ namespace EtAlii.BinanceMagic.Tests
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             data.AddTransaction(firstTransaction);
             var cancellationToken = new CancellationToken();
-            var target = data.BuildTarget(cancellationToken);
+            var target = data.BuildTarget();
             
             // Act.
             var situation = data.GetSituation(target, cancellationToken);
@@ -122,7 +156,7 @@ namespace EtAlii.BinanceMagic.Tests
             data.AddTransaction(firstTransaction);
             data.AddTransaction(secondTransaction);
             var cancellationToken = new CancellationToken();
-            var target = data.BuildTarget(cancellationToken);
+            var target = data.BuildTarget();
             
             // Act.
             var situation = data.GetSituation(target, cancellationToken);

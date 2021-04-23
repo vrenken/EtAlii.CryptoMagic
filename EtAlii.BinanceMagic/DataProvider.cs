@@ -17,7 +17,7 @@
         {
             _client = client;
             _settings = settings;
-            _transactions = new();
+            _transactions = new List<Transaction>();
             Transactions = _transactions.AsReadOnly();
         }
 
@@ -94,7 +94,7 @@
             ConsoleOutput.Write($"Target  = {target.Profit} {_settings.ReferenceCoin}");
         }
         
-        public Target BuildTarget(CancellationToken cancellationToken)
+        public Target BuildTarget()
         {
             var lastTransaction = _transactions.LastOrDefault();
 
