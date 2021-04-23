@@ -80,8 +80,44 @@ namespace EtAlii.BinanceMagic.Tests
 
             // Assert.
             Assert.Equal(2, data.Transactions.Count);
+            Assert.Equal(10, data.Transactions[0].TotalProfit);
+            Assert.Equal(firstCoin, data.Transactions[0].From.Coin);
+            Assert.Equal(secondCoin, data.Transactions[0].To.Coin);
+            Assert.Equal(12, data.Transactions[1].TotalProfit);
+            Assert.Equal(secondCoin, data.Transactions[1].From.Coin);
+            Assert.Equal(firstCoin, data.Transactions[1].To.Coin);
+        }
+                        
+        [Fact]
+        public void DataProvider_Add_Transactions_And_Reload()
+        {
+            // Arrange.
+            var settings = _context.CreateSettings();
+            var client = new Client(settings);
+            var data = new DataProvider(client, settings);
+            data.Load();
+            var firstCoin = settings.AllowedCoins.First();
+            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
+            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
+            data.AddTransaction(firstTransaction);
+            data.AddTransaction(secondTransaction);
+            
+            // Act.
+            data = new DataProvider(client, settings);
+            data.Load();
+
+            // Assert.
+            Assert.Equal(2, data.Transactions.Count);
+            Assert.Equal(10, data.Transactions[0].TotalProfit);
+            Assert.Equal(firstCoin, data.Transactions[0].From.Coin);
+            Assert.Equal(secondCoin, data.Transactions[0].To.Coin);
+            Assert.Equal(12, data.Transactions[1].TotalProfit);
+            Assert.Equal(secondCoin, data.Transactions[1].From.Coin);
+            Assert.Equal(firstCoin, data.Transactions[1].To.Coin);
         }
 
+        
         [Fact]
         public void DataProvider_Build_Targets()
         {

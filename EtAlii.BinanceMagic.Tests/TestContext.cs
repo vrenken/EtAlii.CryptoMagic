@@ -32,7 +32,6 @@ namespace EtAlii.BinanceMagic.Tests
                 },
                 Moment = DateTime.Now,
                 TotalProfit = totalProfit,
-                Change = change,
             };
         }
     }

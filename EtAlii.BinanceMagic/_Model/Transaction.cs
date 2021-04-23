@@ -9,7 +9,6 @@
         public CoinSnapshot From { get; init; }
         public CoinSnapshot To { get; init; }
         
-        public decimal Change { get; init; }
         public decimal TotalProfit { get; init; }
 
         public static void Write(StreamWriter sw, Transaction transaction)
@@ -19,8 +18,6 @@
             CoinSnapshot.Write(sw, transaction.From);
             sw.Write("|");
             CoinSnapshot.Write(sw, transaction.To);
-            sw.Write("|");
-            sw.Write(transaction.Change);
             sw.Write("|");
             sw.Write(transaction.TotalProfit);
             sw.Write(Environment.NewLine);
@@ -35,8 +32,7 @@
                 Moment = DateTime.Parse(parts[0]),
                 From = CoinSnapshot.Read(parts[1]),
                 To = CoinSnapshot.Read(parts[2]),
-                Change = decimal.Parse(parts[3]),
-                TotalProfit = decimal.Parse(parts[4])
+                TotalProfit = decimal.Parse(parts[3])
             };
         }
     }
