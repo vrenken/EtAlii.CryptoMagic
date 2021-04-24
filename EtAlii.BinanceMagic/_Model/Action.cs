@@ -7,7 +7,8 @@ namespace EtAlii.BinanceMagic
     {
         public string Coin { get; init; }
         public decimal Quantity { get; init; }
-        public decimal TargetPrice { get; init; }
+        public decimal Price { get; init; }
+        public decimal UnitPrice { get; init; }
         public string TransactionId { get; init; }
     }
 }

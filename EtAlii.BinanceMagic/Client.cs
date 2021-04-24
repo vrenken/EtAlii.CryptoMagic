@@ -32,6 +32,7 @@
             {
                 RateLimitingBehaviour = RateLimitingBehaviour.Wait,
                 ApiCredentials = new ApiCredentials(_settings.ApiKey, _settings.SecretKey),
+                TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
             };
             _client = new BinanceClient(options);
 
@@ -85,7 +86,7 @@
 
         public (decimal quantityToSell, decimal quantityToBuy) GetMinimalQuantity(string coinToSell, string coinToBuy, CancellationToken cancellationToken)
         {
-            ConsoleOutput.Write("Fetching exchange info...");
+            //ConsoleOutput.Write("Fetching exchange info...");
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
             {
@@ -113,7 +114,7 @@
         
         public bool TryConvert(SellAction sellAction, BuyAction buyAction, CancellationToken cancellationToken, out Transaction transaction)
         {
-            ConsoleOutput.Write("Fetching exchange info...");
+            //ConsoleOutput.Write("Fetching exchange info...");
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
             {
@@ -126,16 +127,25 @@
             _validator.Validate(buyAction, "Buy", exchangeInfo, cancellationToken);
             
             var sellCoin = $"{sellAction.Coin}{_settings.ReferenceCoin}";
-            var sellOrder = _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, OrderType.Market,
-                sellAction.Quantity, null, sellAction.TransactionId, null, null,
-                null, null, OrderResponseType.Result, null, cancellationToken);
+
+            var sellOrder = _settings.PlaceTestOrders
+                ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, OrderType.Market,
+                    sellAction.Quantity, null, sellAction.TransactionId, null, null,
+                    null, null, OrderResponseType.Result, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, OrderType.Market,
+                    null, sellAction.Price, sellAction.TransactionId, null, null,
+                    null, null, OrderResponseType.Result, null, cancellationToken);
 
             if (sellOrder.Error != null)
             {
                 var message = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
                 _program.HandleFail(message);
             }
-            if (sellOrder.Data.Status != OrderStatus.Filled)
+
+            var isSold = _settings.PlaceTestOrders
+                ? sellOrder.Data.Status == OrderStatus.New
+                : sellOrder.Data.Status == OrderStatus.Filled;
+            if (!isSold)
             {
                 var message = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
                 _program.HandleFail(message);
@@ -143,16 +153,25 @@
 
             var buyQuantity = decimal.Round(buyAction.Quantity, 8); 
             var buyCoin = $"{buyAction.Coin}{_settings.ReferenceCoin}";
-            var buyOrder = _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, OrderType.Market,
-                buyQuantity, null, buyAction.TransactionId, null, null,
-                null, null, OrderResponseType.Result, null, cancellationToken);
+
+            var buyOrder = _settings.PlaceTestOrders
+                ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, OrderType.Market,
+                    buyQuantity, null, buyAction.TransactionId, null, null,
+                    null, null, OrderResponseType.Result, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, OrderType.Market,
+                    null, buyAction.Price, buyAction.TransactionId, null, null,
+                    null, null, OrderResponseType.Result, null, cancellationToken);
 
             if (buyOrder.Error != null)
             {
                 var message = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
                 _program.HandleFail(message);
             }
-            if (buyOrder.Data.Status != OrderStatus.Filled)
+
+            var isBought = _settings.PlaceTestOrders
+                ? buyOrder.Data.Status == OrderStatus.New
+                : buyOrder.Data.Status == OrderStatus.Filled;
+            if (!isBought)
             {
                 var message = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
                 _program.HandleFail(message);

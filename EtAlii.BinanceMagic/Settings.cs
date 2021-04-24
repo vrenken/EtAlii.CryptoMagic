@@ -5,6 +5,7 @@
     public record Settings
     {
         public bool IsTest { get; init; } = false;
+        public bool PlaceTestOrders { get; init; } = false;
         public string TransactionsFile { get; init; }  = "Transactions.txt";
         
         public string[] AllowedCoins { get; init; }  = { "BTC", "BNB" }; // "ETH"
@@ -17,6 +18,7 @@
         public decimal MinimalIncrease  { get; init; } = 0.1m; // in %
         public decimal InitialPurchaseMinimalFactor { get; init; } = 1.2m; // in %
         public decimal InitialTargetProfit  { get; init; } = 5.00000001m; // in BUSD.
+        public decimal MaxQuantityToTrade  { get; init; } = 0.9m; // in %.
 
         public TimeSpan SampleInterval  { get; init; } = TimeSpan.FromMinutes(5);
 

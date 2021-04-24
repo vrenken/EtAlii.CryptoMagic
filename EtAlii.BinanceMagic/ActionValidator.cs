@@ -26,14 +26,14 @@ namespace EtAlii.BinanceMagic
             var price = priceResult.Data.Price;
             if (symbol.PriceFilter is var priceFilter)
             {
-                if (sellAction.TargetPrice <= priceFilter!.MinPrice)
+                if (sellAction.UnitPrice <= priceFilter!.MinPrice)
                 {
-                    var message = $"{type} action target price {sellAction.TargetPrice} is below price filter minimum of {priceFilter.MinPrice}";
+                    var message = $"{type} action target price {sellAction.UnitPrice} is below price filter minimum of {priceFilter.MinPrice}";
                     _program.HandleFail(message);
                 }
-                if (sellAction.TargetPrice >= priceFilter.MaxPrice)
+                if (sellAction.UnitPrice >= priceFilter.MaxPrice)
                 {
-                    var message = $"{type} action target price {sellAction.TargetPrice} is above price filter maximum of {priceFilter.MaxPrice}";
+                    var message = $"{type} action target price {sellAction.UnitPrice} is above price filter maximum of {priceFilter.MaxPrice}";
                     _program.HandleFail(message);
                 }
             }
@@ -42,21 +42,21 @@ namespace EtAlii.BinanceMagic
             {
                 var min = percentPriceFilter!.MultiplierDown * price;
                 var max = percentPriceFilter.MultiplierUp * price;
-                if (sellAction.TargetPrice <= min)
+                if (sellAction.UnitPrice <= min)
                 {
-                    var message = $"{type} action target price {sellAction.TargetPrice} is below price percent filter minimum of {min}";
+                    var message = $"{type} action target price {sellAction.UnitPrice} is below price percent filter minimum of {min}";
                     _program.HandleFail(message);
                 }
-                if (sellAction.TargetPrice >= max)
+                if (sellAction.UnitPrice >= max)
                 {
-                    var message = $"{type} action target price {sellAction.TargetPrice} is above price percent filter maximum of {max}";
+                    var message = $"{type} action target price {sellAction.UnitPrice} is above price percent filter maximum of {max}";
                     _program.HandleFail(message);
                 }
             }
             
             if (symbol.MinNotionalFilter is var minNotionalFilter)
             {
-                var notionalPrice = sellAction.Quantity * sellAction.TargetPrice;
+                var notionalPrice = sellAction.Quantity * sellAction.UnitPrice;
                 if (notionalPrice <= minNotionalFilter!.MinNotional)
                 {
                     var message = $"{type} action notional price {notionalPrice} is below notional price filter of {minNotionalFilter.MinNotional}";

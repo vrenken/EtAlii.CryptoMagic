@@ -13,6 +13,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 TransactionsFile = $"Transactions_{_random.Next()}.txt",
                 IsTest = true,
+                PlaceTestOrders = true,
             };
         }
 

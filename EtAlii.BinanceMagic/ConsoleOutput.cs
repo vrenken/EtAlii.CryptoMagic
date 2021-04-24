@@ -5,6 +5,12 @@ namespace EtAlii.BinanceMagic
     public static class ConsoleOutput
     {
         public static void Write(string line) => Console.WriteLine(line);
+        public static void WriteFormatted(string line, params object[] parameters)
+        {
+            line = string.Format(line, parameters);
+            Console.WriteLine(line);
+        }
+
         public static void WritePositive(string line)
         {
             var color = Console.ForegroundColor;

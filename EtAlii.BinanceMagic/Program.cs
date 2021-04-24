@@ -12,7 +12,11 @@
         }
         static void Main()//string[] args)
         {
-            var settings = new Settings();
+            var settings = new Settings
+            {
+                PlaceTestOrders = true
+            };
+            
             var program = new Program(settings);
 
             ConsoleOutput.Write("Starting Binance magic...");

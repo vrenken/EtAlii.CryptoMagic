@@ -41,7 +41,7 @@ namespace EtAlii.BinanceMagic.Tests
             Assert.NotNull(client);
         }
                         
-        [Fact(Skip = "Live test")]
+        [Fact]
         public void Client_TryConvert()
         {
             // Arrange.
@@ -54,15 +54,17 @@ namespace EtAlii.BinanceMagic.Tests
             var sellAction = new SellAction
             {
                 Coin = "ETH",
-                Quantity = 0.0048m, // = ~11,23 USD
-                TargetPrice = 2321.51m,
+                Quantity = 0.0048m, // = ~11,143248 USD
+                UnitPrice = 2321.51m,
+                Price = 2321.51m * 0.0048m,
                 TransactionId = $"{transactionId:000000}_0_ETH_BNB",
             };
             var buyAction = new BuyAction
             {
                 Coin = "BNB",
-                Quantity = 0.02m, // = ~10.17 BUSD
-                TargetPrice = 509.7750m,
+                Quantity = 0.03m, // = ~15,29325 BUSD
+                UnitPrice = 509.7750m,
+                Price = 509.7750m * 0.03m, 
                 TransactionId = $"{transactionId:000000}_1_BNB_ETH",
             };
             
