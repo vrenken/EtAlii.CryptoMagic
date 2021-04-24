@@ -17,9 +17,10 @@ namespace EtAlii.BinanceMagic.Tests
         {
             // Arrange.
             var settings = _context.CreateSettings();
+            var program = new Program(settings);
             
             // Act.
-            var client = new Client(settings);
+            var client = new Client(settings, program);
             
             // Assert.
             Assert.NotNull(client);
@@ -30,7 +31,8 @@ namespace EtAlii.BinanceMagic.Tests
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
             
             // Act.
             client.Start();
@@ -39,27 +41,28 @@ namespace EtAlii.BinanceMagic.Tests
             Assert.NotNull(client);
         }
                         
-        [Fact]
+        [Fact(Skip = "Live test")]
         public void Client_TryConvert()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
             client.Start();
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();
             var sellAction = new SellAction
             {
                 Coin = "ETH",
-                Quantity = 0.0001200m, // = ~ 0,027 USD
-                TargetPrice = 0.027m,
+                Quantity = 0.0048m, // = ~11,23 USD
+                TargetPrice = 2321.51m,
                 TransactionId = $"{transactionId:000000}_0_ETH_BNB",
             };
             var buyAction = new BuyAction
             {
                 Coin = "BNB",
-                Quantity = 0.001m, // = ~ 0.48439623070802 BUSD
-                TargetPrice = 0.48439623070802m,
+                Quantity = 0.02m, // = ~10.17 BUSD
+                TargetPrice = 509.7750m,
                 TransactionId = $"{transactionId:000000}_1_BNB_ETH",
             };
             
