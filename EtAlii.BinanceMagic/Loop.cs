@@ -4,21 +4,21 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class AutomationLoop
+    public class Loop
     {
         private readonly Settings _settings;
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private Task _task;
-        private readonly MagicAlgorithm _algorithm;
-        private readonly DataProvider _data;
+        private readonly Algorithm _algorithm;
+        private readonly Data _data;
         private readonly Client _client;
 
-        public AutomationLoop(Settings settings)
+        public Loop(Settings settings, Program program)
         {
             _settings = settings;
-            _client = new Client(settings);
-            _algorithm = new MagicAlgorithm(settings, _client);
-            _data = new DataProvider(_client, settings);
+            _client = new Client(settings, program);
+            _algorithm = new Algorithm(_client);
+            _data = new Data(_client, settings);
         }
         
         public void Stop()
@@ -61,22 +61,22 @@
                             targetSucceeded = true;
                         }
                     }
-                    if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
+                    else if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
                     {
                         ConsoleOutput.Write($"Feasible transaction found - Converting...");
                         if (_client.TryConvert(sellAction, buyAction, cancellationToken, out var transaction))
                         {
                             ConsoleOutput.WritePositive($"Transaction done!");
+                            ConsoleOutput.Write("Next check at: {DateTime.Now + _settings.SampleInterval}");
                             _data.AddTransaction(transaction);
                             targetSucceeded = true;
                         }
                     }
                     else
                     {
-                        var interval = _settings.SampleInterval;
-                        ConsoleOutput.WriteNegative($"No feasible transaction - Waiting until: {DateTime.Now + interval}");
-                        Task.Delay(interval, cancellationToken).Wait(cancellationToken);
+                        ConsoleOutput.WriteNegative($"No feasible transaction - Waiting until: {DateTime.Now + _settings.SampleInterval}");
                     }
+                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
                 }
             }
 

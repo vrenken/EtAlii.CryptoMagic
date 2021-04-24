@@ -6,14 +6,14 @@
     using System.Linq;
     using System.Threading;
 
-    public class DataProvider
+    public class Data
     {        
         private readonly Client _client;
         private readonly Settings _settings;
         public IReadOnlyList<Transaction> Transactions { get; } 
         private readonly List<Transaction> _transactions;
 
-        public DataProvider(Client client, Settings settings)
+        public Data(Client client, Settings settings)
         {
             _client = client;
             _settings = settings;
@@ -65,9 +65,9 @@
             };
             var situation = new Situation
             {
-                SourceDelta =sourceDelta,
+                Source =sourceDelta,
                 SourceSellFee = sourceTradeFees.MakerFee,
-                DestinationDelta = targetDelta,
+                Destination = targetDelta,
                 DestinationBuyFee = targetTradeFees.TakerFee,
                 IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
             };
@@ -85,10 +85,10 @@
             var feeLabel     = "- Fee     = ";
             var format = "{0, -12}{1, -30}{2, -12}{3, -30}";
             ConsoleOutput.Write($"Current situation:");
-            ConsoleOutput.Write(string.Format(format, situation.SourceDelta.Coin, "", situation.DestinationDelta.Coin, ""));
-            ConsoleOutput.Write(string.Format(format, quotaLabel,$"{situation.SourceDelta.PastQuota} {_settings.ReferenceCoin}",quotaLabel, $"{situation.DestinationDelta.PastQuota} {_settings.ReferenceCoin}"));
-            ConsoleOutput.Write(string.Format(format, pastLabel, $"{situation.SourceDelta.PastPrice * situation.SourceDelta.PastQuota}", pastLabel, $"{situation.DestinationDelta.PastPrice * situation.DestinationDelta.PastQuota}"));
-            ConsoleOutput.Write(string.Format(format, presentLabel, $"{situation.SourceDelta.PresentPrice * situation.SourceDelta.PastQuota} {_settings.ReferenceCoin}", presentLabel, $"{situation.DestinationDelta.PresentPrice * situation.DestinationDelta.PastQuota} {_settings.ReferenceCoin}"));
+            ConsoleOutput.Write(string.Format(format, situation.Source.Coin, "", situation.Destination.Coin, ""));
+            ConsoleOutput.Write(string.Format(format, quotaLabel,$"{situation.Source.PastQuota} {_settings.ReferenceCoin}",quotaLabel, $"{situation.Destination.PastQuota} {_settings.ReferenceCoin}"));
+            ConsoleOutput.Write(string.Format(format, pastLabel, $"{situation.Source.PastPrice * situation.Source.PastQuota}", pastLabel, $"{situation.Destination.PastPrice * situation.Destination.PastQuota}"));
+            ConsoleOutput.Write(string.Format(format, presentLabel, $"{situation.Source.PresentPrice * situation.Source.PastQuota} {_settings.ReferenceCoin}", presentLabel, $"{situation.Destination.PresentPrice * situation.Destination.PastQuota} {_settings.ReferenceCoin}"));
             ConsoleOutput.Write(string.Format(format, feeLabel, $"{situation.SourceSellFee:P}", feeLabel, $"{situation.DestinationBuyFee:P}"));
 
             ConsoleOutput.Write($"Target  = {target.Profit} {_settings.ReferenceCoin}");

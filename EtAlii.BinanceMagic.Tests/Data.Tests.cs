@@ -4,36 +4,38 @@ namespace EtAlii.BinanceMagic.Tests
     using System.Threading;
     using Xunit;
 
-    public class DataProviderTests : IClassFixture<TestContext>
+    public class DataTests : IClassFixture<TestContext>
     {
         private readonly TestContext _context;
 
-        public DataProviderTests(TestContext context)
+        public DataTests(TestContext context)
         {
             _context = context;
         }
         
         [Fact]
-        public void DataProvider_Create()
+        public void Data_Create()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
             
             // Act.
-            var data = new DataProvider(client, settings);
+            var data = new Data(client, settings);
             
             // Assert.
             Assert.NotNull(data);
         }
         
         [Fact]
-        public void DataProvider_Load_Empty()
+        public void Data_Load_Empty()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
-            var data = new DataProvider(client, settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
+            var data = new Data(client, settings);
             
             // Act.
             data.Load();
@@ -43,12 +45,13 @@ namespace EtAlii.BinanceMagic.Tests
         }
                 
         [Fact]
-        public void DataProvider_Add_Transaction()
+        public void Data_Add_Transaction()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
-            var data = new DataProvider(client, settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
+            var data = new Data(client, settings);
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
@@ -62,12 +65,13 @@ namespace EtAlii.BinanceMagic.Tests
         }
                         
         [Fact]
-        public void DataProvider_Add_Transactions()
+        public void Data_Add_Transactions()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
-            var data = new DataProvider(client, settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
+            var data = new Data(client, settings);
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
@@ -89,12 +93,13 @@ namespace EtAlii.BinanceMagic.Tests
         }
                         
         [Fact]
-        public void DataProvider_Add_Transactions_And_Reload()
+        public void Data_Add_Transactions_And_Reload()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
-            var data = new DataProvider(client, settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
+            var data = new Data(client, settings);
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
@@ -104,7 +109,7 @@ namespace EtAlii.BinanceMagic.Tests
             data.AddTransaction(secondTransaction);
             
             // Act.
-            data = new DataProvider(client, settings);
+            data = new Data(client, settings);
             data.Load();
 
             // Assert.
@@ -119,12 +124,13 @@ namespace EtAlii.BinanceMagic.Tests
 
         
         [Fact]
-        public void DataProvider_Build_Targets()
+        public void Data_Build_Targets()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
-            var data = new DataProvider(client, settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
+            var data = new Data(client, settings);
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
@@ -153,13 +159,14 @@ namespace EtAlii.BinanceMagic.Tests
         }
 
         [Fact]
-        public void DataProvider_Situation_Get()
+        public void Data_Situation_Get()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
             client.Start();
-            var data = new DataProvider(client, settings);
+            var data = new Data(client, settings);
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
@@ -177,13 +184,14 @@ namespace EtAlii.BinanceMagic.Tests
         }
                        
         [Fact]
-        public void DataProvider_Situation_Get_After_InitialCycle()
+        public void Data_Situation_Get_After_InitialCycle()
         {
             // Arrange.
             var settings = _context.CreateSettings();
-            var client = new Client(settings);
+            var program = new Program(settings);
+            var client = new Client(settings, program);
             client.Start();
-            var data = new DataProvider(client, settings);
+            var data = new Data(client, settings);
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
