@@ -18,7 +18,7 @@
             _program = program;
         }
 
-        public bool TransactionIsWorthIt(Target target, Situation situation, CancellationToken cancellationToken, out SellAction sellAction, out BuyAction buyAction)
+        public bool TransactionIsWorthIt(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
             sellAction = null;
             buyAction = null;
@@ -68,13 +68,35 @@
             return isWorthIt;
         }
 
-        public void ToInitialConversionActions(Target target, CancellationToken cancellationToken, out SellAction sellAction, out BuyAction buyAction)
+        public void ToInitialConversionActions(Target target, Situation situation, CancellationToken cancellationToken, out SellAction sellAction, out BuyAction buyAction)
         {
-            var (quantityToSell, quantityToBuy) = _client.GetMinimalQuantity(target.Source, target.Destination, _settings, cancellationToken);
-            var sourcePrice = _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
+            var exchangeInfo = _client.GetExchangeInfo(cancellationToken);
+
+            var lastPurchaseForSource = _data.FindLastPurchase(target.Source);
+            var quantityToSell = lastPurchaseForSource == null
+                ? _client.GetMinimalQuantity2(target.Source, situation.Source, exchangeInfo, _settings)
+                : lastPurchaseForSource.Quantity;
+
+            var quantityToBuy = _client.GetMinimalQuantity2(target.Destination, situation.Destination, exchangeInfo, _settings);
+
+            var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
             var previousTransaction = _data.Transactions.LastOrDefault();
-            if (previousTransaction != null)
+            if (previousTransaction == null)
+            {
+                quantityToBuy = quantityToBuy * _settings.NotionalMinCorrection * _settings.InitialBuyFactor;
+                quantityToSell = quantityToSell * _settings.NotionalMinCorrection;// * _settings.InitialSellFactor;
+
+                sellAction = new SellAction
+                {
+                    Coin = target.Source,
+                    UnitPrice = sourcePrice,
+                    Quantity = quantityToSell,
+                    Price = sourcePrice * quantityToSell,
+                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
+                };
+            }
+            else
             {
                 if (previousTransaction.To.Coin != target.Source)
                 {
@@ -90,19 +112,8 @@
                     TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
                 };
             }
-            else
-            {
-                sellAction = new SellAction
-                {
-                    Coin = target.Source,
-                    UnitPrice = sourcePrice,
-                    Quantity = quantityToSell,
-                    Price = sourcePrice * quantityToSell,
-                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
-                };
-            }
 
-            var destinationPrice = _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
+            var destinationPrice = situation.Destination.PresentPrice;// _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
             buyAction = new BuyAction
             {
                 Coin = target.Destination,

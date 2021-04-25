@@ -64,7 +64,7 @@
                 if (situation.IsInitialCycle)
                 {
                     ConsoleOutput.Write($"Initial cycle - Converting...");
-                    _algorithm.ToInitialConversionActions(target, cancellationToken, out var initialSellAction, out var initialBuyAction);
+                    _algorithm.ToInitialConversionActions(target, situation, cancellationToken, out var initialSellAction, out var initialBuyAction);
                     ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{initialSellAction.Quantity} {initialSellAction.Coin}", $"{initialSellAction.Price} {_settings.ReferenceCoin}");
                     ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{initialBuyAction.Quantity} {initialBuyAction.Coin}", $"{initialBuyAction.Price} {_settings.ReferenceCoin}");
 
@@ -77,7 +77,7 @@
                         targetSucceeded = true;
                     }
                 }
-                else if (_algorithm.TransactionIsWorthIt(target, situation, cancellationToken, out var sellAction, out var buyAction))
+                else if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
                 {
                     ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
                     ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{buyAction.Quantity} {buyAction.Coin}", $"{buyAction.Price} {_settings.ReferenceCoin}");

@@ -28,7 +28,8 @@
                 new LoopSettings
                 {
                     AllowedCoins = new []{"BTC", "BNB"},
-                    InitialPurchaseMinimalFactor = 10.0m,
+                    //InitialTransferFactor = 10.0m,
+                    //MaxQuantityToTrade = 0.9m,
                     MinimalIncrease = 0.05m,
                 },
                 // new LoopSettings

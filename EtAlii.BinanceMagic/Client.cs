@@ -6,6 +6,7 @@
     using Binance.Net;
     using Binance.Net.Enums;
     using Binance.Net.Objects.Spot;
+    using Binance.Net.Objects.Spot.MarketData;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
 
@@ -81,33 +82,40 @@
             var fees = result.Data.First();
             return (fees.MakerFee, fees.TakerFee);
         }
-
-        public (decimal quantityToSell, decimal quantityToBuy) GetMinimalQuantity(string coinToSell, string coinToBuy, LoopSettings loopSettings, CancellationToken cancellationToken)
+        
+        public BinanceExchangeInfo GetExchangeInfo(CancellationToken cancellationToken)
         {
             //ConsoleOutput.Write("Fetching exchange info...");
-            var exchangeResult = _client.Spot.System.GetExchangeInfo();
+            var exchangeResult = _client.Spot.System.GetExchangeInfo(cancellationToken);
             if (!exchangeResult.Success)
             {
                 var message = $"Failed to fetch exchange info: {exchangeResult.Error}";
                 _program.HandleFail(message);
             }
-            var exchangeInfo = exchangeResult.Data;
+            return exchangeResult.Data;
+        }
+        
+        public decimal GetMinimalQuantity1(string coin, BinanceExchangeInfo exchangeInfo, LoopSettings loopSettings)
+        {
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
 
-            var symbolToSell = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToSell && s.QuoteAsset == loopSettings.ReferenceCoin);
-
-            var min = symbolToSell.PriceFilter!.MinPrice;
-            var minPercent = symbolToSell.PricePercentFilter!.MultiplierDown;
-            var notional = symbolToSell.MinNotionalFilter!.MinNotional;
-            var quantityToSell = ((min * minPercent) / notional) * loopSettings.InitialPurchaseMinimalFactor;
+            var min = symbol.PriceFilter!.MinPrice;
+            var minPercent = symbol.PricePercentFilter!.MultiplierDown;
+            var notional = symbol.MinNotionalFilter!.MinNotional;
+            var quantity = (min * minPercent) / notional;
             //var quantityToSell = symbolToSell.LotSizeFilter!.MinQuantity * _settings.InitialPurchaseMinimalFactor;
 
-            var symbolToBuy = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToBuy && s.QuoteAsset == loopSettings.ReferenceCoin);
+            return quantity;
+        }
+        public decimal GetMinimalQuantity2(string coin, Delta delta, BinanceExchangeInfo exchangeInfo, LoopSettings loopSettings)//, CancellationToken cancellationToken)
+        {
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
 
-            var price = GetPrice(coinToBuy, loopSettings.ReferenceCoin, cancellationToken);
+            var price = delta.PresentPrice;//GetPrice(coin, loopSettings.ReferenceCoin, cancellationToken);
             
-            var quantityToBuy = (1 / price) * symbolToBuy.MinNotionalFilter!.MinNotional * loopSettings.InitialPurchaseMinimalFactor;
+            var quantity = (1 / price) * symbol.MinNotionalFilter!.MinNotional;
 
-            return (quantityToSell, quantityToBuy);
+            return quantity;
         }
         
         public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, out Transaction transaction)

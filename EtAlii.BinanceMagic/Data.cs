@@ -40,8 +40,8 @@
             ConsoleOutput.Write("Loading previous gambles from file: Done");
         }
         
-        private CoinSnapshot FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.To;
-        private CoinSnapshot FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.From;
+        public CoinSnapshot FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.To;
+        public CoinSnapshot FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.From;
         
         public Situation GetSituation(Target target, CancellationToken cancellationToken)
         {
@@ -119,6 +119,7 @@
                 : profit;
 
             var previousProfit = lastTransaction?.TotalProfit ?? profit;
+            previousProfit = previousProfit > 0 ? previousProfit : profit; 
             // previousProfit = previousProfit < 0m 
             //     ? 0m 
             //     : previousProfit;
