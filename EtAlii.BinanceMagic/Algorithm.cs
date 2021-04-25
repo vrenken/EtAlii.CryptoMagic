@@ -1,18 +1,16 @@
 ﻿namespace EtAlii.BinanceMagic
 {
     using System.Linq;
-    using System.Threading;
+    using Binance.Net.Objects.Spot.MarketData;
 
     public class Algorithm
     {
-        private readonly Client _client;
         private readonly LoopSettings _settings;
         private readonly Data _data;
         private readonly Program _program;
 
-        public Algorithm(Client client, LoopSettings settings, Data data, Program program)
+        public Algorithm(LoopSettings settings, Data data, Program program)
         {
-            _client = client;
             _settings = settings;
             _data = data;
             _program = program;
@@ -31,22 +29,48 @@
             
             var currentProfit = currentProfitIncrease - currentProfitDecrease;
             var profitIncrease = target.Profit - target.PreviousProfit;
-            var isWorthIt = currentProfit > profitIncrease;
+
+            var sufficientProfit = currentProfit > profitIncrease; 
+            var aboveNotionalProfitIncrease = currentProfitIncrease > GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
+            var aboveNotionalProfitDecrease = currentProfitDecrease > GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+
+            var isWorthIt = sufficientProfit && aboveNotionalProfitIncrease && aboveNotionalProfitDecrease;
+            
             var profitDifference = currentProfitIncrease - currentProfitDecrease;
             ConsoleOutput.Write($"Target   : +{profitIncrease} {_settings.ReferenceCoin}");
-            ConsoleOutput.Write($"Sell     : +{currentProfitIncrease} {_settings.ReferenceCoin} (= +{sourceQuantityToSell} {target.Source})");
-            ConsoleOutput.Write($"Buy      : -{currentProfitDecrease} {_settings.ReferenceCoin} (= -{maxDestinationQuantityToBuy} {target.Destination})");
-            var message =          $"Diff     : {profitDifference} {_settings.ReferenceCoin}";
-            
-            _data.AddTrend(profitIncrease, currentProfitIncrease, sourceQuantityToSell, currentProfitDecrease, maxDestinationQuantityToBuy, profitDifference);
-            
-            if (!isWorthIt)
+            var sellMessage = $"Sell     : +{currentProfitIncrease} {_settings.ReferenceCoin} (= +{sourceQuantityToSell} {target.Source})";
+            var buyMessage =  $"Buy      : -{currentProfitDecrease} {_settings.ReferenceCoin} (= -{maxDestinationQuantityToBuy} {target.Destination})";
+            var diffMessage = $"Diff     : {profitDifference} {_settings.ReferenceCoin}";
+
+            if (aboveNotionalProfitIncrease)
             {
-                ConsoleOutput.WriteNegative(message);
+                ConsoleOutput.Write(sellMessage);
             }
             else
             {
-                ConsoleOutput.WritePositive(message);
+                ConsoleOutput.WriteNegative(sellMessage);
+            }
+            if (aboveNotionalProfitDecrease)
+            {
+                ConsoleOutput.Write(buyMessage);
+            }
+            else
+            {
+                ConsoleOutput.WriteNegative(buyMessage);
+            }
+            if (sufficientProfit)
+            {
+                ConsoleOutput.WritePositive(diffMessage);
+            }
+            else
+            {
+                ConsoleOutput.WriteNegative(diffMessage);
+            }
+            
+            _data.AddTrend(profitIncrease, currentProfitIncrease, sourceQuantityToSell, currentProfitDecrease, maxDestinationQuantityToBuy, profitDifference);
+            
+            if (isWorthIt)
+            {
                 sellAction = new SellAction
                 {
                     Coin = situation.Source.Coin,
@@ -68,25 +92,23 @@
             return isWorthIt;
         }
 
-        public void ToInitialConversionActions(Target target, Situation situation, CancellationToken cancellationToken, out SellAction sellAction, out BuyAction buyAction)
+        public void ToInitialConversionActions(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            var exchangeInfo = _client.GetExchangeInfo(cancellationToken);
-
             var lastPurchaseForSource = _data.FindLastPurchase(target.Source);
             var quantityToSell = lastPurchaseForSource == null
-                ? _client.GetMinimalQuantity2(target.Source, situation.Source, exchangeInfo, _settings)
+                ? (1 / situation.Source.PresentPrice) * GetMinimalQuantity(target.Source, situation.ExchangeInfo, _settings)
                 : lastPurchaseForSource.Quantity;
 
-            var quantityToBuy = _client.GetMinimalQuantity2(target.Destination, situation.Destination, exchangeInfo, _settings);
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * GetMinimalQuantity(target.Destination, situation.ExchangeInfo, _settings);
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
+
+            quantityToBuy = quantityToBuy * _settings.NotionalMinCorrection * _settings.InitialBuyFactor;
+            quantityToSell = quantityToSell * _settings.NotionalMinCorrection;// * _settings.InitialSellFactor;
 
             var previousTransaction = _data.Transactions.LastOrDefault();
             if (previousTransaction == null)
             {
-                quantityToBuy = quantityToBuy * _settings.NotionalMinCorrection * _settings.InitialBuyFactor;
-                quantityToSell = quantityToSell * _settings.NotionalMinCorrection;// * _settings.InitialSellFactor;
-
                 sellAction = new SellAction
                 {
                     Coin = target.Source,
@@ -122,6 +144,12 @@
                 Price = destinationPrice * quantityToBuy,
                 TransactionId = $"{target.TransactionId:000000}_1_{target.Destination}_{target.Source}",
             };
+        }
+
+        private decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, LoopSettings loopSettings)//, CancellationToken cancellationToken)
+        {
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
+            return symbol.MinNotionalFilter!.MinNotional;
         }
     }
 }

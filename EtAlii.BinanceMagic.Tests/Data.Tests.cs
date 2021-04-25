@@ -183,9 +183,10 @@ namespace EtAlii.BinanceMagic.Tests
             var target = data.BuildTarget();
             
             // Act.
-            var situation = data.GetSituation(target, cancellationToken);
+            var result = data.TryGetSituation(target, cancellationToken, out var situation);
 
             // Assert.
+            Assert.True(result);
             Assert.NotNull(situation);
             Assert.True(situation.IsInitialCycle);
         }
@@ -211,9 +212,10 @@ namespace EtAlii.BinanceMagic.Tests
             var target = data.BuildTarget();
             
             // Act.
-            var situation = data.GetSituation(target, cancellationToken);
+            var result = data.TryGetSituation(target, cancellationToken, out var situation);
 
             // Assert.
+            Assert.True(result);
             Assert.NotNull(situation);
             Assert.False(situation.IsInitialCycle);
         }

@@ -43,13 +43,22 @@
         public CoinSnapshot FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.To;
         public CoinSnapshot FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.From;
         
-        public Situation GetSituation(Target target, CancellationToken cancellationToken)
+        public bool TryGetSituation(Target target, CancellationToken cancellationToken, out Situation situation)
         {
             var sourcePrice = _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
             var targetPrice = _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
 
-            var sourceTradeFees = _client.GetTradeFees(target.Source, _settings.ReferenceCoin, cancellationToken);
-            var targetTradeFees = _client.GetTradeFees(target.Destination, _settings.ReferenceCoin, cancellationToken);
+            if (!_client.TryGetTradeFees(target.Source, _settings.ReferenceCoin, cancellationToken, out var sourceMakerFee, out var _))
+            {
+                situation = null;
+                return false;
+            }
+            
+            if (!_client.TryGetTradeFees(target.Destination, _settings.ReferenceCoin, cancellationToken, out var _, out var destinationTakerFee))
+            {
+                situation = null;
+                return false;
+            }
 
             var lastSourcePurchase = FindLastPurchase(target.Source);
             var sourceDelta = new Delta
@@ -68,37 +77,18 @@
                 PastQuantity = lastTargetSell?.Quantity ?? 0,
                 PresentPrice = targetPrice
             };
-            var situation = new Situation
+            situation = new Situation
             {
                 Source =sourceDelta,
-                SourceSellFee = sourceTradeFees.MakerFee,
+                SourceSellFee = sourceMakerFee,
                 Destination = targetDelta,
-                DestinationBuyFee = targetTradeFees.TakerFee,
+                DestinationBuyFee = destinationTakerFee,
                 IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
             };
             
-            // WriteSituation(situation, target);
-
-            return situation;
+            return true;
         }
 
-        // private void WriteSituation(Situation situation, Target target)
-        // {
-        //     // var quantityLabel = "- Quantity = ";
-        //     // var pastLabel     = "- Past     = ";
-        //     // var presentLabel  = "- Present  = ";
-        //     // var feeLabel      = "- Fee      = ";
-        //     // var format = "{0, -12}{1, -30}{2, -12}{3, -30}";
-        //     // ConsoleOutput.Write($"Current situation:");
-        //     // ConsoleOutput.Write(string.Format(format, situation.Source.Coin, "", situation.Destination.Coin, ""));
-        //     // ConsoleOutput.Write(string.Format(format, quantityLabel,$"{situation.Source.PastQuantity} {_settings.ReferenceCoin}",quantityLabel, $"{situation.Destination.PastQuantity} {_settings.ReferenceCoin}"));
-        //     // ConsoleOutput.Write(string.Format(format, pastLabel, $"{situation.Source.PastPrice * situation.Source.PastQuantity}", pastLabel, $"{situation.Destination.PastPrice * situation.Destination.PastQuantity}"));
-        //     // ConsoleOutput.Write(string.Format(format, presentLabel, $"{situation.Source.PresentPrice * situation.Source.PastQuantity} {_settings.ReferenceCoin}", presentLabel, $"{situation.Destination.PresentPrice * situation.Destination.PastQuantity} {_settings.ReferenceCoin}"));
-        //     // ConsoleOutput.Write(string.Format(format, feeLabel, $"{situation.SourceSellFee:P}", feeLabel, $"{situation.DestinationBuyFee:P}"));
-        //
-        //     ConsoleOutput.Write($"Target  = {target.Profit} {_settings.ReferenceCoin}");
-        // }
-        
         public Target BuildTarget()
         {
             var lastTransaction = _transactions.LastOrDefault();
@@ -120,10 +110,7 @@
 
             var previousProfit = lastTransaction?.TotalProfit ?? profit;
             previousProfit = previousProfit > 0 ? previousProfit : profit; 
-            // previousProfit = previousProfit < 0m 
-            //     ? 0m 
-            //     : previousProfit;
-            
+
             return new Target
             {
                 Source = source,
