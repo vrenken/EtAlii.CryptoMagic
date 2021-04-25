@@ -6,11 +6,11 @@
     public class Algorithm
     {
         private readonly Client _client;
-        private readonly Settings _settings;
+        private readonly LoopSettings _settings;
         private readonly Data _data;
         private readonly Program _program;
 
-        public Algorithm(Client client, Settings settings, Data data, Program program)
+        public Algorithm(Client client, LoopSettings settings, Data data, Program program)
         {
             _client = client;
             _settings = settings;
@@ -70,8 +70,8 @@
 
         public void ToInitialConversionActions(Target target, CancellationToken cancellationToken, out SellAction sellAction, out BuyAction buyAction)
         {
-            var (quantityToSell, quantityToBuy) = _client.GetMinimalQuantity(target.Source, target.Destination, cancellationToken);
-            var sourcePrice = _client.GetPrice(target.Source, cancellationToken);
+            var (quantityToSell, quantityToBuy) = _client.GetMinimalQuantity(target.Source, target.Destination, _settings, cancellationToken);
+            var sourcePrice = _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
             var previousTransaction = _data.Transactions.LastOrDefault();
             if (previousTransaction != null)
@@ -102,7 +102,7 @@
                 };
             }
 
-            var destinationPrice = _client.GetPrice(target.Destination, cancellationToken);
+            var destinationPrice = _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
             buyAction = new BuyAction
             {
                 Coin = target.Destination,

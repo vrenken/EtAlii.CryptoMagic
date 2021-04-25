@@ -16,7 +16,7 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_Create()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
+            var settings = _context.CreateProgramSettings();
             var program = new Program(settings);
             
             // Act.
@@ -30,7 +30,7 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_Start()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
+            var settings = _context.CreateProgramSettings();
             var program = new Program(settings);
             var client = new Client(settings, program);
             
@@ -45,9 +45,10 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_TryConvert()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
             client.Start();
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();
@@ -69,7 +70,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, cancellationToken, out var transaction);
+            client.TryConvert(sellAction, buyAction, loopSettings.ReferenceCoin, cancellationToken, out var transaction);
             
             // Assert.
             Assert.NotNull(transaction);

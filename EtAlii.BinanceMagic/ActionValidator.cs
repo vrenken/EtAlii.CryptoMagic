@@ -7,21 +7,19 @@ namespace EtAlii.BinanceMagic
 
     public class ActionValidator
     {
-        private readonly Settings _settings;
         private readonly Program _program;
         private readonly BinanceClient _client;
 
-        public ActionValidator(Settings settings, Program program, BinanceClient client)
+        public ActionValidator(Program program, BinanceClient client)
         {
-            _settings = settings;
             _program = program;
             _client = client;
         }
 
-        public TAction Validate<TAction>(TAction action, string type, BinanceExchangeInfo exchangeInfo, CancellationToken cancellationToken)
+        public TAction Validate<TAction>(TAction action, string type, string referenceCoin, BinanceExchangeInfo exchangeInfo, CancellationToken cancellationToken)
             where TAction : Action
         {
-            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == action.Coin && s.QuoteAsset == _settings.ReferenceCoin);
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == action.Coin && s.QuoteAsset == referenceCoin);
 
             var priceResult = _client.Spot.Market.GetPrice(symbol.Name, cancellationToken);
             var price = priceResult.Data.Price;

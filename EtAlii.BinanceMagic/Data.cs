@@ -9,24 +9,29 @@
     public class Data
     {        
         private readonly Client _client;
-        private readonly Settings _settings;
+        private readonly LoopSettings _settings;
         public IReadOnlyList<Transaction> Transactions { get; } 
         private readonly List<Transaction> _transactions;
 
-        public Data(Client client, Settings settings)
+        private readonly string _trendsFile;
+        private readonly string _transactionsFile;
+        public Data(Client client, LoopSettings settings)
         {
             _client = client;
             _settings = settings;
             _transactions = new List<Transaction>();
             Transactions = _transactions.AsReadOnly();
+
+            _trendsFile = $"{_settings.AllowedCoins[0]}_{_settings.AllowedCoins[1]}_{_settings.TrendsFile}";
+            _transactionsFile = $"{_settings.AllowedCoins[0]}_{_settings.AllowedCoins[1]}_{_settings.TransactionsFile}";
         }
 
         public void Load()
         {
             ConsoleOutput.Write("Loading previous gambles from file...");
             
-            var lines = File.Exists(_settings.TransactionsFile) 
-                ? File.ReadAllLines(_settings.TransactionsFile) 
+            var lines = File.Exists(_transactionsFile) 
+                ? File.ReadAllLines(_transactionsFile) 
                 : Array.Empty<string>();
             var transactions = lines
                 .Select(Transaction.Read)
@@ -40,11 +45,11 @@
         
         public Situation GetSituation(Target target, CancellationToken cancellationToken)
         {
-            var sourcePrice = _client.GetPrice(target.Source, cancellationToken);
-            var targetPrice = _client.GetPrice(target.Destination, cancellationToken);
+            var sourcePrice = _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
+            var targetPrice = _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
 
-            var sourceTradeFees = _client.GetTradeFees(target.Source, cancellationToken);
-            var targetTradeFees = _client.GetTradeFees(target.Destination, cancellationToken);
+            var sourceTradeFees = _client.GetTradeFees(target.Source, _settings.ReferenceCoin, cancellationToken);
+            var targetTradeFees = _client.GetTradeFees(target.Destination, _settings.ReferenceCoin, cancellationToken);
 
             var lastSourcePurchase = FindLastPurchase(target.Source);
             var sourceDelta = new Delta
@@ -131,7 +136,7 @@
         public void AddTransaction(Transaction transaction)
         {
             _transactions.Add(transaction);
-            using var file = new FileStream(_settings.TransactionsFile, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var file = new FileStream(_transactionsFile, FileMode.Append, FileAccess.Write, FileShare.Read);
             using var sw = new StreamWriter(file);
 
             Transaction.Write(sw, transaction);
@@ -139,8 +144,8 @@
 
         public void AddTrend(decimal target, decimal sellPrice, decimal sellQuantity, decimal buyPrice, decimal buyQuantity, decimal difference)
         {
-            var writeHeader = !File.Exists(_settings.TrendsFile); 
-            using var file = new FileStream(_settings.TrendsFile, FileMode.Append, FileAccess.Write, FileShare.Read);
+            var writeHeader = !File.Exists(_trendsFile); 
+            using var file = new FileStream(_trendsFile, FileMode.Append, FileAccess.Write, FileShare.Read);
             using var sw = new StreamWriter(file);
 
             if (writeHeader)

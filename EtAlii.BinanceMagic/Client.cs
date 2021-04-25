@@ -12,13 +12,11 @@
     public class Client
     {
         private BinanceClient _client;
-        //private BinanceSocketClient _socketClient;
-
-        private readonly Settings _settings;
+        private readonly ProgramSettings _settings;
         private readonly Program _program;
         private ActionValidator _validator;
 
-        public Client(Settings settings, Program program)
+        public Client(ProgramSettings settings, Program program)
         {
             _settings = settings;
             _program = program;
@@ -26,7 +24,7 @@
 
         public void Start()
         {
-            ConsoleOutput.Write("Starting Binance client...");
+            ConsoleOutput.Write("Starting client...");
             
             var options = new BinanceClientOptions
             {
@@ -51,15 +49,15 @@
                 _program.HandleFail(message);
             }
 
-            _validator = new ActionValidator(_settings, _program, _client);
+            _validator = new ActionValidator(_program, _client);
             
-            ConsoleOutput.Write("Starting Binance client: Done");
+            ConsoleOutput.Write("Starting client: Done");
             
         }
 
-        public decimal GetPrice(string coin, CancellationToken cancellationToken)
+        public decimal GetPrice(string coin, string referenceCoin, CancellationToken cancellationToken)
         {
-            var coinComparedToReference = $"{coin}{_settings.ReferenceCoin}"; 
+            var coinComparedToReference = $"{coin}{referenceCoin}"; 
             var result = _client.Spot.Market.GetPrice(coinComparedToReference, cancellationToken);
             if (result.Error != null)
             {
@@ -70,9 +68,9 @@
             return result.Data.Price;
         }
 
-        public (decimal MakerFee, decimal TakerFee) GetTradeFees(string coin, CancellationToken cancellationToken)
+        public (decimal MakerFee, decimal TakerFee) GetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken)
         {
-            var coinComparedToReference = $"{coin}{_settings.ReferenceCoin}"; 
+            var coinComparedToReference = $"{coin}{referenceCoin}"; 
             var result = _client.Spot.Market.GetTradeFee(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
@@ -84,7 +82,7 @@
             return (fees.MakerFee, fees.TakerFee);
         }
 
-        public decimal GetMinimalNotionalToBuy(string coinToBuy, CancellationToken cancellationToken)
+        public (decimal quantityToSell, decimal quantityToBuy) GetMinimalQuantity(string coinToSell, string coinToBuy, LoopSettings loopSettings, CancellationToken cancellationToken)
         {
             //ConsoleOutput.Write("Fetching exchange info...");
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
@@ -95,40 +93,24 @@
             }
             var exchangeInfo = exchangeResult.Data;
 
-            var symbolToBuy = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToBuy && s.QuoteAsset == _settings.ReferenceCoin);
-
-            return symbolToBuy.MinNotionalFilter!.MinNotional * _settings.NotionalMinCorrection;
-        }
-
-        public (decimal quantityToSell, decimal quantityToBuy) GetMinimalQuantity(string coinToSell, string coinToBuy, CancellationToken cancellationToken)
-        {
-            //ConsoleOutput.Write("Fetching exchange info...");
-            var exchangeResult = _client.Spot.System.GetExchangeInfo();
-            if (!exchangeResult.Success)
-            {
-                var message = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                _program.HandleFail(message);
-            }
-            var exchangeInfo = exchangeResult.Data;
-
-            var symbolToSell = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToSell && s.QuoteAsset == _settings.ReferenceCoin);
+            var symbolToSell = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToSell && s.QuoteAsset == loopSettings.ReferenceCoin);
 
             var min = symbolToSell.PriceFilter!.MinPrice;
             var minPercent = symbolToSell.PricePercentFilter!.MultiplierDown;
             var notional = symbolToSell.MinNotionalFilter!.MinNotional;
-            var quantityToSell = ((min * minPercent) / notional) * _settings.InitialPurchaseMinimalFactor;
+            var quantityToSell = ((min * minPercent) / notional) * loopSettings.InitialPurchaseMinimalFactor;
             //var quantityToSell = symbolToSell.LotSizeFilter!.MinQuantity * _settings.InitialPurchaseMinimalFactor;
 
-            var symbolToBuy = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToBuy && s.QuoteAsset == _settings.ReferenceCoin);
+            var symbolToBuy = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToBuy && s.QuoteAsset == loopSettings.ReferenceCoin);
 
-            var price = GetPrice(coinToBuy, cancellationToken);
+            var price = GetPrice(coinToBuy, loopSettings.ReferenceCoin, cancellationToken);
             
-            var quantityToBuy = (1 / price) * symbolToBuy.MinNotionalFilter!.MinNotional * _settings.InitialPurchaseMinimalFactor;
+            var quantityToBuy = (1 / price) * symbolToBuy.MinNotionalFilter!.MinNotional * loopSettings.InitialPurchaseMinimalFactor;
 
             return (quantityToSell, quantityToBuy);
         }
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, CancellationToken cancellationToken, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, out Transaction transaction)
         {
             //ConsoleOutput.Write("Fetching exchange info...");
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
@@ -143,10 +125,10 @@
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
             var orderType = OrderType.Market;
             
-            sellAction = _validator.Validate(sellAction, "Sell", exchangeInfo, cancellationToken);
-            buyAction = _validator.Validate(buyAction, "Buy", exchangeInfo, cancellationToken);
+            sellAction = _validator.Validate(sellAction, "Sell", referenceCoin, exchangeInfo, cancellationToken);
+            buyAction = _validator.Validate(buyAction, "Buy", referenceCoin, exchangeInfo, cancellationToken);
             
-            var sellCoin = $"{sellAction.Coin}{_settings.ReferenceCoin}";
+            var sellCoin = $"{sellAction.Coin}{referenceCoin}";
 
             // ReSharper disable ExpressionIsAlwaysNull
             var sellOrder = _settings.PlaceTestOrders
@@ -169,7 +151,7 @@
                 _program.HandleFail(message);
             }
 
-            var buyCoin = $"{buyAction.Coin}{_settings.ReferenceCoin}";
+            var buyCoin = $"{buyAction.Coin}{referenceCoin}";
 
             // ReSharper disable ExpressionIsAlwaysNull
             var buyOrder = _settings.PlaceTestOrders

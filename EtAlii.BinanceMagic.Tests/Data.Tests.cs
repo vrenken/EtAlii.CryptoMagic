@@ -17,12 +17,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Create()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
             
             // Act.
-            var data = new Data(client, settings);
+            var data = new Data(client, loopSettings);
             
             // Assert.
             Assert.NotNull(data);
@@ -32,10 +33,11 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Load_Empty()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
-            var data = new Data(client, settings);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
+            var data = new Data(client, loopSettings);
             
             // Act.
             data.Load();
@@ -48,13 +50,14 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Add_Transaction()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
-            var data = new Data(client, settings);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
+            var data = new Data(client, loopSettings);
             data.Load();
-            var firstCoin = settings.AllowedCoins.First();
-            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstCoin = loopSettings.AllowedCoins.First();
+            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
             var transaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             
             // Act.
@@ -68,13 +71,14 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Add_Transactions()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
-            var data = new Data(client, settings);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
+            var data = new Data(client, loopSettings);
             data.Load();
-            var firstCoin = settings.AllowedCoins.First();
-            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstCoin = loopSettings.AllowedCoins.First();
+            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             
@@ -96,20 +100,21 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Add_Transactions_And_Reload()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
-            var data = new Data(client, settings);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
+            var data = new Data(client, loopSettings);
             data.Load();
-            var firstCoin = settings.AllowedCoins.First();
-            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstCoin = loopSettings.AllowedCoins.First();
+            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             data.AddTransaction(firstTransaction);
             data.AddTransaction(secondTransaction);
             
             // Act.
-            data = new Data(client, settings);
+            data = new Data(client, loopSettings);
             data.Load();
 
             // Assert.
@@ -127,15 +132,16 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Build_Targets()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
-            var data = new Data(client, settings);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
+            var data = new Data(client, loopSettings);
             data.Load();
-            var firstCoin = settings.AllowedCoins.First();
-            var secondCoin = settings.AllowedCoins.Skip(1).First();
-            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, settings.MinimalTargetProfit, 2);
-            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, settings.MinimalTargetProfit * (1 + settings.MinimalIncrease), 2);
+            var firstCoin = loopSettings.AllowedCoins.First();
+            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
+            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, loopSettings.MinimalTargetProfit, 2);
+            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, loopSettings.MinimalTargetProfit * (1 + loopSettings.MinimalIncrease), 2);
             
             // Act.
             var firstTarget = data.BuildTarget();
@@ -147,29 +153,30 @@ namespace EtAlii.BinanceMagic.Tests
             // Assert.
             Assert.Equal(firstCoin, firstTarget.Source);
             Assert.Equal(secondCoin, firstTarget.Destination);
-            Assert.Equal(settings.MinimalTargetProfit, firstTarget.Profit);
+            Assert.Equal(loopSettings.MinimalTargetProfit, firstTarget.Profit);
             
             Assert.Equal(secondCoin, secondTarget.Source);
             Assert.Equal(firstCoin, secondTarget.Destination);
-            Assert.Equal(firstTarget.Profit * (1 + settings.MinimalIncrease), secondTarget.Profit);
+            Assert.Equal(firstTarget.Profit * (1 + loopSettings.MinimalIncrease), secondTarget.Profit);
 
             Assert.Equal(firstCoin, thirdTarget.Source);
             Assert.Equal(secondCoin, thirdTarget.Destination);
-            Assert.Equal(secondTarget.Profit * (1 + settings.MinimalIncrease), thirdTarget.Profit);
+            Assert.Equal(secondTarget.Profit * (1 + loopSettings.MinimalIncrease), thirdTarget.Profit);
         }
 
         [Fact]
         public void Data_Situation_Get()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
             client.Start();
-            var data = new Data(client, settings);
+            var data = new Data(client, loopSettings);
             data.Load();
-            var firstCoin = settings.AllowedCoins.First();
-            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstCoin = loopSettings.AllowedCoins.First();
+            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             data.AddTransaction(firstTransaction);
             var cancellationToken = CancellationToken.None;
@@ -187,14 +194,15 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Situation_Get_After_InitialCycle()
         {
             // Arrange.
-            var settings = _context.CreateSettings();
-            var program = new Program(settings);
-            var client = new Client(settings, program);
+            var programSettings = _context.CreateProgramSettings();
+            var loopSettings = _context.CreateLoopSettings();
+            var program = new Program(programSettings);
+            var client = new Client(programSettings, program);
             client.Start();
-            var data = new Data(client, settings);
+            var data = new Data(client, loopSettings);
             data.Load();
-            var firstCoin = settings.AllowedCoins.First();
-            var secondCoin = settings.AllowedCoins.Skip(1).First();
+            var firstCoin = loopSettings.AllowedCoins.First();
+            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             data.AddTransaction(firstTransaction);
