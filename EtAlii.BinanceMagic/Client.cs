@@ -84,6 +84,22 @@
             return (fees.MakerFee, fees.TakerFee);
         }
 
+        public decimal GetMinimalNotionalToBuy(string coinToBuy, CancellationToken cancellationToken)
+        {
+            //ConsoleOutput.Write("Fetching exchange info...");
+            var exchangeResult = _client.Spot.System.GetExchangeInfo();
+            if (!exchangeResult.Success)
+            {
+                var message = $"Failed to fetch exchange info: {exchangeResult.Error}";
+                _program.HandleFail(message);
+            }
+            var exchangeInfo = exchangeResult.Data;
+
+            var symbolToBuy = exchangeInfo.Symbols.Single(s => s.BaseAsset == coinToBuy && s.QuoteAsset == _settings.ReferenceCoin);
+
+            return symbolToBuy.MinNotionalFilter!.MinNotional * _settings.NotionalMinCorrection;
+        }
+
         public (decimal quantityToSell, decimal quantityToBuy) GetMinimalQuantity(string coinToSell, string coinToBuy, CancellationToken cancellationToken)
         {
             //ConsoleOutput.Write("Fetching exchange info...");
@@ -123,18 +139,20 @@
             }
             var exchangeInfo = exchangeResult.Data;
 
-            _validator.Validate(sellAction, "Sell", exchangeInfo, cancellationToken);
-            _validator.Validate(buyAction, "Buy", exchangeInfo, cancellationToken);
+            var orderResponseType = OrderResponseType.Full;
+            var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
+            var orderType = OrderType.Market;
+            
+            sellAction = _validator.Validate(sellAction, "Sell", exchangeInfo, cancellationToken);
+            buyAction = _validator.Validate(buyAction, "Buy", exchangeInfo, cancellationToken);
             
             var sellCoin = $"{sellAction.Coin}{_settings.ReferenceCoin}";
 
+            // ReSharper disable ExpressionIsAlwaysNull
             var sellOrder = _settings.PlaceTestOrders
-                ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, OrderType.Market,
-                    sellAction.Quantity, null, sellAction.TransactionId, null, null,
-                    null, null, OrderResponseType.Result, null, cancellationToken)
-                : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, OrderType.Market,
-                    null, sellAction.Price, sellAction.TransactionId, null, null,
-                    null, null, OrderResponseType.Result, null, cancellationToken);
+                ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.Price, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.Price, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+            // ReSharper restore ExpressionIsAlwaysNull
 
             if (sellOrder.Error != null)
             {
@@ -151,16 +169,13 @@
                 _program.HandleFail(message);
             }
 
-            var buyQuantity = decimal.Round(buyAction.Quantity, 8); 
             var buyCoin = $"{buyAction.Coin}{_settings.ReferenceCoin}";
 
+            // ReSharper disable ExpressionIsAlwaysNull
             var buyOrder = _settings.PlaceTestOrders
-                ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, OrderType.Market,
-                    buyQuantity, null, buyAction.TransactionId, null, null,
-                    null, null, OrderResponseType.Result, null, cancellationToken)
-                : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, OrderType.Market,
-                    null, buyAction.Price, buyAction.TransactionId, null, null,
-                    null, null, OrderResponseType.Result, null, cancellationToken);
+                ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.Price, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.Price, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+            // ReSharper restore ExpressionIsAlwaysNull
 
             if (buyOrder.Error != null)
             {
@@ -182,17 +197,17 @@
                 From = new CoinSnapshot
                 {
                     Coin = sellAction.Coin,
-                    Price = sellOrder.Data.Price,
-                    Quantity = sellOrder.Data.Quantity
+                    Price = sellOrder.Data.QuoteQuantityFilled,
+                    Quantity = sellOrder.Data.QuantityFilled
                 },
                 To = new CoinSnapshot
                 {
                     Coin = buyAction.Coin,
-                    Price = buyOrder.Data.Price,
-                    Quantity = buyOrder.Data.Quantity
+                    Price = buyOrder.Data.QuoteQuantityFilled,
+                    Quantity = buyOrder.Data.QuantityFilled
                 },
                 Moment = DateTime.Now,
-                TotalProfit =  (buyOrder.Data.Price * buyOrder.Data.Quantity) - (sellOrder.Data.Price * sellOrder.Data.Quantity) 
+                TotalProfit =  sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
             };
             return true;
         }

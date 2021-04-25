@@ -1,30 +1,27 @@
 ﻿namespace EtAlii.BinanceMagic
 {
+    using System.Linq;
     using System.Threading;
 
     public class Algorithm
     {
         private readonly Client _client;
         private readonly Settings _settings;
+        private readonly Data _data;
+        private readonly Program _program;
 
-        public Algorithm(Client client, Settings settings)
+        public Algorithm(Client client, Settings settings, Data data, Program program)
         {
             _client = client;
             _settings = settings;
+            _data = data;
+            _program = program;
         }
 
-        public bool TransactionIsWorthIt(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
+        public bool TransactionIsWorthIt(Target target, Situation situation, CancellationToken cancellationToken, out SellAction sellAction, out BuyAction buyAction)
         {
             sellAction = null;
             buyAction = null;
-
-            // var sourceQuantityToSell = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
-            // var destinationQuantityToBuy = 0m;
-            // var currentProfitIncrease = situation.Source.PresentPrice * sourceQuantityToSell;
-            // var currentProfitDecrease = situation.Destination.PresentPrice * destinationQuantityToBuy;
-
-            // var currentProfit = currentProfitIncrease - currentProfitDecrease;
-            // return currentProfit > target.Profit;
             
             var sourceQuantityToSell = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
             var currentProfitIncrease = situation.Source.PresentPrice * sourceQuantityToSell;
@@ -33,15 +30,29 @@
             var currentProfitDecrease = maxDestinationQuantityToBuy * situation.Destination.PresentPrice;
             
             var currentProfit = currentProfitIncrease - currentProfitDecrease;
-            var isWorthIt = currentProfit > target.Profit;
-            if (isWorthIt)
+            var profitIncrease = target.Profit - target.PreviousProfit;
+            var isWorthIt = currentProfit > profitIncrease;
+            var profitDifference = currentProfitIncrease - currentProfitDecrease;
+            ConsoleOutput.Write($"Target   : +{profitIncrease} {_settings.ReferenceCoin}");
+            ConsoleOutput.Write($"Sell     : +{currentProfitIncrease} {_settings.ReferenceCoin} (= +{sourceQuantityToSell} {target.Source})");
+            ConsoleOutput.Write($"Buy      : -{currentProfitDecrease} {_settings.ReferenceCoin} (= -{maxDestinationQuantityToBuy} {target.Destination})");
+            var message =          $"Diff     : {profitDifference} {_settings.ReferenceCoin}";
+            
+            _data.AddTrend(profitIncrease, currentProfitIncrease, sourceQuantityToSell, currentProfitDecrease, maxDestinationQuantityToBuy, profitDifference);
+            
+            if (!isWorthIt)
             {
+                ConsoleOutput.WriteNegative(message);
+            }
+            else
+            {
+                ConsoleOutput.WritePositive(message);
                 sellAction = new SellAction
                 {
                     Coin = situation.Source.Coin,
                     Quantity = sourceQuantityToSell,
                     UnitPrice = situation.Source.PresentPrice,
-                    Price = situation.Source.PresentPrice * sourceQuantityToSell,
+                    Price = currentProfitIncrease,
                     TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
                 };
                 buyAction = new BuyAction
@@ -49,7 +60,7 @@
                     Coin = situation.Destination.Coin,
                     Quantity = maxDestinationQuantityToBuy,
                     UnitPrice = situation.Destination.PresentPrice,
-                    Price = situation.Destination.PresentPrice * maxDestinationQuantityToBuy,
+                    Price = currentProfitDecrease,
                     TransactionId = $"{target.TransactionId:000000}_1_{target.Destination}_{target.Source}",
                 };
             }
@@ -61,14 +72,35 @@
         {
             var (quantityToSell, quantityToBuy) = _client.GetMinimalQuantity(target.Source, target.Destination, cancellationToken);
             var sourcePrice = _client.GetPrice(target.Source, cancellationToken);
-            sellAction = new SellAction
+
+            var previousTransaction = _data.Transactions.LastOrDefault();
+            if (previousTransaction != null)
             {
-                Coin = target.Source,
-                UnitPrice = sourcePrice,
-                Quantity = quantityToSell,
-                Price = sourcePrice * quantityToSell,
-                TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
-            };
+                if (previousTransaction.To.Coin != target.Source)
+                {
+                    _program.HandleFail($"Previous initial transaction did not purchase {target.Source}");
+                }
+                var sourceQuantityToSell = previousTransaction.To.Quantity;
+                sellAction = new SellAction
+                {
+                    Coin = target.Source,
+                    Quantity = sourceQuantityToSell,
+                    UnitPrice = sourcePrice,
+                    Price = sourcePrice * sourceQuantityToSell,
+                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
+                };
+            }
+            else
+            {
+                sellAction = new SellAction
+                {
+                    Coin = target.Source,
+                    UnitPrice = sourcePrice,
+                    Quantity = quantityToSell,
+                    Price = sourcePrice * quantityToSell,
+                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
+                };
+            }
 
             var destinationPrice = _client.GetPrice(target.Destination, cancellationToken);
             buyAction = new BuyAction

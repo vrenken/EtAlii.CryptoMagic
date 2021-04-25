@@ -17,8 +17,8 @@
         {
             _settings = settings;
             _client = new Client(settings, program);
-            _algorithm = new Algorithm(_client, settings);
             _data = new Data(_client, settings);
+            _algorithm = new Algorithm(_client, settings, _data, program);
         }
         
         public void Stop()
@@ -58,12 +58,14 @@
 
                         if (_client.TryConvert(initialSellAction, initialBuyAction, cancellationToken, out var transaction))
                         {
+                            transaction = transaction with {TotalProfit = 0m};
+                            
                             ConsoleOutput.WritePositive($"Transaction done!");
                             _data.AddTransaction(transaction);
                             targetSucceeded = true;
                         }
                     }
-                    else if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
+                    else if (_algorithm.TransactionIsWorthIt(target, situation, cancellationToken, out var sellAction, out var buyAction))
                     {
                         ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
                         ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{buyAction.Quantity} {buyAction.Coin}", $"{buyAction.Price} {_settings.ReferenceCoin}");
@@ -72,7 +74,7 @@
                         if (_client.TryConvert(sellAction, buyAction, cancellationToken, out var transaction))
                         {
                             ConsoleOutput.WritePositive($"Transaction done!");
-                            ConsoleOutput.Write("Next check at: {DateTime.Now + _settings.SampleInterval}");
+                            ConsoleOutput.Write($"Next check at: {DateTime.Now + _settings.SampleInterval}");
                             _data.AddTransaction(transaction);
                             targetSucceeded = true;
                             Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);

@@ -10,11 +10,11 @@
         {
             _settings = settings;
         }
-        static void Main()//string[] args)
+        static void Main()
         {
             var settings = new Settings
             {
-                PlaceTestOrders = true
+                //PlaceTestOrders = true
             };
             
             var program = new Program(settings);

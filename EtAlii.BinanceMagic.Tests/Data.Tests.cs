@@ -134,8 +134,8 @@ namespace EtAlii.BinanceMagic.Tests
             data.Load();
             var firstCoin = settings.AllowedCoins.First();
             var secondCoin = settings.AllowedCoins.Skip(1).First();
-            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, settings.InitialTargetProfit, 2);
-            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, settings.InitialTargetProfit * (1 + settings.MinimalIncrease), 2);
+            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, settings.MinimalTargetProfit, 2);
+            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, settings.MinimalTargetProfit * (1 + settings.MinimalIncrease), 2);
             
             // Act.
             var firstTarget = data.BuildTarget();
@@ -147,7 +147,7 @@ namespace EtAlii.BinanceMagic.Tests
             // Assert.
             Assert.Equal(firstCoin, firstTarget.Source);
             Assert.Equal(secondCoin, firstTarget.Destination);
-            Assert.Equal(settings.InitialTargetProfit, firstTarget.Profit);
+            Assert.Equal(settings.MinimalTargetProfit, firstTarget.Profit);
             
             Assert.Equal(secondCoin, secondTarget.Source);
             Assert.Equal(firstCoin, secondTarget.Destination);

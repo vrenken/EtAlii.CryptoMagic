@@ -35,8 +35,8 @@
             ConsoleOutput.Write("Loading previous gambles from file: Done");
         }
         
-        private CoinSnapshot FindLastPurchase(string coin) => _transactions.SingleOrDefault(t => t.To.Coin == coin)?.To;
-        private CoinSnapshot FindLastSell(string coin) => _transactions.SingleOrDefault(t => t.To.Coin == coin)?.From;
+        private CoinSnapshot FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.To;
+        private CoinSnapshot FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.From;
         
         public Situation GetSituation(Target target, CancellationToken cancellationToken)
         {
@@ -72,27 +72,27 @@
                 IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
             };
             
-            WriteSituation(situation, target);
+            // WriteSituation(situation, target);
 
             return situation;
         }
 
-        private void WriteSituation(Situation situation, Target target)
-        {
-            var quantityLabel = "- Quantity = ";
-            var pastLabel     = "- Past     = ";
-            var presentLabel  = "- Present  = ";
-            var feeLabel      = "- Fee      = ";
-            var format = "{0, -12}{1, -30}{2, -12}{3, -30}";
-            ConsoleOutput.Write($"Current situation:");
-            ConsoleOutput.Write(string.Format(format, situation.Source.Coin, "", situation.Destination.Coin, ""));
-            ConsoleOutput.Write(string.Format(format, quantityLabel,$"{situation.Source.PastQuantity} {_settings.ReferenceCoin}",quantityLabel, $"{situation.Destination.PastQuantity} {_settings.ReferenceCoin}"));
-            ConsoleOutput.Write(string.Format(format, pastLabel, $"{situation.Source.PastPrice * situation.Source.PastQuantity}", pastLabel, $"{situation.Destination.PastPrice * situation.Destination.PastQuantity}"));
-            ConsoleOutput.Write(string.Format(format, presentLabel, $"{situation.Source.PresentPrice * situation.Source.PastQuantity} {_settings.ReferenceCoin}", presentLabel, $"{situation.Destination.PresentPrice * situation.Destination.PastQuantity} {_settings.ReferenceCoin}"));
-            ConsoleOutput.Write(string.Format(format, feeLabel, $"{situation.SourceSellFee:P}", feeLabel, $"{situation.DestinationBuyFee:P}"));
-
-            ConsoleOutput.Write($"Target  = {target.Profit} {_settings.ReferenceCoin}");
-        }
+        // private void WriteSituation(Situation situation, Target target)
+        // {
+        //     // var quantityLabel = "- Quantity = ";
+        //     // var pastLabel     = "- Past     = ";
+        //     // var presentLabel  = "- Present  = ";
+        //     // var feeLabel      = "- Fee      = ";
+        //     // var format = "{0, -12}{1, -30}{2, -12}{3, -30}";
+        //     // ConsoleOutput.Write($"Current situation:");
+        //     // ConsoleOutput.Write(string.Format(format, situation.Source.Coin, "", situation.Destination.Coin, ""));
+        //     // ConsoleOutput.Write(string.Format(format, quantityLabel,$"{situation.Source.PastQuantity} {_settings.ReferenceCoin}",quantityLabel, $"{situation.Destination.PastQuantity} {_settings.ReferenceCoin}"));
+        //     // ConsoleOutput.Write(string.Format(format, pastLabel, $"{situation.Source.PastPrice * situation.Source.PastQuantity}", pastLabel, $"{situation.Destination.PastPrice * situation.Destination.PastQuantity}"));
+        //     // ConsoleOutput.Write(string.Format(format, presentLabel, $"{situation.Source.PresentPrice * situation.Source.PastQuantity} {_settings.ReferenceCoin}", presentLabel, $"{situation.Destination.PresentPrice * situation.Destination.PastQuantity} {_settings.ReferenceCoin}"));
+        //     // ConsoleOutput.Write(string.Format(format, feeLabel, $"{situation.SourceSellFee:P}", feeLabel, $"{situation.DestinationBuyFee:P}"));
+        //
+        //     ConsoleOutput.Write($"Target  = {target.Profit} {_settings.ReferenceCoin}");
+        // }
         
         public Target BuildTarget()
         {
@@ -107,17 +107,27 @@
 
             var profit = lastTransaction != null
                 ? lastTransaction.TotalProfit * (1 + _settings.MinimalIncrease)
-                : _settings.InitialTargetProfit;
-             
+                : _settings.MinimalTargetProfit;
+
+            profit = profit < _settings.MinimalTargetProfit 
+                ? _settings.MinimalTargetProfit 
+                : profit;
+
+            var previousProfit = lastTransaction?.TotalProfit ?? profit;
+            // previousProfit = previousProfit < 0m 
+            //     ? 0m 
+            //     : previousProfit;
+            
             return new Target
             {
                 Source = source,
                 Destination = destination,
+                PreviousProfit = previousProfit,
                 Profit = profit,
                 TransactionId = _transactions.Count + 1,
             };
         }
-        
+
         public void AddTransaction(Transaction transaction)
         {
             _transactions.Add(transaction);
@@ -125,6 +135,19 @@
             using var sw = new StreamWriter(file);
 
             Transaction.Write(sw, transaction);
+        }
+
+        public void AddTrend(decimal target, decimal sellPrice, decimal sellQuantity, decimal buyPrice, decimal buyQuantity, decimal difference)
+        {
+            var writeHeader = !File.Exists(_settings.TrendsFile); 
+            using var file = new FileStream(_settings.TrendsFile, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var sw = new StreamWriter(file);
+
+            if (writeHeader)
+            {
+                sw.WriteLine($"Target;Sell price;Sell quantity;Buy price;Buy quantity;Difference");
+            }
+            sw.WriteLine($"{target};{sellPrice};{sellQuantity};{buyPrice};{buyQuantity};{difference}");
         }
     }
 }

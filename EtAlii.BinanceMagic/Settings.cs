@@ -7,6 +7,7 @@
         public bool IsTest { get; init; } = false;
         public bool PlaceTestOrders { get; init; } = false;
         public string TransactionsFile { get; init; }  = "Transactions.txt";
+        public string TrendsFile { get; init; }  = "Trends.txt";
         
         public string[] AllowedCoins { get; init; }  = { "BTC", "BNB" }; // "ETH"
         
@@ -15,12 +16,13 @@
 
         public string ReferenceCoin  { get; init; } = "BUSD";
         
-        public decimal MinimalIncrease  { get; init; } = 0.1m; // in %
-        public decimal InitialPurchaseMinimalFactor { get; init; } = 1.2m; // in %
-        public decimal InitialTargetProfit  { get; init; } = 5.00000001m; // in BUSD.
-        public decimal MaxQuantityToTrade  { get; init; } = 0.9m; // in %.
+        public decimal MinimalIncrease  { get; init; } = 0.05m; // in %
+        public decimal InitialPurchaseMinimalFactor { get; init; } = 10.0m; // in %
+        public decimal MinimalTargetProfit  { get; init; } = 11m; // in BUSD.
+        public decimal MaxQuantityToTrade  { get; init; } = 1.0m; // in %.
+        public decimal NotionalMinCorrection  { get; init; } = 1.05m; // in %.
 
-        public TimeSpan SampleInterval  { get; init; } = TimeSpan.FromMinutes(5);
+        public TimeSpan SampleInterval  { get; init; } = TimeSpan.FromMinutes(1);
 
     }
 }

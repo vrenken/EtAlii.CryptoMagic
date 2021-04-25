@@ -18,22 +18,23 @@ namespace EtAlii.BinanceMagic
             _client = client;
         }
 
-        public void Validate(Action sellAction, string type, BinanceExchangeInfo exchangeInfo, CancellationToken cancellationToken)
+        public TAction Validate<TAction>(TAction action, string type, BinanceExchangeInfo exchangeInfo, CancellationToken cancellationToken)
+            where TAction : Action
         {
-            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == sellAction.Coin && s.QuoteAsset == _settings.ReferenceCoin);
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == action.Coin && s.QuoteAsset == _settings.ReferenceCoin);
 
             var priceResult = _client.Spot.Market.GetPrice(symbol.Name, cancellationToken);
             var price = priceResult.Data.Price;
             if (symbol.PriceFilter is var priceFilter)
             {
-                if (sellAction.UnitPrice <= priceFilter!.MinPrice)
+                if (action.UnitPrice <= priceFilter!.MinPrice)
                 {
-                    var message = $"{type} action target price {sellAction.UnitPrice} is below price filter minimum of {priceFilter.MinPrice}";
+                    var message = $"{type} action target price {action.UnitPrice} is below price filter minimum of {priceFilter.MinPrice}";
                     _program.HandleFail(message);
                 }
-                if (sellAction.UnitPrice >= priceFilter.MaxPrice)
+                if (action.UnitPrice >= priceFilter.MaxPrice)
                 {
-                    var message = $"{type} action target price {sellAction.UnitPrice} is above price filter maximum of {priceFilter.MaxPrice}";
+                    var message = $"{type} action target price {action.UnitPrice} is above price filter maximum of {priceFilter.MaxPrice}";
                     _program.HandleFail(message);
                 }
             }
@@ -42,21 +43,21 @@ namespace EtAlii.BinanceMagic
             {
                 var min = percentPriceFilter!.MultiplierDown * price;
                 var max = percentPriceFilter.MultiplierUp * price;
-                if (sellAction.UnitPrice <= min)
+                if (action.UnitPrice <= min)
                 {
-                    var message = $"{type} action target price {sellAction.UnitPrice} is below price percent filter minimum of {min}";
+                    var message = $"{type} action target price {action.UnitPrice} is below price percent filter minimum of {min}";
                     _program.HandleFail(message);
                 }
-                if (sellAction.UnitPrice >= max)
+                if (action.UnitPrice >= max)
                 {
-                    var message = $"{type} action target price {sellAction.UnitPrice} is above price percent filter maximum of {max}";
+                    var message = $"{type} action target price {action.UnitPrice} is above price percent filter maximum of {max}";
                     _program.HandleFail(message);
                 }
             }
             
             if (symbol.MinNotionalFilter is var minNotionalFilter)
             {
-                var notionalPrice = sellAction.Quantity * sellAction.UnitPrice;
+                var notionalPrice = action.Quantity * action.UnitPrice;
                 if (notionalPrice <= minNotionalFilter!.MinNotional)
                 {
                     var message = $"{type} action notional price {notionalPrice} is below notional price filter of {minNotionalFilter.MinNotional}";
@@ -67,17 +68,23 @@ namespace EtAlii.BinanceMagic
             {
                 var min = lotSizeFilter!.MinQuantity;
                 var max = lotSizeFilter.MaxQuantity;
-                if (sellAction.Quantity <= min)
+                if (action.Quantity <= min)
                 {
-                    var message = $"{type} action lot quantity {sellAction.Quantity} is below minimum lot size of {min}";
+                    var message = $"{type} action lot quantity {action.Quantity} is below minimum lot size of {min}";
                     _program.HandleFail(message);
                 }
-                if (sellAction.Quantity >= max)
+                if (action.Quantity >= max)
                 {
-                    var message = $"{type} action lot quantity {sellAction.Quantity} is above minimum lot size of {max}";
+                    var message = $"{type} action lot quantity {action.Quantity} is above minimum lot size of {max}";
                     _program.HandleFail(message);
                 }
             }
+            
+            
+            action = action with { Price = decimal.Round(action.Price, symbol.QuoteAssetPrecision) };
+            action = action with { Quantity = decimal.Round(action.Quantity, symbol.BaseAssetPrecision) };
+
+            return action;
         }
     }
 }
