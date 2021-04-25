@@ -19,7 +19,7 @@ namespace EtAlii.BinanceMagic.Tests
         {
             return new()
             {
-                TransactionsFile = $"Transactions_{_random.Next()}.txt",
+                TransactionsFileFormat = $"Transactions_{_random.Next()}.txt",
             };
         }
 

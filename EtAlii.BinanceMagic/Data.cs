@@ -22,8 +22,8 @@
             _transactions = new List<Transaction>();
             Transactions = _transactions.AsReadOnly();
 
-            _trendsFile = $"{_settings.AllowedCoins[0]}_{_settings.AllowedCoins[1]}_{_settings.TrendsFile}";
-            _transactionsFile = $"{_settings.AllowedCoins[0]}_{_settings.AllowedCoins[1]}_{_settings.TransactionsFile}";
+            _trendsFile = string.Format(_settings.TrendsFileFormat, _settings.AllowedCoins[0], _settings.AllowedCoins[1]); 
+            _transactionsFile = string.Format(_settings.TransactionsFileFormat, _settings.AllowedCoins[0], _settings.AllowedCoins[1]); 
         }
 
         public void Load()

@@ -4,8 +4,8 @@
 
     public record LoopSettings
     {
-        public string TransactionsFile { get; init; }  = "Transactions.txt";
-        public string TrendsFile { get; init; }  = "Trends.txt";
+        public string TransactionsFileFormat { get; init; }  = "Transactions_{0}_{1}.txt";
+        public string TrendsFileFormat { get; init; }  = "Trends_{0}_{1}.txt";
         public string[] AllowedCoins { get; init; }  = { "BTC", "BNB" }; // "ETH"
         public string ReferenceCoin  { get; init; } = "BUSD";
         public decimal MinimalIncrease  { get; init; } = 0.05m; // in %
