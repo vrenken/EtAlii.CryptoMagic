@@ -6,16 +6,16 @@
     using System.Linq;
     using System.Threading;
 
-    public class Data
+    public class Data : IData
     {        
-        private readonly Client _client;
+        private readonly IClient _client;
         private readonly LoopSettings _settings;
         public IReadOnlyList<Transaction> Transactions { get; } 
         private readonly List<Transaction> _transactions;
 
         private readonly string _trendsFile;
         private readonly string _transactionsFile;
-        public Data(Client client, LoopSettings settings)
+        public Data(IClient client, LoopSettings settings)
         {
             _client = client;
             _settings = settings;
@@ -87,38 +87,6 @@
             };
             
             return true;
-        }
-
-        public Target BuildTarget()
-        {
-            var lastTransaction = _transactions.LastOrDefault();
-
-            var source = lastTransaction == null
-                ? _settings.AllowedCoins.First()
-                : lastTransaction.To.Coin;
-            var destination = lastTransaction == null
-                ? _settings.AllowedCoins.Skip(1).First()
-                : lastTransaction.From.Coin;
-
-            var profit = lastTransaction != null
-                ? lastTransaction.TotalProfit * (1 + _settings.MinimalIncrease)
-                : _settings.MinimalTargetProfit;
-
-            profit = profit < _settings.MinimalTargetProfit 
-                ? _settings.MinimalTargetProfit 
-                : profit;
-
-            var previousProfit = lastTransaction?.TotalProfit ?? profit;
-            previousProfit = previousProfit > 0 ? previousProfit : profit; 
-
-            return new Target
-            {
-                Source = source,
-                Destination = destination,
-                PreviousProfit = previousProfit,
-                Profit = profit,
-                TransactionId = _transactions.Count + 1,
-            };
         }
 
         public void AddTransaction(Transaction transaction)

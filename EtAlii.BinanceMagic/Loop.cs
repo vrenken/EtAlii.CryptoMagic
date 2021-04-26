@@ -4,22 +4,26 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class Loop
+    public partial class Loop
     {
         private readonly LoopSettings _settings;
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private Task _task;
-        private readonly Algorithm _algorithm;
-        private readonly Data _data;
-        private readonly Client _client;
+        private readonly IAlgorithm _algorithm;
+        private readonly IData _data;
+        private readonly ITargetBuilder _targetBuilder;
+        private readonly IClient _client;
         private static readonly object LockObject = new();
+
+        public StatusInfo Status { get; } = new ();
         
-        public Loop(LoopSettings settings, Program program, Client client)
+        public Loop(LoopSettings settings, IProgram program, IClient client)
         {
             _settings = settings;
             _client = client;
             _data = new Data(_client, settings);
             _algorithm = new Algorithm(settings, _data, program);
+            _targetBuilder = new TargetBuilder(_data, settings);
         }
         
         public void Stop()
@@ -52,69 +56,51 @@
 
         private void RunOnce(CancellationToken cancellationToken)
         {
-            var target = _data.BuildTarget();
+            var target = _targetBuilder.BuildTarget();
             ConsoleOutput.Write($"Found next target: {target.Source} -> {target.Destination} using minimal increase: {_settings.MinimalIncrease:P}");
-
+            Status.FromCoin = target.Source;
+            Status.ToCoin = target.Destination;
+            
             var targetSucceeded = false;
+            var shouldDelay = false;
 
             while (!targetSucceeded)
             {
+                if (shouldDelay)
+                {
+                    var nextCheck = DateTime.Now + _settings.SampleInterval;
+                    ConsoleOutput.WriteNegative($"Waiting until: {nextCheck}");
+                    Status.NextCheck = nextCheck;
+                }
                 if (!_data.TryGetSituation(target, cancellationToken, out var situation))
                 {
-                    ConsoleOutput.WriteNegative($"Waiting until: {DateTime.Now + _settings.SampleInterval}");
-                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
+                    shouldDelay = true;
+                    continue;
                 }
-
+                
                 if (!_client.TryGetExchangeInfo(cancellationToken, out var exchangeInfo))
                 {
-                    ConsoleOutput.WriteNegative($"Waiting until: {DateTime.Now + _settings.SampleInterval}");
-                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
+                    shouldDelay = true;
+                    continue;
                 }
                 situation = situation with { ExchangeInfo = exchangeInfo };
                 
                 if (situation.IsInitialCycle)
                 {
-                    ConsoleOutput.Write($"Initial cycle - Converting...");
-                    _algorithm.ToInitialConversionActions(target, situation, out var initialSellAction, out var initialBuyAction);
-                    ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{initialSellAction.Quantity} {initialSellAction.Coin}", $"{initialSellAction.Price} {_settings.ReferenceCoin}");
-                    ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{initialBuyAction.Quantity} {initialBuyAction.Coin}", $"{initialBuyAction.Price} {_settings.ReferenceCoin}");
-
-                    if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, cancellationToken, out var transaction))
-                    {
-                        transaction = transaction with {TotalProfit = 0m};
-                        
-                        ConsoleOutput.WritePositive($"Transaction done!");
-                        _data.AddTransaction(transaction);
-                        targetSucceeded = true;
-                    }
-                    else
-                    {
-                        ConsoleOutput.WriteNegative($"Waiting until: {DateTime.Now + _settings.SampleInterval}");
-                        Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
-                    }
+                    targetSucceeded = HandleInitialCycle(cancellationToken, target, situation);
+                    shouldDelay = !targetSucceeded;
+                    continue;
                 }
-                else if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
+                if(TryHandleNormalCycle(cancellationToken, target, situation, out targetSucceeded))
                 {
-                    ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
-                    ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{buyAction.Quantity} {buyAction.Coin}", $"{buyAction.Price} {_settings.ReferenceCoin}");
+                    shouldDelay = !targetSucceeded;
+                    continue;
+                }
 
-                    ConsoleOutput.Write($"Feasible transaction found - Converting...");
-                    if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, cancellationToken, out var transaction))
-                    {
-                        ConsoleOutput.WritePositive($"Transaction done!");
-                        ConsoleOutput.Write($"Next check at: {DateTime.Now + _settings.SampleInterval}");
-                        _data.AddTransaction(transaction);
-                        targetSucceeded = true;
-                        Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
-                    }
-                }
-                else
-                {
-                    ConsoleOutput.WriteNegative($"No feasible transaction - Waiting until: {DateTime.Now + _settings.SampleInterval}");
-                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
-                }
+                ConsoleOutput.WriteNegative($"No feasible transaction");
+                Status.Result = $"No feasible transaction";
+                shouldDelay = true;
             }
-
         }
     }
 }

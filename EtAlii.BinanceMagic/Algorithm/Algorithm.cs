@@ -3,13 +3,13 @@
     using System.Linq;
     using Binance.Net.Objects.Spot.MarketData;
 
-    public class Algorithm
+    public class Algorithm : IAlgorithm
     {
         private readonly LoopSettings _settings;
-        private readonly Data _data;
-        private readonly Program _program;
+        private readonly IData _data;
+        private readonly IProgram _program;
 
-        public Algorithm(LoopSettings settings, Data data, Program program)
+        public Algorithm(LoopSettings settings, IData data, IProgram program)
         {
             _settings = settings;
             _data = data;

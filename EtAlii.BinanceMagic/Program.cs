@@ -3,7 +3,7 @@
     using System;
     using System.Linq;
 
-    public class Program
+    public class Program : IProgram
     {
         private readonly ProgramSettings _settings;
 
@@ -20,14 +20,15 @@
             var program = new Program(programSettings);
 
             ConsoleOutput.Write("Starting Binance magic...");
-            var client = new Client(programSettings, program);
+            var actionValidator = new ActionValidator();
+            var client = new Client(programSettings, program, actionValidator);
             client.Start();
 
             var allLoopSettings = new[]
             {
                 new LoopSettings
                 {
-                    AllowedCoins = new []{"BTC", "BNB"},
+                    AllowedCoins = new []{ "BTC", "BNB" },
                     //InitialTransferFactor = 10.0m,
                     //MaxQuantityToTrade = 0.9m,
                     MinimalIncrease = 0.05m,
@@ -68,7 +69,5 @@
             ConsoleOutput.WriteNegative(message);
             Environment.Exit(-1);
         }
-
-
     }
 }

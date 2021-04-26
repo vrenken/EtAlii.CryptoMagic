@@ -11,18 +11,18 @@
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
 
-    public class Client
+    public class Client : IClient
     {
         private BinanceClient _client;
         private readonly ProgramSettings _settings;
-        private readonly Program _program;
-        private readonly ActionValidator _validator;
+        private readonly IProgram _program;
+        private readonly IActionValidator _validator;
 
-        public Client(ProgramSettings settings, Program program)
+        public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator)
         {
             _settings = settings;
             _program = program;
-            _validator = new ActionValidator();
+            _validator = actionValidator;
         }
 
         public void Start()

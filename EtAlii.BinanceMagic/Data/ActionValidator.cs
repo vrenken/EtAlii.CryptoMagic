@@ -5,7 +5,7 @@ namespace EtAlii.BinanceMagic
     using Binance.Net;
     using Binance.Net.Objects.Spot.MarketData;
 
-    public class ActionValidator
+    public class ActionValidator : IActionValidator
     {
         public bool TryValidate<TAction>(BinanceClient client, TAction action, string type, string referenceCoin, BinanceExchangeInfo exchangeInfo, CancellationToken cancellationToken, out TAction outAction)
             where TAction : Action
