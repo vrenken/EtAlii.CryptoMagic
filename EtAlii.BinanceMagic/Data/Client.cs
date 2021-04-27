@@ -69,14 +69,13 @@
             return result.Data.Price;
         }
 
-        public bool TryGetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
+        public bool TryGetTradeFees(string coin, string referenceCoin, StatusInfo statusInfo, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
         {
             var coinComparedToReference = $"{coin}{referenceCoin}"; 
             var result = _client.Spot.Market.GetTradeFee(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
-                var message = $"Failure fetching trade fees for {coin}: {result.Error}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failure fetching trade fees for {coin}: {result.Error}";
                 makerFee = 0m;
                 takerFee = 0m;
                 return false;
@@ -88,14 +87,12 @@
             return true;
         }
         
-        public bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo)
+        public bool TryGetExchangeInfo(StatusInfo statusInfo, CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo)
         {
-            //ConsoleOutput.Write("Fetching exchange info...");
             var exchangeResult = _client.Spot.System.GetExchangeInfo(cancellationToken);
             if (!exchangeResult.Success)
             {
-                var message = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failed to fetch exchange info: {exchangeResult.Error}";
                 exchangeInfo = null;
                 return false;
             }
@@ -103,14 +100,12 @@
             return true;
         }
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, StatusInfo statusInfo, CancellationToken cancellationToken, out Transaction transaction)
         {
-            //ConsoleOutput.Write("Fetching exchange info...");
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
             {
-                var message = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failed to fetch exchange info: {exchangeResult.Error}";
                 transaction = null;
                 return false;
             }
@@ -120,12 +115,12 @@
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
             var orderType = OrderType.Market;
 
-            if (!_validator.TryValidate(_client, sellAction, "Sell", referenceCoin, exchangeInfo, cancellationToken, out sellAction))
+            if (!_validator.TryValidate(_client, sellAction, "Sell", referenceCoin, exchangeInfo, statusInfo, cancellationToken, out sellAction))
             {
                 transaction = null;
                 return false;
             }
-            if(!_validator.TryValidate(_client, buyAction, "Buy", referenceCoin, exchangeInfo, cancellationToken, out buyAction))
+            if(!_validator.TryValidate(_client, buyAction, "Buy", referenceCoin, exchangeInfo, statusInfo, cancellationToken, out buyAction))
             {
                 transaction = null;
                 return false;
@@ -141,8 +136,7 @@
 
             if (sellOrder.Error != null)
             {
-                var message = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
                 transaction = null;
                 return false;
             }
@@ -152,8 +146,7 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                var message = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
                 transaction = null;
                 return false;
             }
@@ -168,8 +161,7 @@
 
             if (buyOrder.Error != null)
             {
-                var message = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
@@ -180,8 +172,7 @@
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
             {
-                var message = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
-                ConsoleOutput.WriteNegative(message);
+                statusInfo.Result = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
@@ -219,9 +210,9 @@
         
         public void Stop()
         {
-            ConsoleOutput.Write("Stopping Binance client...");
+            ConsoleOutput.Write("Stopping client...");
             _client.Dispose();
-            ConsoleOutput.Write("Stopping Binance client: Done");
+            ConsoleOutput.Write("Stopping client: Done");
         }
     }
 }

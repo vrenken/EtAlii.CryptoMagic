@@ -50,6 +50,7 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
+            var status = new StatusInfo();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             client.Start();
@@ -73,7 +74,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, loopSettings.ReferenceCoin, cancellationToken, out var transaction);
+            client.TryConvert(sellAction, buyAction, loopSettings.ReferenceCoin, status, cancellationToken, out var transaction);
             
             // Assert.
             Assert.NotNull(transaction);

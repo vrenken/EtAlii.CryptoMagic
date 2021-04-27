@@ -6,13 +6,13 @@ namespace EtAlii.BinanceMagic
 
     public interface IActionValidator
     {
-        bool TryValidate<TAction>(
-            BinanceClient client, 
-            TAction action, 
-            string type, 
+        bool TryValidate<TAction>(BinanceClient client,
+            TAction action,
+            string type,
             string referenceCoin,
-            BinanceExchangeInfo exchangeInfo, 
-            CancellationToken cancellationToken, 
+            BinanceExchangeInfo exchangeInfo,
+            StatusInfo statusInfo,
+            CancellationToken cancellationToken,
             out TAction outAction)
             where TAction : Action;
     }

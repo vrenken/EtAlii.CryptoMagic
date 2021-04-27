@@ -15,15 +15,17 @@
         private readonly IClient _client;
         private static readonly object LockObject = new();
 
-        public StatusInfo Status { get; } = new ();
+        public StatusInfo Status => _status;
+        private readonly StatusInfo _status;
         
         public Loop(LoopSettings settings, IProgram program, IClient client)
         {
             _settings = settings;
             _client = client;
             _data = new Data(_client, settings);
-            _algorithm = new Algorithm(settings, _data, program);
-            _targetBuilder = new TargetBuilder(_data, settings);
+            _status = new StatusInfo();
+            _algorithm = new Algorithm(settings, _data, program, _status);
+            _targetBuilder = new TargetBuilder(_data, settings, _status);
         }
         
         public void Stop()
@@ -57,9 +59,10 @@
         private void RunOnce(CancellationToken cancellationToken)
         {
             var target = _targetBuilder.BuildTarget();
-            ConsoleOutput.Write($"Found next target: {target.Source} -> {target.Destination} using minimal increase: {_settings.MinimalIncrease:P}");
             Status.FromCoin = target.Source;
             Status.ToCoin = target.Destination;
+            Status.ReferenceCoin = _settings.ReferenceCoin;
+            Status.Result = "Found next target";
             
             var targetSucceeded = false;
             var shouldDelay = false;
@@ -69,16 +72,22 @@
                 if (shouldDelay)
                 {
                     var nextCheck = DateTime.Now + _settings.SampleInterval;
-                    ConsoleOutput.WriteNegative($"Waiting until: {nextCheck}");
                     Status.NextCheck = nextCheck;
+                    Status.DumpToConsole();
+                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
                 }
-                if (!_data.TryGetSituation(target, cancellationToken, out var situation))
+                Status.NextCheck = DateTime.MinValue;
+                Status.Result = "Fetching current situation...";
+                
+                if (!_data.TryGetSituation(target, _status, cancellationToken, out var situation))
                 {
                     shouldDelay = true;
                     continue;
                 }
                 
-                if (!_client.TryGetExchangeInfo(cancellationToken, out var exchangeInfo))
+                Status.Result = "Fetching exchange info...";
+
+                if (!_client.TryGetExchangeInfo(_status, cancellationToken, out var exchangeInfo))
                 {
                     shouldDelay = true;
                     continue;
@@ -97,8 +106,7 @@
                     continue;
                 }
 
-                ConsoleOutput.WriteNegative($"No feasible transaction");
-                Status.Result = $"No feasible transaction";
+                Status.Result = "No feasible transaction";
                 shouldDelay = true;
             }
         }

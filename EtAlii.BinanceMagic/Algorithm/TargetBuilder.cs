@@ -1,16 +1,19 @@
 ﻿namespace EtAlii.BinanceMagic
 {
+    using System;
     using System.Linq;
 
     public class TargetBuilder : ITargetBuilder
     {
         private readonly IData _data;
         private readonly LoopSettings _settings;
+        private readonly StatusInfo _status;
 
-        public TargetBuilder(IData data, LoopSettings settings)
+        public TargetBuilder(IData data, LoopSettings settings, StatusInfo status)
         {
             _data = data;
             _settings = settings;
+            _status = status;
         }
 
         public Target BuildTarget()
@@ -35,6 +38,9 @@
             var previousProfit = lastTransaction?.TotalProfit ?? profit;
             previousProfit = previousProfit > 0 ? previousProfit : profit; 
 
+            _status.LastSuccess = lastTransaction?.Moment ?? DateTime.MinValue;
+            _status.Profit = previousProfit;
+
             return new Target
             {
                 Source = source,
@@ -44,6 +50,5 @@
                 TransactionId = _data.Transactions.Count + 1,
             };
         }
-
     }
 }

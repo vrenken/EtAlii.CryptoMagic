@@ -28,7 +28,7 @@
 
         public void Load()
         {
-            ConsoleOutput.Write("Loading previous gambles from file...");
+            ConsoleOutput.Write("Loading previous transactions from file...");
             
             var lines = File.Exists(_transactionsFile) 
                 ? File.ReadAllLines(_transactionsFile) 
@@ -37,24 +37,24 @@
                 .Select(Transaction.Read)
                 .ToArray();
             _transactions.AddRange(transactions);
-            ConsoleOutput.Write("Loading previous gambles from file: Done");
+            ConsoleOutput.Write("Loading previous transactions from file: Done");
         }
         
         public CoinSnapshot FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.To;
         public CoinSnapshot FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.From;
         
-        public bool TryGetSituation(Target target, CancellationToken cancellationToken, out Situation situation)
+        public bool TryGetSituation(Target target, StatusInfo status, CancellationToken cancellationToken, out Situation situation)
         {
             var sourcePrice = _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
             var targetPrice = _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
 
-            if (!_client.TryGetTradeFees(target.Source, _settings.ReferenceCoin, cancellationToken, out var sourceMakerFee, out var _))
+            if (!_client.TryGetTradeFees(target.Source, _settings.ReferenceCoin, status, cancellationToken, out var sourceMakerFee, out var _))
             {
                 situation = null;
                 return false;
             }
             
-            if (!_client.TryGetTradeFees(target.Destination, _settings.ReferenceCoin, cancellationToken, out var _, out var destinationTakerFee))
+            if (!_client.TryGetTradeFees(target.Destination, _settings.ReferenceCoin, status, cancellationToken, out var _, out var destinationTakerFee))
             {
                 situation = null;
                 return false;

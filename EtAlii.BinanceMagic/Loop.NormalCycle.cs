@@ -2,7 +2,6 @@
 {
     using System;
     using System.Threading;
-    using System.Threading.Tasks;
 
     public partial class Loop
     {
@@ -12,17 +11,19 @@
 
             if (_algorithm.TransactionIsWorthIt(target, situation, out var sellAction, out var buyAction))
             {
-                ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
-                ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{buyAction.Quantity} {buyAction.Coin}", $"{buyAction.Price} {_settings.ReferenceCoin}");
+                _status.Result = $"Preparing to sell {sellAction.Quantity} {sellAction.Coin} and buy {buyAction.Quantity} {buyAction.Coin}";
+                // ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
+                // ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{buyAction.Quantity} {buyAction.Coin}", $"{buyAction.Price} {_settings.ReferenceCoin}");
 
-                ConsoleOutput.Write($"Feasible transaction found - Converting...");
-                if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, cancellationToken, out var transaction))
+                _status.Result = "Feasible transaction found - Converting...";
+                
+                if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, _status, cancellationToken, out var transaction))
                 {
-                    ConsoleOutput.WritePositive($"Transaction done!");
-                    ConsoleOutput.Write($"Next check at: {DateTime.Now + _settings.SampleInterval}");
+                    Status.Result = $"Transaction done!";
+                    Status.LastSuccess = DateTime.Now; 
+                    
                     _data.AddTransaction(transaction);
                     targetSucceeded = true;
-                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
                 }
             }
 

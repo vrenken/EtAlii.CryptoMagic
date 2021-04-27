@@ -140,10 +140,11 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
+            var status = new StatusInfo();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             var data = new Data(client, loopSettings);
-            var targetBuilder = new TargetBuilder(data, loopSettings);
+            var targetBuilder = new TargetBuilder(data, loopSettings, status);
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
             var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
@@ -178,10 +179,11 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
+            var status = new StatusInfo();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             var data = new Data(client, loopSettings);
-            var targetBuilder = new TargetBuilder(data, loopSettings);
+            var targetBuilder = new TargetBuilder(data, loopSettings, status);
             client.Start();
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
@@ -192,7 +194,7 @@ namespace EtAlii.BinanceMagic.Tests
             var target = targetBuilder.BuildTarget();
             
             // Act.
-            var result = data.TryGetSituation(target, cancellationToken, out var situation);
+            var result = data.TryGetSituation(target, status, cancellationToken, out var situation);
 
             // Assert.
             Assert.True(result);
@@ -207,10 +209,11 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
+            var status = new StatusInfo();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             var data = new Data(client, loopSettings);
-            var targetBuilder = new TargetBuilder(data, loopSettings);
+            var targetBuilder = new TargetBuilder(data, loopSettings, status);
             client.Start();
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
@@ -223,7 +226,7 @@ namespace EtAlii.BinanceMagic.Tests
             var target = targetBuilder.BuildTarget();
             
             // Act.
-            var result = data.TryGetSituation(target, cancellationToken, out var situation);
+            var result = data.TryGetSituation(target, status, cancellationToken, out var situation);
 
             // Assert.
             Assert.True(result);
