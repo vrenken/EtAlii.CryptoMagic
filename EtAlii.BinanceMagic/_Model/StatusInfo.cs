@@ -26,6 +26,7 @@
         public DateTime NextCheck { get; set; }
         
         public decimal Profit { get; set; }
+
         public string Result
         {
             get => _result;

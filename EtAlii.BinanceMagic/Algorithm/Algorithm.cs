@@ -8,12 +8,14 @@
         private readonly LoopSettings _settings;
         private readonly IData _data;
         private readonly IProgram _program;
+        private readonly StatusInfo _status;
 
-        public Algorithm(LoopSettings settings, IData data, IProgram program)
+        public Algorithm(LoopSettings settings, IData data, IProgram program, StatusInfo status)
         {
             _settings = settings;
             _data = data;
             _program = program;
+            _status = status;
         }
 
         public bool TransactionIsWorthIt(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
@@ -21,75 +23,45 @@
             sellAction = null;
             buyAction = null;
             
-            var sourceQuantityToSell = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
-            var currentProfitIncrease = situation.Source.PresentPrice * sourceQuantityToSell;
-            
-            var maxDestinationQuantityToBuy = target.Profit / situation.Destination.PresentPrice * _settings.MaxQuantityToTrade;
-            var currentProfitDecrease = maxDestinationQuantityToBuy * situation.Destination.PresentPrice;
-            
-            var currentProfit = currentProfitIncrease - currentProfitDecrease;
-            var profitIncrease = target.Profit - target.PreviousProfit;
+            _status.Target = target.Profit / 10m;
+            _status.SellQuantity = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
+            _status.SellPrice = situation.Source.PresentPrice * _status.SellQuantity;
+            _status.BuyQuantity = target.Profit / situation.Destination.PresentPrice * _settings.MaxQuantityToTrade;
+            _status.BuyPrice = _status.BuyQuantity * situation.Destination.PresentPrice;
+            _status.SufficientProfit = _status.SellPrice - _status.BuyPrice > _status.Target;
+            _status.Difference = _status.SellPrice - _status.BuyPrice;
 
-            var sufficientProfit = currentProfit > profitIncrease; 
-            var aboveNotionalProfitIncrease = currentProfitIncrease > GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
-            var aboveNotionalProfitDecrease = currentProfitDecrease > GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+            _status.SellQuantityMinimum = GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
+            _status.BuyQuantityMinimum = GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+            _status.SellPriceIsAboveNotionalMinimum = _status.SellPrice > _status.SellQuantityMinimum;
+            _status.BuyPriceIsAboveNotionalMinimum = _status.BuyPrice > _status.BuyQuantityMinimum; 
+            _status.IsWorthIt = _status.SufficientProfit && _status.SellPriceIsAboveNotionalMinimum && _status.BuyPriceIsAboveNotionalMinimum;
 
-            var isWorthIt = sufficientProfit && aboveNotionalProfitIncrease && aboveNotionalProfitDecrease;
-            
-            var profitDifference = currentProfitIncrease - currentProfitDecrease;
-            ConsoleOutput.Write($"Target   : +{profitIncrease} {_settings.ReferenceCoin}");
-            var sellMessage = $"Sell     : +{currentProfitIncrease} {_settings.ReferenceCoin} (= +{sourceQuantityToSell} {target.Source})";
-            var buyMessage =  $"Buy      : -{currentProfitDecrease} {_settings.ReferenceCoin} (= -{maxDestinationQuantityToBuy} {target.Destination})";
-            var diffMessage = $"Diff     : {profitDifference} {_settings.ReferenceCoin}";
+            _status.DumpToConsole();
 
-            if (aboveNotionalProfitIncrease)
-            {
-                ConsoleOutput.Write(sellMessage);
-            }
-            else
-            {
-                ConsoleOutput.WriteNegative(sellMessage);
-            }
-            if (aboveNotionalProfitDecrease)
-            {
-                ConsoleOutput.Write(buyMessage);
-            }
-            else
-            {
-                ConsoleOutput.WriteNegative(buyMessage);
-            }
-            if (sufficientProfit)
-            {
-                ConsoleOutput.WritePositive(diffMessage);
-            }
-            else
-            {
-                ConsoleOutput.WriteNegative(diffMessage);
-            }
+            _data.AddTrend(_status.Target, _status.SellPrice, _status.SellQuantity, _status.BuyPrice, _status.BuyQuantity, _status.Difference);
             
-            _data.AddTrend(profitIncrease, currentProfitIncrease, sourceQuantityToSell, currentProfitDecrease, maxDestinationQuantityToBuy, profitDifference);
-            
-            if (isWorthIt)
+            if (_status.IsWorthIt)
             {
                 sellAction = new SellAction
                 {
                     Coin = situation.Source.Coin,
-                    Quantity = sourceQuantityToSell,
+                    Quantity = _status.SellQuantity,
                     UnitPrice = situation.Source.PresentPrice,
-                    Price = currentProfitIncrease,
+                    Price = _status.SellPrice,
                     TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
                 };
                 buyAction = new BuyAction
                 {
                     Coin = situation.Destination.Coin,
-                    Quantity = maxDestinationQuantityToBuy,
+                    Quantity = _status.BuyQuantity,
                     UnitPrice = situation.Destination.PresentPrice,
-                    Price = currentProfitDecrease,
+                    Price = _status.BuyPrice,
                     TransactionId = $"{target.TransactionId:000000}_1_{target.Destination}_{target.Source}",
                 };
             }
 
-            return isWorthIt;
+            return _status.IsWorthIt;
         }
 
         public void ToInitialConversionActions(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
@@ -124,6 +96,7 @@
                 {
                     _program.HandleFail($"Previous initial transaction did not purchase {target.Source}");
                 }
+                
                 var sourceQuantityToSell = previousTransaction.To.Quantity;
                 sellAction = new SellAction
                 {
