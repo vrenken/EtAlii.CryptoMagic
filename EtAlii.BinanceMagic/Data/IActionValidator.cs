@@ -11,7 +11,7 @@ namespace EtAlii.BinanceMagic
             string type,
             string referenceCoin,
             BinanceExchangeInfo exchangeInfo,
-            StatusInfo statusInfo,
+            TradeDetails details,
             CancellationToken cancellationToken,
             out TAction outAction)
             where TAction : Action;

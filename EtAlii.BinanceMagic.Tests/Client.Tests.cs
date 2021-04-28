@@ -50,7 +50,7 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
-            var status = new StatusInfo();
+            var status = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             client.Start();

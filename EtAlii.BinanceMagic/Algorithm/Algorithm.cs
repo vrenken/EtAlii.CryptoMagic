@@ -8,70 +8,71 @@
         private readonly LoopSettings _settings;
         private readonly IData _data;
         private readonly IProgram _program;
-        private readonly StatusInfo _status;
+        private readonly TradeDetails _details;
 
-        public Algorithm(LoopSettings settings, IData data, IProgram program, StatusInfo status)
+        public Algorithm(LoopSettings settings, IData data, IProgram program, TradeDetails details)
         {
             _settings = settings;
             _data = data;
             _program = program;
-            _status = status;
+            _details = details;
         }
 
-        public bool TransactionIsWorthIt(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
+        public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
             sellAction = null;
             buyAction = null;
             
-            _status.Target = target.Profit / 10m;
-            _status.SellQuantity = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
-            _status.SellPrice = situation.Source.PresentPrice * _status.SellQuantity;
-            _status.BuyQuantity = target.Profit / situation.Destination.PresentPrice * _settings.MaxQuantityToTrade;
-            _status.BuyPrice = _status.BuyQuantity * situation.Destination.PresentPrice;
-            _status.SufficientProfit = _status.SellPrice - _status.BuyPrice > _status.Target;
-            _status.Difference = _status.SellPrice - _status.BuyPrice;
+            // TODO: This _details.Goal and _details.Target don't match.
+            _details.Target = _details.Goal / 10m; 
+            _details.SellQuantity = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
+            _details.SellPrice = situation.Source.PresentPrice * _details.SellQuantity;
+            _details.BuyQuantity = _details.Goal / situation.Destination.PresentPrice * _settings.MaxQuantityToTrade;
+            _details.BuyPrice = _details.BuyQuantity * situation.Destination.PresentPrice;
+            _details.SufficientProfit = _details.SellPrice - _details.BuyPrice > _details.Target;
+            _details.Difference = _details.SellPrice - _details.BuyPrice;
 
-            _status.SellQuantityMinimum = GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
-            _status.BuyQuantityMinimum = GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
-            _status.SellPriceIsAboveNotionalMinimum = _status.SellPrice > _status.SellQuantityMinimum;
-            _status.BuyPriceIsAboveNotionalMinimum = _status.BuyPrice > _status.BuyQuantityMinimum; 
-            _status.IsWorthIt = _status.SufficientProfit && _status.SellPriceIsAboveNotionalMinimum && _status.BuyPriceIsAboveNotionalMinimum;
+            _details.SellQuantityMinimum = GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
+            _details.BuyQuantityMinimum = GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+            _details.SellPriceIsAboveNotionalMinimum = _details.SellPrice > _details.SellQuantityMinimum;
+            _details.BuyPriceIsAboveNotionalMinimum = _details.BuyPrice > _details.BuyQuantityMinimum; 
+            _details.IsWorthIt = _details.SufficientProfit && _details.SellPriceIsAboveNotionalMinimum && _details.BuyPriceIsAboveNotionalMinimum;
 
-            _status.DumpToConsole();
+            _details.DumpToConsole();
 
-            _data.AddTrend(_status.Target, _status.SellPrice, _status.SellQuantity, _status.BuyPrice, _status.BuyQuantity, _status.Difference);
+            _data.AddTrend(_details.Target, _details.SellPrice, _details.SellQuantity, _details.BuyPrice, _details.BuyQuantity, _details.Difference);
             
-            if (_status.IsWorthIt)
+            if (_details.IsWorthIt)
             {
                 sellAction = new SellAction
                 {
                     Coin = situation.Source.Coin,
-                    Quantity = _status.SellQuantity,
+                    Quantity = _details.SellQuantity,
                     UnitPrice = situation.Source.PresentPrice,
-                    Price = _status.SellPrice,
-                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
+                    Price = _details.SellPrice,
+                    TransactionId = $"{_details.TransactionId:000000}_0_{_details.FromCoin}_{_details.ToCoin}",
                 };
                 buyAction = new BuyAction
                 {
                     Coin = situation.Destination.Coin,
-                    Quantity = _status.BuyQuantity,
+                    Quantity = _details.BuyQuantity,
                     UnitPrice = situation.Destination.PresentPrice,
-                    Price = _status.BuyPrice,
-                    TransactionId = $"{target.TransactionId:000000}_1_{target.Destination}_{target.Source}",
+                    Price = _details.BuyPrice,
+                    TransactionId = $"{_details.TransactionId:000000}_1_{_details.ToCoin}_{_details.FromCoin}",
                 };
             }
 
-            return _status.IsWorthIt;
+            return _details.IsWorthIt;
         }
 
-        public void ToInitialConversionActions(Target target, Situation situation, out SellAction sellAction, out BuyAction buyAction)
+        public void ToInitialConversionActions(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            var lastPurchaseForSource = _data.FindLastPurchase(target.Source);
+            var lastPurchaseForSource = _data.FindLastPurchase(_details.FromCoin);
             var quantityToSell = lastPurchaseForSource == null
-                ? (1 / situation.Source.PresentPrice) * GetMinimalQuantity(target.Source, situation.ExchangeInfo, _settings)
+                ? (1 / situation.Source.PresentPrice) * GetMinimalQuantity(_details.FromCoin, situation.ExchangeInfo, _settings)
                 : lastPurchaseForSource.Quantity;
 
-            var quantityToBuy = (1 / situation.Destination.PresentPrice) * GetMinimalQuantity(target.Destination, situation.ExchangeInfo, _settings);
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * GetMinimalQuantity(_details.ToCoin, situation.ExchangeInfo, _settings);
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
@@ -83,39 +84,39 @@
             {
                 sellAction = new SellAction
                 {
-                    Coin = target.Source,
+                    Coin = _details.FromCoin,
                     UnitPrice = sourcePrice,
                     Quantity = quantityToSell,
                     Price = sourcePrice * quantityToSell,
-                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
+                    TransactionId = $"{_details.TransactionId:000000}_0_{_details.FromCoin}_{_details.ToCoin}",
                 };
             }
             else
             {
-                if (previousTransaction.To.Coin != target.Source)
+                if (previousTransaction.To.Coin != _details.FromCoin)
                 {
-                    _program.HandleFail($"Previous initial transaction did not purchase {target.Source}");
+                    _program.HandleFail($"Previous initial transaction did not purchase {_details.FromCoin}");
                 }
                 
                 var sourceQuantityToSell = previousTransaction.To.Quantity;
                 sellAction = new SellAction
                 {
-                    Coin = target.Source,
+                    Coin = _details.FromCoin,
                     Quantity = sourceQuantityToSell,
                     UnitPrice = sourcePrice,
                     Price = sourcePrice * sourceQuantityToSell,
-                    TransactionId = $"{target.TransactionId:000000}_0_{target.Source}_{target.Destination}",
+                    TransactionId = $"{_details.TransactionId:000000}_0_{_details.FromCoin}_{_details.ToCoin}",
                 };
             }
 
             var destinationPrice = situation.Destination.PresentPrice;// _client.GetPrice(target.Destination, _settings.ReferenceCoin, cancellationToken);
             buyAction = new BuyAction
             {
-                Coin = target.Destination,
+                Coin = _details.ToCoin,
                 UnitPrice = destinationPrice,
                 Quantity = quantityToBuy,
                 Price = destinationPrice * quantityToBuy,
-                TransactionId = $"{target.TransactionId:000000}_1_{target.Destination}_{target.Source}",
+                TransactionId = $"{_details.TransactionId:000000}_1_{_details.ToCoin}_{_details.FromCoin}",
             };
         }
 

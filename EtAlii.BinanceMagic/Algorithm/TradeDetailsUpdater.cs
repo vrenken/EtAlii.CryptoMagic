@@ -3,20 +3,18 @@
     using System;
     using System.Linq;
 
-    public class TargetBuilder : ITargetBuilder
+    public class TradeDetailsUpdater : ITargetBuilder
     {
         private readonly IData _data;
         private readonly LoopSettings _settings;
-        private readonly StatusInfo _status;
 
-        public TargetBuilder(IData data, LoopSettings settings, StatusInfo status)
+        public TradeDetailsUpdater(IData data, LoopSettings settings)
         {
             _data = data;
             _settings = settings;
-            _status = status;
         }
 
-        public Target BuildTarget()
+        public void UpdateTargetDetails(TradeDetails details)
         {
             var lastTransaction = _data.Transactions.LastOrDefault();
 
@@ -38,17 +36,17 @@
             var previousProfit = lastTransaction?.TotalProfit ?? profit;
             previousProfit = previousProfit > 0 ? previousProfit : profit; 
 
-            _status.LastSuccess = lastTransaction?.Moment ?? DateTime.MinValue;
-            _status.Profit = previousProfit;
+            details.LastSuccess = lastTransaction?.Moment ?? DateTime.MinValue;
+            details.Profit = previousProfit;
 
-            return new Target
-            {
-                Source = source,
-                Destination = destination,
-                PreviousProfit = previousProfit,
-                Profit = profit,
-                TransactionId = _data.Transactions.Count + 1,
-            };
+            details.FromCoin = source;
+            details.ToCoin = destination;
+            details.TransactionId = _data.Transactions.Count + 1;
+            details.ReferenceCoin = _settings.ReferenceCoin;
+            details.Result = "Found next target";
+
+            details.PreviousProfit = previousProfit;
+            details.Goal = profit;
         }
     }
 }

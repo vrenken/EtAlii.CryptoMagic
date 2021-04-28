@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class StatusInfo
+    public class TradeDetails
     {
         public string FromCoin { get; set; }
         public string ToCoin { get; set; }
@@ -26,6 +26,7 @@
         public DateTime NextCheck { get; set; }
         
         public decimal Profit { get; set; }
+        public int TransactionId { get; set; }
 
         public string Result
         {
@@ -43,6 +44,10 @@
 
         public bool IsWorthIt { get; set; }
 
+        // TBD:
+        public decimal PreviousProfit { get; set; }
+        public decimal Goal { get; set; }
+        
         public void DumpToConsole()
         {
             var nextCheck = NextCheck != DateTime.MinValue ? NextCheck.ToString("yyyy-MM-dd HH:mm:ss") : "Now";

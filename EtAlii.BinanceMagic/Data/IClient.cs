@@ -7,12 +7,12 @@ namespace EtAlii.BinanceMagic
     {
         void Start();
         void Stop();
-        decimal GetPrice(string coin, string referenceCoin, CancellationToken cancellationToken);
+        bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price);
 
-        bool TryGetTradeFees(string coin, string referenceCoin, StatusInfo statusInfo, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee);
+        bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee);
 
-        bool TryGetExchangeInfo(StatusInfo statusInfo, CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo);
+        bool TryGetExchangeInfo(TradeDetails details, CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo);
         
-        bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, StatusInfo statusInfo, CancellationToken cancellationToken, out Transaction transaction);
+        bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out Transaction transaction);
     }
 }

@@ -140,11 +140,11 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
-            var status = new StatusInfo();
+            var details = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             var data = new Data(client, loopSettings);
-            var targetBuilder = new TargetBuilder(data, loopSettings, status);
+            var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
             var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
@@ -152,24 +152,29 @@ namespace EtAlii.BinanceMagic.Tests
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, loopSettings.MinimalTargetProfit * (1 + loopSettings.MinimalIncrease), 2);
             
             // Act.
-            var firstTarget = targetBuilder.BuildTarget();
-            data.AddTransaction(firstTransaction);
-            var secondTarget = targetBuilder.BuildTarget();
-            data.AddTransaction(secondTransaction);
-            var thirdTarget = targetBuilder.BuildTarget();
+            targetBuilder.UpdateTargetDetails(details);
 
             // Assert.
-            Assert.Equal(firstCoin, firstTarget.Source);
-            Assert.Equal(secondCoin, firstTarget.Destination);
-            Assert.Equal(loopSettings.MinimalTargetProfit, firstTarget.Profit);
-            
-            Assert.Equal(secondCoin, secondTarget.Source);
-            Assert.Equal(firstCoin, secondTarget.Destination);
-            Assert.Equal(firstTarget.Profit * (1 + loopSettings.MinimalIncrease), secondTarget.Profit);
+            Assert.Equal(firstCoin, details.FromCoin);
+            Assert.Equal(secondCoin, details.ToCoin);
+            var firstGoal = details.Goal;
+            Assert.Equal(loopSettings.MinimalTargetProfit, firstGoal);
 
-            Assert.Equal(firstCoin, thirdTarget.Source);
-            Assert.Equal(secondCoin, thirdTarget.Destination);
-            Assert.Equal(secondTarget.Profit * (1 + loopSettings.MinimalIncrease), thirdTarget.Profit);
+            data.AddTransaction(firstTransaction);
+            targetBuilder.UpdateTargetDetails(details);
+
+            Assert.Equal(secondCoin, details.FromCoin);
+            Assert.Equal(firstCoin, details.ToCoin);
+            var secondGoal = details.Goal;
+            Assert.Equal(firstGoal * (1 + loopSettings.MinimalIncrease), secondGoal);
+
+            data.AddTransaction(secondTransaction);
+            targetBuilder.UpdateTargetDetails(details);
+
+            Assert.Equal(firstCoin, details.FromCoin);
+            Assert.Equal(secondCoin, details.ToCoin);
+            var thirdGoal = details.Goal;
+            Assert.Equal(secondGoal * (1 + loopSettings.MinimalIncrease), thirdGoal);
         }
 
         [Fact]
@@ -179,11 +184,11 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
-            var status = new StatusInfo();
+            var details = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             var data = new Data(client, loopSettings);
-            var targetBuilder = new TargetBuilder(data, loopSettings, status);
+            var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
             client.Start();
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
@@ -191,10 +196,10 @@ namespace EtAlii.BinanceMagic.Tests
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             data.AddTransaction(firstTransaction);
             var cancellationToken = CancellationToken.None;
-            var target = targetBuilder.BuildTarget();
+            targetBuilder.UpdateTargetDetails(details);
             
             // Act.
-            var result = data.TryGetSituation(target, status, cancellationToken, out var situation);
+            var result = data.TryGetSituation(details, cancellationToken, out Situation situation);
 
             // Assert.
             Assert.True(result);
@@ -209,11 +214,11 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
             var program = new Program(programSettings);
-            var status = new StatusInfo();
+            var details = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator);
             var data = new Data(client, loopSettings);
-            var targetBuilder = new TargetBuilder(data, loopSettings, status);
+            var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
             client.Start();
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
@@ -223,10 +228,10 @@ namespace EtAlii.BinanceMagic.Tests
             data.AddTransaction(firstTransaction);
             data.AddTransaction(secondTransaction);
             var cancellationToken = CancellationToken.None;
-            var target = targetBuilder.BuildTarget();
+            targetBuilder.UpdateTargetDetails(details);
             
             // Act.
-            var result = data.TryGetSituation(target, status, cancellationToken, out var situation);
+            var result = data.TryGetSituation(details, cancellationToken, out Situation situation);
 
             // Assert.
             Assert.True(result);

@@ -15,17 +15,16 @@
         private readonly IClient _client;
         private static readonly object LockObject = new();
 
-        public StatusInfo Status => _status;
-        private readonly StatusInfo _status;
+        private readonly TradeDetails _details;
         
         public Loop(LoopSettings settings, IProgram program, IClient client)
         {
             _settings = settings;
             _client = client;
             _data = new Data(_client, settings);
-            _status = new StatusInfo();
-            _algorithm = new Algorithm(settings, _data, program, _status);
-            _targetBuilder = new TargetBuilder(_data, settings, _status);
+            _details = new TradeDetails();
+            _algorithm = new Algorithm(settings, _data, program, _details);
+            _targetBuilder = new TradeDetailsUpdater(_data, settings);
         }
         
         public void Stop()
@@ -58,36 +57,32 @@
 
         private void RunOnce(CancellationToken cancellationToken)
         {
-            var target = _targetBuilder.BuildTarget();
-            Status.FromCoin = target.Source;
-            Status.ToCoin = target.Destination;
-            Status.ReferenceCoin = _settings.ReferenceCoin;
-            Status.Result = "Found next target";
+            _targetBuilder.UpdateTargetDetails(_details);
             
-            var targetSucceeded = false;
+            var targetAchieved = false;
             var shouldDelay = false;
 
-            while (!targetSucceeded)
+            while (!targetAchieved)
             {
                 if (shouldDelay)
                 {
                     var nextCheck = DateTime.Now + _settings.SampleInterval;
-                    Status.NextCheck = nextCheck;
-                    Status.DumpToConsole();
+                    _details.NextCheck = nextCheck;
+                    _details.DumpToConsole();
                     Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
                 }
-                Status.NextCheck = DateTime.MinValue;
-                Status.Result = "Fetching current situation...";
+                _details.NextCheck = DateTime.MinValue;
+                _details.Result = "Fetching current situation...";
                 
-                if (!_data.TryGetSituation(target, _status, cancellationToken, out var situation))
+                if (!_data.TryGetSituation(_details, cancellationToken, out var situation))
                 {
                     shouldDelay = true;
                     continue;
                 }
                 
-                Status.Result = "Fetching exchange info...";
+                _details.Result = "Fetching exchange info...";
 
-                if (!_client.TryGetExchangeInfo(_status, cancellationToken, out var exchangeInfo))
+                if (!_client.TryGetExchangeInfo(_details, cancellationToken, out var exchangeInfo))
                 {
                     shouldDelay = true;
                     continue;
@@ -96,17 +91,17 @@
                 
                 if (situation.IsInitialCycle)
                 {
-                    targetSucceeded = HandleInitialCycle(cancellationToken, target, situation);
-                    shouldDelay = !targetSucceeded;
+                    targetAchieved = HandleInitialCycle(cancellationToken, situation);
+                    shouldDelay = !targetAchieved;
                     continue;
                 }
-                if(TryHandleNormalCycle(cancellationToken, target, situation, out targetSucceeded))
+                if(TryHandleNormalCycle(cancellationToken, situation, out targetAchieved))
                 {
-                    shouldDelay = !targetSucceeded;
+                    shouldDelay = !targetAchieved;
                     continue;
                 }
 
-                Status.Result = "No feasible transaction";
+                _details.Result = "No feasible transaction";
                 shouldDelay = true;
             }
         }
