@@ -3,7 +3,7 @@
     using System;
     using System.Linq;
 
-    public class TradeDetailsUpdater : ITargetBuilder
+    public class TradeDetailsUpdater : ITradeDetailsBuilder
     {
         private readonly IData _data;
         private readonly LoopSettings _settings;
@@ -39,14 +39,15 @@
             details.LastSuccess = lastTransaction?.Moment ?? DateTime.MinValue;
             details.Profit = previousProfit;
 
-            details.FromCoin = source;
-            details.ToCoin = destination;
+            details.SellCoin = source;
+            details.BuyCoin = destination;
             details.TransactionId = _data.Transactions.Count + 1;
             details.ReferenceCoin = _settings.ReferenceCoin;
-            details.Result = "Found next target";
 
             details.PreviousProfit = previousProfit;
             details.Goal = profit;
+            
+            details.Result = "Found next target";
         }
     }
 }

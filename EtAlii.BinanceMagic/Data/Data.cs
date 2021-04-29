@@ -45,53 +45,67 @@
         
         public bool TryGetSituation(TradeDetails details, CancellationToken cancellationToken, out Situation situation)
         {
-            if (!_client.TryGetPrice(details.FromCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourcePrice))
+            if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourcePrice))
             {
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetPrice(details.ToCoin, _settings.ReferenceCoin, details, cancellationToken, out var targetPrice))
+            if (!_client.TryGetPrice(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var targetPrice))
             {
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetTradeFees(details.FromCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourceMakerFee, out var _))
+            if (!_client.TryGetTradeFees(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourceMakerFee, out var _))
             {
                 situation = null;
                 return false;
             }
             
-            if (!_client.TryGetTradeFees(details.ToCoin, _settings.ReferenceCoin, details, cancellationToken, out var _, out var destinationTakerFee))
+            if (!_client.TryGetTradeFees(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var _, out var destinationTakerFee))
             {
                 situation = null;
                 return false;
             }
 
-            var lastSourcePurchase = FindLastPurchase(details.FromCoin);
+            if (!_client.TryGetTrend(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sellTrend))
+            {
+                situation = null;
+                return false;
+            }
+            if (!_client.TryGetTrend(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var buyTrend))
+            {
+                situation = null;
+                return false;
+            }
+
+
+            var lastSourcePurchase = FindLastPurchase(details.SellCoin);
             var sourceDelta = new Delta
             {
-                Coin = details.FromCoin,
+                Coin = details.SellCoin,
                 PastPrice = lastSourcePurchase?.Price ?? sourcePrice,
                 PastQuantity = lastSourcePurchase?.Quantity ?? 0,
                 PresentPrice = sourcePrice,
             };
 
-            var lastTargetSell = FindLastSell(details.ToCoin);
+            var lastTargetSell = FindLastSell(details.BuyCoin);
             var targetDelta = new Delta
             {
-                Coin = details.ToCoin,
+                Coin = details.BuyCoin,
                 PastPrice = lastTargetSell?.Price ?? targetPrice,
                 PastQuantity = lastTargetSell?.Quantity ?? 0,
                 PresentPrice = targetPrice
             };
             situation = new Situation
             {
-                Source =sourceDelta,
-                SourceSellFee = sourceMakerFee,
+                Source = sourceDelta,
+                SellFee = sourceMakerFee,
+                SellTrend = sellTrend,
                 Destination = targetDelta,
-                DestinationBuyFee = destinationTakerFee,
+                BuyFee = destinationTakerFee,
+                BuyTrend = buyTrend,
                 IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
             };
             

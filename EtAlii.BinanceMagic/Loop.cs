@@ -11,7 +11,7 @@
         private Task _task;
         private readonly IAlgorithm _algorithm;
         private readonly IData _data;
-        private readonly ITargetBuilder _targetBuilder;
+        private readonly ITradeDetailsBuilder _tradeDetailsBuilder;
         private readonly IClient _client;
         private static readonly object LockObject = new();
 
@@ -24,7 +24,7 @@
             _data = new Data(_client, settings);
             _details = new TradeDetails();
             _algorithm = new Algorithm(settings, _data, program, _details);
-            _targetBuilder = new TradeDetailsUpdater(_data, settings);
+            _tradeDetailsBuilder = new TradeDetailsUpdater(_data, settings);
         }
         
         public void Stop()
@@ -57,7 +57,7 @@
 
         private void RunOnce(CancellationToken cancellationToken)
         {
-            _targetBuilder.UpdateTargetDetails(_details);
+            _tradeDetailsBuilder.UpdateTargetDetails(_details);
             
             var targetAchieved = false;
             var shouldDelay = false;

@@ -155,24 +155,24 @@ namespace EtAlii.BinanceMagic.Tests
             targetBuilder.UpdateTargetDetails(details);
 
             // Assert.
-            Assert.Equal(firstCoin, details.FromCoin);
-            Assert.Equal(secondCoin, details.ToCoin);
+            Assert.Equal(firstCoin, details.SellCoin);
+            Assert.Equal(secondCoin, details.BuyCoin);
             var firstGoal = details.Goal;
             Assert.Equal(loopSettings.MinimalTargetProfit, firstGoal);
 
             data.AddTransaction(firstTransaction);
             targetBuilder.UpdateTargetDetails(details);
 
-            Assert.Equal(secondCoin, details.FromCoin);
-            Assert.Equal(firstCoin, details.ToCoin);
+            Assert.Equal(secondCoin, details.SellCoin);
+            Assert.Equal(firstCoin, details.BuyCoin);
             var secondGoal = details.Goal;
             Assert.Equal(firstGoal * (1 + loopSettings.MinimalIncrease), secondGoal);
 
             data.AddTransaction(secondTransaction);
             targetBuilder.UpdateTargetDetails(details);
 
-            Assert.Equal(firstCoin, details.FromCoin);
-            Assert.Equal(secondCoin, details.ToCoin);
+            Assert.Equal(firstCoin, details.SellCoin);
+            Assert.Equal(secondCoin, details.BuyCoin);
             var thirdGoal = details.Goal;
             Assert.Equal(secondGoal * (1 + loopSettings.MinimalIncrease), thirdGoal);
         }

@@ -1,6 +1,6 @@
 namespace EtAlii.BinanceMagic
 {
-    public interface ITargetBuilder
+    public interface ITradeDetailsBuilder
     {
         void UpdateTargetDetails(TradeDetails details);
     }

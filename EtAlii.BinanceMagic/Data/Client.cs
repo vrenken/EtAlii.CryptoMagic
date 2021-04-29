@@ -71,6 +71,22 @@
             return true;
         }
 
+        public bool TryGetTrend(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal trend)
+        {
+            var coinComparedToReference = $"{coin}{referenceCoin}"; 
+            var result = _client.Spot.Market.GetKlines(coinComparedToReference, KlineInterval.FiveMinutes, limit:1 , ct: cancellationToken);
+            if (result.Error != null)
+            {
+                details.Result = $"Failure fetching candlestick data for {coin}: {result.Error}";
+                trend = 0m;
+                return false;
+            }
+
+            var data = result.Data.Single();
+            trend = data.Close - data.Open;
+            return true;
+        }
+        
         public bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
         {
             var coinComparedToReference = $"{coin}{referenceCoin}"; 
