@@ -4,6 +4,7 @@
 
     public record LoopSettings
     {
+        public bool IsBackTest { get; init; } = false;
         public string TransactionsFileFormat { get; init; }  = "Transactions_{0}_{1}.txt";
         public string TrendsFileFormat { get; init; }  = "Trends_{0}_{1}.txt";
         public string[] AllowedCoins { get; init; }  = { "BTC", "BNB" }; // "ETH"
