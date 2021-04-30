@@ -199,15 +199,15 @@
 
             transaction = new Transaction
             {
-                From = new CoinSnapshot
+                From = new Coin
                 {
-                    Coin = sellAction.Coin,
+                    Symbol = sellAction.Coin,
                     Price = sellOrder.Data.QuoteQuantityFilled,
                     Quantity = sellOrder.Data.QuantityFilled
                 },
-                To = new CoinSnapshot
+                To = new Coin
                 {
-                    Coin = buyAction.Coin,
+                    Symbol = buyAction.Coin,
                     Price = buyOrder.Data.QuoteQuantityFilled,
                     Quantity = buyOrder.Data.QuantityFilled
                 },

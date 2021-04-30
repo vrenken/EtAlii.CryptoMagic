@@ -5,10 +5,10 @@
 
     public class TradeDetailsUpdater : ITradeDetailsBuilder
     {
-        private readonly IData _data;
-        private readonly LoopSettings _settings;
+        private readonly ICircularData _data;
+        private readonly CircularAlgorithmSettings _settings;
 
-        public TradeDetailsUpdater(IData data, LoopSettings settings)
+        public TradeDetailsUpdater(ICircularData data, CircularAlgorithmSettings settings)
         {
             _data = data;
             _settings = settings;
@@ -20,10 +20,10 @@
 
             var source = lastTransaction == null
                 ? _settings.AllowedCoins.First()
-                : lastTransaction.To.Coin;
+                : lastTransaction.To.Symbol;
             var destination = lastTransaction == null
                 ? _settings.AllowedCoins.Skip(1).First()
-                : lastTransaction.From.Coin;
+                : lastTransaction.From.Symbol;
 
             var profit = lastTransaction != null
                 ? lastTransaction.TotalProfit * (1 + _settings.MinimalIncrease)

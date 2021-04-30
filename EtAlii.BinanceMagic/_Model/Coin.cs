@@ -2,27 +2,27 @@
 {
     using System.IO;
 
-    public record CoinSnapshot
+    public record Coin
     {
-        public string Coin { get; init; }
+        public string Symbol { get; init; }
         public decimal Quantity { get; init; }
         public decimal Price { get; init; }
 
-        public static void Write(StreamWriter sw, CoinSnapshot coinSnapshot)
+        public static void Write(StreamWriter sw, Coin coin)
         {
-            sw.Write(coinSnapshot.Coin);
+            sw.Write(coin.Symbol);
             sw.Write("=");
-            sw.Write(coinSnapshot.Quantity);
+            sw.Write(coin.Quantity);
             sw.Write("=");
-            sw.Write(coinSnapshot.Price);
+            sw.Write(coin.Price);
         }
 
-        public static CoinSnapshot Read(string text)
+        public static Coin Read(string text)
         {
             var parts = text.Split("=");
-            return new CoinSnapshot
+            return new Coin
             {
-                Coin = parts[0],
+                Symbol = parts[0],
                 Quantity = decimal.Parse(parts[1]),
                 Price = decimal.Parse(parts[2]),
             };

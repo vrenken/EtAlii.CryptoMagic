@@ -3,21 +3,21 @@
     using System.Linq;
     using Binance.Net.Objects.Spot.MarketData;
 
-    public class Algorithm : IAlgorithm
+    public class CircularAlgorithm : ICircularAlgorithm
     {
-        private readonly LoopSettings _settings;
-        private readonly IData _data;
+        private readonly CircularAlgorithmSettings _settings;
+        private readonly ICircularData _data;
         private readonly IProgram _program;
         private readonly TradeDetails _details;
-        private readonly StatusWriter _statusWriter;
+        private readonly StatusProvider _statusProvider;
 
-        public Algorithm(LoopSettings settings, IData data, IProgram program, TradeDetails details, StatusWriter statusWriter)
+        public CircularAlgorithm(CircularAlgorithmSettings settings, ICircularData data, IProgram program, TradeDetails details, StatusProvider statusProvider)
         {
             _settings = settings;
             _data = data;
             _program = program;
             _details = details;
-            _statusWriter = statusWriter;
+            _statusProvider = statusProvider;
         }
 
         public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
@@ -41,7 +41,7 @@
             _details.TrendsAreNegative = _details.SellTrend < 0 || _details.BuyTrend > 0;
             _details.IsWorthIt = _details.SufficientProfit && _details.SellPriceIsAboveNotionalMinimum && _details.BuyPriceIsAboveNotionalMinimum && _details.TrendsAreNegative;
 
-            _statusWriter.Write(_details);
+            _statusProvider.RaiseChanged();
 
             _data.AddTrend(_details.Target, _details.SellPrice, _details.SellQuantity, _details.BuyPrice, _details.BuyQuantity, _details.Difference);
             
@@ -101,7 +101,7 @@
             }
             else
             {
-                if (previousTransaction.To.Coin != _details.SellCoin)
+                if (previousTransaction.To.Symbol != _details.SellCoin)
                 {
                     _program.HandleFail($"Previous initial transaction did not purchase {_details.SellCoin}");
                 }
@@ -128,7 +128,7 @@
             };
         }
 
-        private decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, LoopSettings loopSettings)//, CancellationToken cancellationToken)
+        private decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings)//, CancellationToken cancellationToken)
         {
             var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
             return symbol.MinNotionalFilter!.MinNotional;

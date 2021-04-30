@@ -3,13 +3,13 @@ namespace EtAlii.BinanceMagic
     using System.Collections.Generic;
     using System.Threading;
 
-    public interface IData
+    public interface ICircularData
     {
         IReadOnlyList<Transaction> Transactions { get; }
         
         void Load();
-        CoinSnapshot FindLastPurchase(string coin);
-        CoinSnapshot FindLastSell(string coin);
+        Coin FindLastPurchase(string coin);
+        Coin FindLastSell(string coin);
         bool TryGetSituation(TradeDetails status, CancellationToken cancellationToken, out Situation situation);
         void AddTransaction(Transaction transaction);
 

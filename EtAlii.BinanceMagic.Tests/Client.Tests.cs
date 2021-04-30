@@ -51,7 +51,7 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var status = new TradeDetails();
             var actionValidator = new ActionValidator();
@@ -77,7 +77,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, loopSettings.ReferenceCoin, status, cancellationToken, out var transaction);
+            client.TryConvert(sellAction, buyAction, algorithmSettings.ReferenceCoin, status, cancellationToken, out var transaction);
             
             // Assert.
             Assert.NotNull(transaction);

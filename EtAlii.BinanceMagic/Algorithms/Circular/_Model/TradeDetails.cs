@@ -41,7 +41,7 @@
             {
                 _result = value; 
                 LastCheck = DateTime. Now;
-                Updated?.Invoke(this);
+                Updated?.Invoke();
             }
         }
 
@@ -54,6 +54,6 @@
         public decimal PreviousProfit { get; set; }
         public decimal Goal { get; set; }
 
-        public event Action<TradeDetails> Updated;
+        public event System.Action Updated;
     }
 }

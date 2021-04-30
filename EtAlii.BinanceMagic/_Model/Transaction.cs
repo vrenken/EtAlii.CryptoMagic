@@ -6,8 +6,8 @@
     public record Transaction
     {
         public DateTime Moment { get; init; }
-        public CoinSnapshot From { get; init; }
-        public CoinSnapshot To { get; init; }
+        public Coin From { get; init; }
+        public Coin To { get; init; }
         
         public decimal TotalProfit { get; init; }
 
@@ -15,9 +15,9 @@
         {
             sw.Write(transaction.Moment);
             sw.Write("|");
-            CoinSnapshot.Write(sw, transaction.From);
+            Coin.Write(sw, transaction.From);
             sw.Write("|");
-            CoinSnapshot.Write(sw, transaction.To);
+            Coin.Write(sw, transaction.To);
             sw.Write("|");
             sw.Write(transaction.TotalProfit);
             sw.Write(Environment.NewLine);
@@ -30,8 +30,8 @@
             return new Transaction
             {
                 Moment = DateTime.Parse(parts[0]),
-                From = CoinSnapshot.Read(parts[1]),
-                To = CoinSnapshot.Read(parts[2]),
+                From = Coin.Read(parts[1]),
+                To = Coin.Read(parts[2]),
                 TotalProfit = decimal.Parse(parts[3])
             };
         }

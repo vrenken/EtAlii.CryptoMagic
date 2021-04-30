@@ -15,7 +15,8 @@ namespace EtAlii.BinanceMagic.Tests
                 PlaceTestOrders = true,
             };
         }
-        public LoopSettings CreateLoopSettings()
+
+        public CircularAlgorithmSettings CreateCircularAlgorithmSettings()
         {
             return new()
             {
@@ -27,15 +28,15 @@ namespace EtAlii.BinanceMagic.Tests
         {
             return new ()
             {
-                From = new CoinSnapshot
+                From = new Coin
                 {
-                    Coin = fromCoin,
+                    Symbol = fromCoin,
                     Price = fromPrice,
                     Quantity = fromQuantity,
                 },
-                To = new CoinSnapshot
+                To = new Coin
                 {
-                    Coin = toCoin,
+                    Symbol = toCoin,
                     Price = toPrice,
                     Quantity = toQuantity,
                 },
