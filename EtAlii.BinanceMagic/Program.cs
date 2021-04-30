@@ -26,22 +26,23 @@
 
             var allLoopSettings = new[]
             {
-                // new LoopSettings
-                // {
-                //     AllowedCoins = new []{ "BTC", "BNB" },
-                //     //InitialTransferFactor = 10.0m,
-                //     //MaxQuantityToTrade = 0.9m,
-                //     MinimalIncrease = 0.05m,
-                // },
-
                 new LoopSettings
                 {
-                    AllowedCoins = new []{ "BTC", "ZEN" },
-                    ReferenceCoin = "USDT",
+                    IsBackTest = true,
+                    AllowedCoins = new []{ "BTC", "BNB" },
                     //InitialTransferFactor = 10.0m,
                     //MaxQuantityToTrade = 0.9m,
                     MinimalIncrease = 0.05m,
                 },
+
+                // new LoopSettings
+                // {
+                //     AllowedCoins = new []{ "BTC", "ZEN" },
+                //     ReferenceCoin = "USDT",
+                //     //InitialTransferFactor = 10.0m,
+                //     //MaxQuantityToTrade = 0.9m,
+                //     MinimalIncrease = 0.05m,
+                // },
 
                 // new LoopSettings
                 // {
@@ -54,7 +55,7 @@
             var loops = allLoopSettings
                 .Select(loopSettings =>
                 {
-                    var loop = new Loop(loopSettings, program, client);
+                    var loop = CreateLoop(loopSettings, program, client);
                     loop.Start();
                     return loop;
                 })
@@ -78,6 +79,16 @@
 
             ConsoleOutput.WriteNegative(message);
             Environment.Exit(-1);
+        }
+
+        private static Loop CreateLoop(LoopSettings loopSettings, IProgram program, IClient realClient)
+        {
+            var client = loopSettings.IsBackTest
+                ? new BackTestClient(loopSettings.AllowedCoins)
+                : realClient;
+            var loop = new Loop(loopSettings, program, client);
+            loop.Start();
+            return loop;
         }
     }
 }
