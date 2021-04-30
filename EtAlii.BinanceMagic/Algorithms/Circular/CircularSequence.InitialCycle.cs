@@ -2,7 +2,7 @@
 {
     using System.Threading;
 
-    public partial class Loop
+    public partial class CircularSequence
     {
         private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation)
         {
@@ -10,7 +10,7 @@
             
             _details.Result = "Initial cycle";
 
-            _algorithm.ToInitialConversionActions(situation, out var initialSellAction, out var initialBuyAction);
+            _circularAlgorithm.ToInitialConversionActions(situation, out var initialSellAction, out var initialBuyAction);
             _details.Result = $"Preparing to sell {initialSellAction.Quantity} {initialSellAction.Coin} and buy {initialBuyAction.Quantity} {initialBuyAction.Coin}";
 
             if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, _details, cancellationToken, out var transaction))

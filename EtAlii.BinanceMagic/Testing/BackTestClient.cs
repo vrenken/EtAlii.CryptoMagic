@@ -83,11 +83,11 @@ namespace EtAlii.BinanceMagic
             transaction = new Transaction
             {
                 Moment = Moment,
-                From = new CoinSnapshot
+                From = new Coin
                 {
 
                 },
-                To = new CoinSnapshot
+                To = new Coin
                 {
 
                 }

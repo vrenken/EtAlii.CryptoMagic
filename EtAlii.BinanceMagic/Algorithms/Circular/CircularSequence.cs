@@ -1,65 +1,40 @@
-﻿namespace EtAlii.BinanceMagic
+namespace EtAlii.BinanceMagic
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
 
-    public partial class Loop
+    public partial class CircularSequence : ISequence
     {
-        private readonly LoopSettings _settings;
-        private readonly CancellationTokenSource _cancellationTokenSource = new();
-        private Task _task;
-        private readonly IAlgorithm _algorithm;
-        private readonly IData _data;
+        private readonly CircularAlgorithmSettings _settings;
+        private readonly ICircularAlgorithm _circularAlgorithm;
         private readonly ITradeDetailsBuilder _detailsBuilder;
-        private readonly IClient _client;
-        private static readonly object LockObject = new();
-
         private readonly TradeDetails _details;
-        private readonly StatusWriter _statusWriter;
-        
-        public Loop(LoopSettings settings, IProgram program, IClient client, IOutput output)
+        private readonly ICircularData _data;
+        private readonly IClient _client;
+
+        public IStatusProvider Status => _statusProvider;
+        private readonly StatusProvider _statusProvider;
+
+        public CircularSequence(CircularAlgorithmSettings settings, IProgram program, IClient client, IOutput output)
         {
             _settings = settings;
             _client = client;
-            _data = new Data(_client, settings, output);
-            _statusWriter = new StatusWriter(output);
+            _data = new CircularData(_client, settings, output);
             _details = new TradeDetails();
-            _details.Updated += _statusWriter.Write;
+            _statusProvider = new StatusProvider(output, _details);
+            _details.Updated += _statusProvider.Write;
             _detailsBuilder = new TradeDetailsUpdater(_data, settings);
             
-            _algorithm = new Algorithm(settings, _data, program, _details, _statusWriter);
+            _circularAlgorithm = new CircularAlgorithm(settings, _data, program, _details, _statusProvider);
+        }
+
+        public void Initialize()
+        {
+            _data.Load();
         }
         
-        public void Stop()
-        {
-            _cancellationTokenSource.Cancel();
-            _task.Wait();
-        }
-
-        public void Start()
-        {
-            _task = Task.Run(Run);
-        }
-
-        private void Run()
-        {
-            var cancellationToken = _cancellationTokenSource.Token;
-
-            _data.Load();
-
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                lock (LockObject)
-                {
-                    RunOnce(cancellationToken);
-                }
-            }
-
-            _client.Stop();
-        }
-
-        private void RunOnce(CancellationToken cancellationToken)
+        public void Run(CancellationToken cancellationToken)
         {
             _detailsBuilder.UpdateTargetDetails(_details);
             
@@ -72,7 +47,7 @@
                 {
                     var nextCheck = DateTime.Now + _settings.SampleInterval;
                     _details.NextCheck = nextCheck;
-                    _statusWriter.Write(_details);
+                    _statusProvider.RaiseChanged();
 
                     Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
                 }

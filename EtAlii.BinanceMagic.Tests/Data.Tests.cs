@@ -19,13 +19,13 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
             
             // Act.
-            var data = new Data(client, loopSettings, output);
+            var data = new CircularData(client, algorithmSettings, output);
             
             // Assert.
             Assert.NotNull(data);
@@ -37,11 +37,11 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
+            var data = new CircularData(client, algorithmSettings, output);
             
             // Act.
             data.Load();
@@ -56,14 +56,14 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
+            var data = new CircularData(client, algorithmSettings, output);
             data.Load();
-            var firstCoin = loopSettings.AllowedCoins.First();
-            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
+            var firstCoin = algorithmSettings.AllowedCoins.First();
+            var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
             var transaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             
             // Act.
@@ -79,14 +79,14 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
+            var data = new CircularData(client, algorithmSettings, output);
             data.Load();
-            var firstCoin = loopSettings.AllowedCoins.First();
-            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
+            var firstCoin = algorithmSettings.AllowedCoins.First();
+            var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             
@@ -97,11 +97,11 @@ namespace EtAlii.BinanceMagic.Tests
             // Assert.
             Assert.Equal(2, data.Transactions.Count);
             Assert.Equal(10, data.Transactions[0].TotalProfit);
-            Assert.Equal(firstCoin, data.Transactions[0].From.Coin);
-            Assert.Equal(secondCoin, data.Transactions[0].To.Coin);
+            Assert.Equal(firstCoin, data.Transactions[0].From.Symbol);
+            Assert.Equal(secondCoin, data.Transactions[0].To.Symbol);
             Assert.Equal(12, data.Transactions[1].TotalProfit);
-            Assert.Equal(secondCoin, data.Transactions[1].From.Coin);
-            Assert.Equal(firstCoin, data.Transactions[1].To.Coin);
+            Assert.Equal(secondCoin, data.Transactions[1].From.Symbol);
+            Assert.Equal(firstCoin, data.Transactions[1].To.Symbol);
         }
                         
         [Fact]
@@ -110,31 +110,31 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
+            var data = new CircularData(client, algorithmSettings, output);
             data.Load();
-            var firstCoin = loopSettings.AllowedCoins.First();
-            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
+            var firstCoin = algorithmSettings.AllowedCoins.First();
+            var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             data.AddTransaction(firstTransaction);
             data.AddTransaction(secondTransaction);
             
             // Act.
-            data = new Data(client, loopSettings, output);
+            data = new CircularData(client, algorithmSettings, output);
             data.Load();
 
             // Assert.
             Assert.Equal(2, data.Transactions.Count);
             Assert.Equal(10, data.Transactions[0].TotalProfit);
-            Assert.Equal(firstCoin, data.Transactions[0].From.Coin);
-            Assert.Equal(secondCoin, data.Transactions[0].To.Coin);
+            Assert.Equal(firstCoin, data.Transactions[0].From.Symbol);
+            Assert.Equal(secondCoin, data.Transactions[0].To.Symbol);
             Assert.Equal(12, data.Transactions[1].TotalProfit);
-            Assert.Equal(secondCoin, data.Transactions[1].From.Coin);
-            Assert.Equal(firstCoin, data.Transactions[1].To.Coin);
+            Assert.Equal(secondCoin, data.Transactions[1].From.Symbol);
+            Assert.Equal(firstCoin, data.Transactions[1].To.Symbol);
         }
 
         
@@ -144,18 +144,18 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
-            var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
+            var data = new CircularData(client, algorithmSettings, output);
+            var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             data.Load();
-            var firstCoin = loopSettings.AllowedCoins.First();
-            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
-            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, loopSettings.MinimalTargetProfit, 2);
-            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, loopSettings.MinimalTargetProfit * (1 + loopSettings.MinimalIncrease), 2);
+            var firstCoin = algorithmSettings.AllowedCoins.First();
+            var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
+            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, algorithmSettings.MinimalTargetProfit, 2);
+            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, algorithmSettings.MinimalTargetProfit * (1 + algorithmSettings.MinimalIncrease), 2);
             
             // Act.
             targetBuilder.UpdateTargetDetails(details);
@@ -164,7 +164,7 @@ namespace EtAlii.BinanceMagic.Tests
             Assert.Equal(firstCoin, details.SellCoin);
             Assert.Equal(secondCoin, details.BuyCoin);
             var firstGoal = details.Goal;
-            Assert.Equal(loopSettings.MinimalTargetProfit, firstGoal);
+            Assert.Equal(algorithmSettings.MinimalTargetProfit, firstGoal);
 
             data.AddTransaction(firstTransaction);
             targetBuilder.UpdateTargetDetails(details);
@@ -172,7 +172,7 @@ namespace EtAlii.BinanceMagic.Tests
             Assert.Equal(secondCoin, details.SellCoin);
             Assert.Equal(firstCoin, details.BuyCoin);
             var secondGoal = details.Goal;
-            Assert.Equal(firstGoal * (1 + loopSettings.MinimalIncrease), secondGoal);
+            Assert.Equal(firstGoal * (1 + algorithmSettings.MinimalIncrease), secondGoal);
 
             data.AddTransaction(secondTransaction);
             targetBuilder.UpdateTargetDetails(details);
@@ -180,7 +180,7 @@ namespace EtAlii.BinanceMagic.Tests
             Assert.Equal(firstCoin, details.SellCoin);
             Assert.Equal(secondCoin, details.BuyCoin);
             var thirdGoal = details.Goal;
-            Assert.Equal(secondGoal * (1 + loopSettings.MinimalIncrease), thirdGoal);
+            Assert.Equal(secondGoal * (1 + algorithmSettings.MinimalIncrease), thirdGoal);
         }
 
         [Fact]
@@ -189,17 +189,17 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
-            var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
+            var data = new CircularData(client, algorithmSettings, output);
+            var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             client.Start();
             data.Load();
-            var firstCoin = loopSettings.AllowedCoins.First();
-            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
+            var firstCoin = algorithmSettings.AllowedCoins.First();
+            var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             data.AddTransaction(firstTransaction);
             var cancellationToken = CancellationToken.None;
@@ -220,17 +220,17 @@ namespace EtAlii.BinanceMagic.Tests
             // Arrange.
             var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
-            var loopSettings = _context.CreateLoopSettings();
+            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output);
-            var data = new Data(client, loopSettings, output);
-            var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
+            var data = new CircularData(client, algorithmSettings, output);
+            var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             client.Start();
             data.Load();
-            var firstCoin = loopSettings.AllowedCoins.First();
-            var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
+            var firstCoin = algorithmSettings.AllowedCoins.First();
+            var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
             var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, 10, 2);
             var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, 12, 2);
             data.AddTransaction(firstTransaction);

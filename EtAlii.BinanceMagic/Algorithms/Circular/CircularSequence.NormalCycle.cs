@@ -3,13 +3,13 @@
     using System;
     using System.Threading;
 
-    public partial class Loop
+    public partial class CircularSequence
     {
         private bool TryHandleNormalCycle(CancellationToken cancellationToken, Situation situation, out bool targetSucceeded)
         {
             targetSucceeded = false;
 
-            if (_algorithm.TransactionIsWorthIt(situation, out var sellAction, out var buyAction))
+            if (_circularAlgorithm.TransactionIsWorthIt(situation, out var sellAction, out var buyAction))
             {
                 _details.Result = $"Preparing to sell {sellAction.Quantity} {sellAction.Coin} and buy {buyAction.Quantity} {buyAction.Coin}";
                 // ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
