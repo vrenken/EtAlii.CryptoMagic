@@ -17,17 +17,19 @@
         private readonly ProgramSettings _settings;
         private readonly IProgram _program;
         private readonly IActionValidator _validator;
+        private readonly IOutput _output;
 
-        public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator)
+        public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator, IOutput output)
         {
             _settings = settings;
             _program = program;
             _validator = actionValidator;
+            _output = output;
         }
 
         public void Start()
         {
-            ConsoleOutput.Write("Starting client...");
+            _output.WriteLine("Starting client...");
             
             var options = new BinanceClientOptions
             {
@@ -52,8 +54,7 @@
                 _program.HandleFail(message);
             }
             
-            ConsoleOutput.Write("Starting client: Done");
-            
+            _output.WriteLine("Starting client: Done");
         }
 
         public bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price)
@@ -228,9 +229,9 @@
         
         public void Stop()
         {
-            ConsoleOutput.Write("Stopping client...");
+            _output.WriteLine("Stopping client...");
             _client.Dispose();
-            ConsoleOutput.Write("Stopping client: Done");
+            _output.WriteLine("Stopping client: Done");
         }
     }
 }

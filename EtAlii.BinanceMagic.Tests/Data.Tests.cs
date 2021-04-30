@@ -17,14 +17,15 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Create()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
+            var client = new Client(programSettings, program, actionValidator, output);
             
             // Act.
-            var data = new Data(client, loopSettings);
+            var data = new Data(client, loopSettings, output);
             
             // Assert.
             Assert.NotNull(data);
@@ -34,12 +35,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Load_Empty()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             
             // Act.
             data.Load();
@@ -52,12 +54,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Add_Transaction()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
             var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
@@ -74,12 +77,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Add_Transactions()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
             var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
@@ -104,12 +108,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Add_Transactions_And_Reload()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
             var secondCoin = loopSettings.AllowedCoins.Skip(1).First();
@@ -119,7 +124,7 @@ namespace EtAlii.BinanceMagic.Tests
             data.AddTransaction(secondTransaction);
             
             // Act.
-            data = new Data(client, loopSettings);
+            data = new Data(client, loopSettings, output);
             data.Load();
 
             // Assert.
@@ -137,13 +142,14 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Build_Targets()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
             data.Load();
             var firstCoin = loopSettings.AllowedCoins.First();
@@ -181,13 +187,14 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Situation_Get()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
             client.Start();
             data.Load();
@@ -211,13 +218,14 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Situation_Get_After_InitialCycle()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
-            var data = new Data(client, loopSettings);
+            var client = new Client(programSettings, program, actionValidator, output);
+            var data = new Data(client, loopSettings, output);
             var targetBuilder = new TradeDetailsUpdater(data, loopSettings);
             client.Start();
             data.Load();

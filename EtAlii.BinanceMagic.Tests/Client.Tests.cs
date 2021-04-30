@@ -16,12 +16,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_Create()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var settings = _context.CreateProgramSettings();
-            var program = new Program(settings);
+            var program = new Program(settings, output);
             var actionValidator = new ActionValidator();
             
             // Act.
-            var client = new Client(settings, program, actionValidator);
+            var client = new Client(settings, program, actionValidator, output);
             
             // Assert.
             Assert.NotNull(client);
@@ -31,10 +32,11 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_Start()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var settings = _context.CreateProgramSettings();
-            var program = new Program(settings);
+            var program = new Program(settings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(settings, program, actionValidator);
+            var client = new Client(settings, program, actionValidator, output);
             
             // Act.
             client.Start();
@@ -47,12 +49,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_TryConvert()
         {
             // Arrange.
+            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var loopSettings = _context.CreateLoopSettings();
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
             var status = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
+            var client = new Client(programSettings, program, actionValidator, output);
             client.Start();
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();

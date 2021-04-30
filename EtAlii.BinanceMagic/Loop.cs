@@ -11,20 +11,24 @@
         private Task _task;
         private readonly IAlgorithm _algorithm;
         private readonly IData _data;
-        private readonly ITradeDetailsBuilder _tradeDetailsBuilder;
+        private readonly ITradeDetailsBuilder _detailsBuilder;
         private readonly IClient _client;
         private static readonly object LockObject = new();
 
         private readonly TradeDetails _details;
+        private readonly StatusWriter _statusWriter;
         
-        public Loop(LoopSettings settings, IProgram program, IClient client)
+        public Loop(LoopSettings settings, IProgram program, IClient client, IOutput output)
         {
             _settings = settings;
             _client = client;
-            _data = new Data(_client, settings);
+            _data = new Data(_client, settings, output);
+            _statusWriter = new StatusWriter(output);
             _details = new TradeDetails();
-            _algorithm = new Algorithm(settings, _data, program, _details);
-            _tradeDetailsBuilder = new TradeDetailsUpdater(_data, settings);
+            _details.Updated += _statusWriter.Write;
+            _detailsBuilder = new TradeDetailsUpdater(_data, settings);
+            
+            _algorithm = new Algorithm(settings, _data, program, _details, _statusWriter);
         }
         
         public void Stop()
@@ -57,7 +61,7 @@
 
         private void RunOnce(CancellationToken cancellationToken)
         {
-            _tradeDetailsBuilder.UpdateTargetDetails(_details);
+            _detailsBuilder.UpdateTargetDetails(_details);
             
             var targetAchieved = false;
             var shouldDelay = false;
@@ -68,7 +72,8 @@
                 {
                     var nextCheck = DateTime.Now + _settings.SampleInterval;
                     _details.NextCheck = nextCheck;
-                    _details.DumpToConsole();
+                    _statusWriter.Write(_details);
+
                     Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
                 }
                 _details.NextCheck = DateTime.MinValue;

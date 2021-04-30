@@ -6,22 +6,25 @@
     public class Program : IProgram
     {
         private readonly ProgramSettings _settings;
+        private readonly IOutput _output;
 
-        public Program(ProgramSettings settings)
+        public Program(ProgramSettings settings, IOutput output)
         {
             _settings = settings;
+            _output = output;
         }
         static void Main()
         {
+            var output = new ConsoleOutput();
             var programSettings = new ProgramSettings
             {
                 //PlaceTestOrders = true
             };
-            var program = new Program(programSettings);
+            var program = new Program(programSettings, output);
 
-            ConsoleOutput.Write("Starting Binance magic...");
+            output.WriteLine("Starting Binance magic...");
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator);
+            var client = new Client(programSettings, program, actionValidator, output);
             client.Start();
 
             var allLoopSettings = new[]
@@ -55,19 +58,19 @@
             var loops = allLoopSettings
                 .Select(loopSettings =>
                 {
-                    var loop = CreateLoop(loopSettings, program, client);
+                    var loop = CreateLoop(loopSettings, program, client, output);
                     loop.Start();
                     return loop;
                 })
                 .ToArray();
 
             Console.ReadLine();
-            ConsoleOutput.Write("Stopping Binance magic...");
+            output.WriteLine("Stopping Binance magic...");
             foreach (var loop in loops)
             {
                 loop.Stop();
             }
-            ConsoleOutput.Write("Stopping Binance magic: Done");
+            output.WriteLine("Stopping Binance magic: Done");
         }
         
         public void HandleFail(string message)
@@ -77,16 +80,16 @@
                 throw new InvalidOperationException(message);
             }
 
-            ConsoleOutput.WriteNegative(message);
+            _output.WriteLineNegative(message);
             Environment.Exit(-1);
         }
 
-        private static Loop CreateLoop(LoopSettings loopSettings, IProgram program, IClient realClient)
+        private static Loop CreateLoop(LoopSettings loopSettings, IProgram program, IClient realClient, IOutput output)
         {
             var client = loopSettings.IsBackTest
-                ? new BackTestClient(loopSettings.AllowedCoins)
+                ? new BackTestClient(loopSettings.AllowedCoins, loopSettings.ReferenceCoin, output)
                 : realClient;
-            var loop = new Loop(loopSettings, program, client);
+            var loop = new Loop(loopSettings, program, client, output);
             loop.Start();
             return loop;
         }
