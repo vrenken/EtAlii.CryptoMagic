@@ -51,7 +51,7 @@
                     Quantity = _details.SellQuantity,
                     UnitPrice = situation.Source.PresentPrice,
                     Price = _details.SellPrice,
-                    TransactionId = $"{_details.TransactionId:000000}_0_{_details.SellCoin}_{_details.BuyCoin}",
+                    TransactionId = $"{_details.Step:000000}_0_{_details.SellCoin}_{_details.BuyCoin}",
                 };
                 buyAction = new BuyAction
                 {
@@ -59,7 +59,7 @@
                     Quantity = _details.BuyQuantity,
                     UnitPrice = situation.Destination.PresentPrice,
                     Price = _details.BuyPrice,
-                    TransactionId = $"{_details.TransactionId:000000}_1_{_details.BuyCoin}_{_details.SellCoin}",
+                    TransactionId = $"{_details.Step:000000}_1_{_details.BuyCoin}_{_details.SellCoin}",
                 };
             }
             else
@@ -94,7 +94,7 @@
                     UnitPrice = sourcePrice,
                     Quantity = quantityToSell,
                     Price = sourcePrice * quantityToSell,
-                    TransactionId = $"{_details.TransactionId:000000}_0_{_details.SellCoin}_{_details.BuyCoin}",
+                    TransactionId = $"{_details.Step:000000}_0_{_details.SellCoin}_{_details.BuyCoin}",
                 };
             }
             else
@@ -111,7 +111,7 @@
                     Quantity = sourceQuantityToSell,
                     UnitPrice = sourcePrice,
                     Price = sourcePrice * sourceQuantityToSell,
-                    TransactionId = $"{_details.TransactionId:000000}_0_{_details.SellCoin}_{_details.BuyCoin}",
+                    TransactionId = $"{_details.Step:000000}_0_{_details.SellCoin}_{_details.BuyCoin}",
                 };
             }
 
@@ -122,7 +122,7 @@
                 UnitPrice = destinationPrice,
                 Quantity = quantityToBuy,
                 Price = destinationPrice * quantityToBuy,
-                TransactionId = $"{_details.TransactionId:000000}_1_{_details.BuyCoin}_{_details.SellCoin}",
+                TransactionId = $"{_details.Step:000000}_1_{_details.BuyCoin}_{_details.SellCoin}",
             };
         }
 

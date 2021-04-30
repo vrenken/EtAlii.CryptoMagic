@@ -25,13 +25,14 @@
         public decimal Difference { get; set; }
         public decimal Target { get; set; }
 
+        public int Step { get; set; }
+        
         public bool SufficientProfit { get; set; }
         public DateTime LastSuccess { get; set; } = DateTime.MinValue;
         public DateTime LastCheck { get; set; }
         public DateTime NextCheck { get; set; }
         
         public decimal Profit { get; set; }
-        public int TransactionId { get; set; }
 
         public string Result
         {
@@ -65,9 +66,9 @@
             WriteColumns($"Sell         : +{SellPrice:000.000000000} {ReferenceCoin}",                      $"Quantity : +{SellQuantity:000.000000000} {SellCoin}", $"Trend : {SellTrend:+000.000;-000.000}", SellPriceIsAboveNotionalMinimum ? InfoType.Positive : InfoType.Negative);
             WriteColumns($"Buy          : -{BuyPrice:000.000000000} {ReferenceCoin}",                       $"Quantity : -{BuyQuantity:000.000000000} {BuyCoin}", $"Trend : {BuyTrend:+000.000;-000.000}", BuyPriceIsAboveNotionalMinimum ? InfoType.Positive : InfoType.Negative);
             WriteColumns($"Diff         : {differencePrefix}{Difference:000.000000000} {ReferenceCoin}",    $"Target   : +{Target:000.000000000} {ReferenceCoin}", SufficientProfit ? InfoType.Positive : InfoType.Negative);
-            WriteColumns($"Last success : {lastSuccess}",                                                             $"Profit   : +{Profit:000.000000000} {ReferenceCoin}");
-            WriteColumns($"Last check   : {LastCheck:yyyy-MM-dd HH:mm:ss}",                                           $"Result   : {Result}");
-            WriteColumns($"Next check   : {nextCheck}", $"");
+            WriteColumns($"Last success : {lastSuccess}",                                                            $"Profit   : +{Profit:000.000000000} {ReferenceCoin}");
+            WriteColumns($"Last check   : {LastCheck:yyyy-MM-dd HH:mm:ss}",                                          $"Result   : {Result}");
+            WriteColumns($"Next check   : {nextCheck}",                                                              $"Step     : {Step}");
         }
 
         private void WriteColumns(string first, string second, InfoType firstInfoType = InfoType.Normal, InfoType secondInfoType = InfoType.Normal)

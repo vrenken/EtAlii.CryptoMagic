@@ -26,13 +26,23 @@
 
             var allLoopSettings = new[]
             {
+                // new LoopSettings
+                // {
+                //     AllowedCoins = new []{ "BTC", "BNB" },
+                //     //InitialTransferFactor = 10.0m,
+                //     //MaxQuantityToTrade = 0.9m,
+                //     MinimalIncrease = 0.05m,
+                // },
+
                 new LoopSettings
                 {
-                    AllowedCoins = new []{ "BTC", "BNB" },
+                    AllowedCoins = new []{ "BTC", "ZEN" },
+                    ReferenceCoin = "USDT",
                     //InitialTransferFactor = 10.0m,
                     //MaxQuantityToTrade = 0.9m,
                     MinimalIncrease = 0.05m,
                 },
+
                 // new LoopSettings
                 // {
                 //     AllowedCoins = new []{"ETH", "LTC"},

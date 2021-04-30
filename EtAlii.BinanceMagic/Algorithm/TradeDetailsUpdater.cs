@@ -41,9 +41,8 @@
 
             details.SellCoin = source;
             details.BuyCoin = destination;
-            details.TransactionId = _data.Transactions.Count + 1;
             details.ReferenceCoin = _settings.ReferenceCoin;
-
+            details.Step = _data.Transactions.Count + 1;
             details.PreviousProfit = previousProfit;
             details.Goal = profit;
             
