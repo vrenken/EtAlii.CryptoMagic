@@ -10,15 +10,17 @@
     {        
         private readonly IClient _client;
         private readonly LoopSettings _settings;
+        private readonly IOutput _output;
         public IReadOnlyList<Transaction> Transactions { get; } 
         private readonly List<Transaction> _transactions;
 
         private readonly string _trendsFile;
         private readonly string _transactionsFile;
-        public Data(IClient client, LoopSettings settings)
+        public Data(IClient client, LoopSettings settings, IOutput output)
         {
             _client = client;
             _settings = settings;
+            _output = output;
             _transactions = new List<Transaction>();
             Transactions = _transactions.AsReadOnly();
 
@@ -28,7 +30,7 @@
 
         public void Load()
         {
-            ConsoleOutput.Write("Loading previous transactions from file...");
+            _output.WriteLine("Loading previous transactions from file...");
             
             var lines = File.Exists(_transactionsFile) 
                 ? File.ReadAllLines(_transactionsFile) 
@@ -37,7 +39,7 @@
                 .Select(Transaction.Read)
                 .ToArray();
             _transactions.AddRange(transactions);
-            ConsoleOutput.Write("Loading previous transactions from file: Done");
+            _output.WriteLine("Loading previous transactions from file: Done");
         }
         
         public CoinSnapshot FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Coin == coin)?.To;

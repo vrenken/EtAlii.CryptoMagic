@@ -2,23 +2,25 @@ namespace EtAlii.BinanceMagic
 {
     using System;
 
-    public static class ConsoleOutput
+    public class ConsoleOutput : IOutput
     {
-        public static void Write(string line) => Console.WriteLine(line);
-        public static void WriteFormatted(string line, params object[] parameters)
+        public void Write(string text) => Console.Write(text);
+        
+        public void WriteLine(string line) => Console.WriteLine(line);
+        public void WriteLineFormatted(string line, params object[] parameters)
         {
             line = string.Format(line, parameters);
             Console.WriteLine(line);
         }
 
-        public static void WritePositive(string line)
+        public void WriteLinePositive(string line)
         {
             var color = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(line);
             Console.ForegroundColor = color;
         }
-        public static void WriteNegative(string line)
+        public void WriteLineNegative(string line)
         {
             var color = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;

@@ -9,4 +9,23 @@
       <PackageReference Include="Binance.Net" Version="6.13.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Testing\History\Binance_ADAUSDT_minute.csv" />
+      <Content Include="Testing\History\Binance_ADAUSDT_minute.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Testing\History\Binance_BNBUSDT_minute.csv" />
+      <Content Include="Testing\History\Binance_BNBUSDT_minute.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Testing\History\Binance_BTCUSDT_minute.csv" />
+      <Content Include="Testing\History\Binance_BTCUSDT_minute.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Algorithms\Oracle" />
+    </ItemGroup>
+
 </Project>
