@@ -13,7 +13,7 @@
             _circularAlgorithm.ToInitialConversionActions(situation, out var initialSellAction, out var initialBuyAction);
             _details.Result = $"Preparing to sell {initialSellAction.Quantity} {initialSellAction.Coin} and buy {initialBuyAction.Quantity} {initialBuyAction.Coin}";
 
-            if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, _details, cancellationToken, out var transaction))
+            if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, _details, cancellationToken, GetNow, out var transaction))
             {
                 transaction = transaction with {TotalProfit = 0m};
 

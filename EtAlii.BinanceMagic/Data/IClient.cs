@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic
 {
+    using System;
     using System.Threading;
     using Binance.Net.Objects.Spot.MarketData;
 
@@ -14,6 +15,6 @@ namespace EtAlii.BinanceMagic
 
         bool TryGetExchangeInfo(TradeDetails details, CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo);
         
-        bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out Transaction transaction);
+        bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction);
     }
 }
