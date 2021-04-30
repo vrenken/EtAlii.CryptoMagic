@@ -1,6 +1,5 @@
 ﻿namespace EtAlii.BinanceMagic
 {
-    using System;
     using System.Threading;
 
     public partial class CircularSequence
@@ -17,10 +16,10 @@
 
                 _details.Result = "Feasible transaction found - Converting...";
                 
-                if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, _details, cancellationToken, out var transaction))
+                if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, _details, cancellationToken, GetNow, out var transaction))
                 {
                     _details.Result = $"Transaction done!";
-                    _details.LastSuccess = DateTime.Now; 
+                    _details.LastSuccess = GetNow(); 
                     
                     _data.AddTransaction(transaction);
                     targetSucceeded = true;

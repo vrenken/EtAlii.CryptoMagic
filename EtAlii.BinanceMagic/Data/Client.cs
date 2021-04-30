@@ -119,7 +119,7 @@
             return true;
         }
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction)
         {
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
@@ -211,7 +211,7 @@
                     Price = buyOrder.Data.QuoteQuantityFilled,
                     Quantity = buyOrder.Data.QuantityFilled
                 },
-                Moment = DateTime.Now,
+                Moment = getNow(),
                 TotalProfit =  sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
             };
             return true;

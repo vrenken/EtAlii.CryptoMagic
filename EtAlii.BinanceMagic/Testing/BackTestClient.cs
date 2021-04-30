@@ -77,12 +77,11 @@ namespace EtAlii.BinanceMagic
         }
 
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction)
         {
-
             transaction = new Transaction
             {
-                Moment = Moment,
+                Moment = getNow(),
                 From = new Coin
                 {
 
@@ -96,8 +95,7 @@ namespace EtAlii.BinanceMagic
             return true;
         }
 
-        public bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details,
-            CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
+        public bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
         {
             makerFee = 0.1m;
             takerFee = 0.1m;

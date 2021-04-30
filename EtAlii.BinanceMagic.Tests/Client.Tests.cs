@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic.Tests
 {
+    using System;
     using System.Threading;
     using Xunit;
 
@@ -77,7 +78,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, algorithmSettings.ReferenceCoin, status, cancellationToken, out var transaction);
+            client.TryConvert(sellAction, buyAction, algorithmSettings.ReferenceCoin, status, cancellationToken, () => DateTime.Now, out var transaction);
             
             // Assert.
             Assert.NotNull(transaction);
