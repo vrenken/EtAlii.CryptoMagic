@@ -11,7 +11,6 @@ namespace EtAlii.BinanceMagic
     public class BackTestClient : IClient
     {
         private readonly IOutput _output;
-        private readonly IProgram _program;
         private readonly string[] _coins;
         private readonly string _referenceCoin;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
@@ -35,7 +34,14 @@ namespace EtAlii.BinanceMagic
             }
         }
         private DateTime _moment;
-        
+
+        public BackTestClient(string[] coins, string referenceCoin, IOutput output)
+        {
+            _coins = coins;
+            _referenceCoin = referenceCoin;
+            _output = output;
+        }
+
         public void Start()
         {
             _output.WriteLine("Starting back-testing client...");
@@ -60,22 +66,22 @@ namespace EtAlii.BinanceMagic
                     .OrderBy(moment => moment)
                     .First())
                 .ToArray();
-            var allSameStartTime = startTimes.All(time => time == startTimes[0]);
-            if(!allSameStartTime)            
-            {
-                _program.HandleFail("History files have different start times");
-            }
+            // var allSameStartTime = startTimes.All(time => time == startTimes[0]);
+            // if(!allSameStartTime)            
+            // {
+            //     _program.HandleFail("History files have different start times");
+            // }
 
             var endTimes = _history.Select(h => h.Value
                     .Select(e => e.To)
                     .OrderByDescending(moment => moment)
                     .First())
                 .ToArray();
-            var allSameEndTime = endTimes.All(time => time == endTimes[0]);
-            if(!allSameEndTime)            
-            {
-                _program.HandleFail("History files have different end times");
-            }
+            // var allSameEndTime = endTimes.All(time => time == endTimes[0]);
+            // if(!allSameEndTime)            
+            // {
+            //     _program.HandleFail("History files have different end times");
+            // }
 
             FirstRecordedHistory = startTimes[0];
             LastRecordedHistory = endTimes[0];
@@ -105,19 +111,11 @@ namespace EtAlii.BinanceMagic
         
         public void Stop() { }
         
-        public BackTestClient(string[] coins, string referenceCoin, IOutput output, IProgram program)
-        {
-            _coins = coins;
-            _referenceCoin = referenceCoin;
-            _output = output;
-            _program = program;
-        }
-
         private void SetCurrentHistory()
         {
             foreach (var history in _history)
             {
-                _currentHistory[history.Key] = history.Value.Single(entry => entry.From < Moment && Moment <= entry.To);
+                _currentHistory[history.Key] = history.Value.SingleOrDefault(entry => entry.From < Moment && Moment <= entry.To);
             }
         }
         
@@ -125,6 +123,12 @@ namespace EtAlii.BinanceMagic
         {
             var history = _currentHistory[coin];
 
+            if (history == null)
+            {
+                price = 0m;
+                return false;
+            }
+            
             price = (history.Close + history.Open) / 2m;
             return true;
         }
@@ -148,9 +152,8 @@ namespace EtAlii.BinanceMagic
                     Quantity = buyAction.Quantity
                 },
                 Moment = getNow(),
-                TotalProfit = sellAction.Price - buyAction.Price 
+                Profit = sellAction.Price - buyAction.Price 
             };
-            
             return true;
         }
 
@@ -169,6 +172,12 @@ namespace EtAlii.BinanceMagic
         public bool TryGetTrend(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal trend)
         {
             var history = _currentHistory[coin];
+
+            if (history == null)
+            {
+                trend = 0m;
+                return false;
+            }
 
             trend = history.Close - history.Open;
             return true;

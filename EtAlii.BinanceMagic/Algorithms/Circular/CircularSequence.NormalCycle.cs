@@ -14,15 +14,17 @@
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged();
 
-                // ConsoleOutput.WriteFormatted("Preparing sell action : {0, -40} (= {1})", $"{sellAction.Quantity} {sellAction.Coin}", $"{sellAction.Price} {_settings.ReferenceCoin}");
-                // ConsoleOutput.WriteFormatted("Preparing buy action  : {0, -40} (= {1})", $"{buyAction.Quantity} {buyAction.Coin}", $"{buyAction.Price} {_settings.ReferenceCoin}");
-
                 _details.Result = "Feasible transaction found - Converting...";
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged();
 
                 if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, _details, cancellationToken, _timeManager.GetNow, out var transaction))
                 {
+                    transaction = transaction with
+                    {
+                        Target = _details.Target,
+                    };
+
                     _details.Result = $"Transaction done!";
                     _details.LastCheck = _timeManager.GetNow();
                     _details.LastSuccess = _timeManager.GetNow(); 

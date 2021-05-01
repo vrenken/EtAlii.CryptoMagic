@@ -25,26 +25,18 @@
                 ? _settings.AllowedCoins.Skip(1).First()
                 : lastTransaction.From.Symbol;
 
-            var profit = lastTransaction != null
-                ? lastTransaction.TotalProfit * (1 + _settings.MinimalIncrease)
-                : _settings.MinimalTargetProfit;
-
-            profit = profit < _settings.MinimalTargetProfit 
-                ? _settings.MinimalTargetProfit 
-                : profit;
-
-            var previousProfit = lastTransaction?.TotalProfit ?? profit;
-            previousProfit = previousProfit > 0 ? previousProfit : profit; 
-
+            var target = lastTransaction != null
+                ? lastTransaction.Target * _settings.TargetIncrease
+                : _settings.InitialTarget;
+            
             details.LastSuccess = lastTransaction?.Moment ?? DateTime.MinValue;
-            details.Profit = previousProfit;
+            details.Profit = _data.GetTotalProfits();
 
             details.SellCoin = source;
             details.BuyCoin = destination;
             details.ReferenceCoin = _settings.ReferenceCoin;
             details.Step = _data.Transactions.Count + 1;
-            details.PreviousProfit = previousProfit;
-            details.Goal = profit;
+            details.Target = target;
             
             details.Result = "Found next target";
         }

@@ -31,35 +31,81 @@
 
             var allLoopSettings = new List<LoopSettings>();
 
-            // Back-test.
-            var allowedCoins = new[] {"BTC", "BNB"};
-            var referenceCoin = "USDT";
-            var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output, program);
-            var time = new BackTestTimeManager(backTestClient, program);
-            allLoopSettings.Add(new LoopSettings
-            {
-                Client = backTestClient,
-                Time = time,
-                Algorithm = new CircularAlgorithmSettings
-                {
-                    AllowedCoins = allowedCoins,
-                    ReferenceCoin = referenceCoin,
-                    MinimalIncrease = 0.05m,
-                }
-            });
-
-            // Live test 1
+            // // Back-test 1.
+            // var allowedCoins = new[] {"BTC", "XMR"};
+            // var referenceCoin = "USDT";
+            // var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            // var time = new BackTestTimeManager(backTestClient, program);
             // allLoopSettings.Add(new LoopSettings
             // {
-            //     Client = client,
-            //     Time = new RealtimeTimeManager(),
+            //     Client = backTestClient,
+            //     Time = time,
             //     Algorithm = new CircularAlgorithmSettings
             //     {
-            //         AllowedCoins = new[] {"BTC", "ZEN"},
-            //         ReferenceCoin = "USDT",
-            //         MinimalIncrease = 0.05m,
+            //         AllowedCoins = allowedCoins,
+            //         ReferenceCoin = referenceCoin,
+            //         TargetIncrease = 1.03m,
+            //         QuantityFactor = 10m,
+            //         InitialTarget = 0.5m,
+            //         WriteTrends = false,
             //     }
             // });
+
+            // Back-test 2.
+            // var allowedCoins = new[] {"LTC", "DASH"};
+            // var referenceCoin = "USDT";
+            // var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            // var time = new BackTestTimeManager(backTestClient, program);
+            // allLoopSettings.Add(new LoopSettings
+            // {
+            //     Client = backTestClient,
+            //     Time = time,
+            //     Algorithm = new CircularAlgorithmSettings
+            //     {
+            //         AllowedCoins = allowedCoins,
+            //         ReferenceCoin = referenceCoin,
+            //         TargetIncrease = 1.05m,
+            //         InitialTarget = 0.5m,
+            //         WriteTrends = false,
+            //     }
+            // });
+
+            // Back-test 3.
+            // var allowedCoins = new[] {"BTC", "ETH"};
+            // var referenceCoin = "USDT";
+            // var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            // var time = new BackTestTimeManager(backTestClient, program);
+            // allLoopSettings.Add(new LoopSettings
+            // {
+            //     Client = backTestClient,
+            //     Time = time,
+            //     Algorithm = new CircularAlgorithmSettings
+            //     {
+            //         AllowedCoins = allowedCoins,
+            //         ReferenceCoin = referenceCoin,
+            //         TargetIncrease = 1.05m,
+            //         InitialTarget = 0.5m,
+            //         WriteTrends = false,
+            //     }
+            // });
+
+                
+            // Live test 1
+            allLoopSettings.Add(new LoopSettings
+            {
+                Client = client,
+                Time = new RealtimeTimeManager(),
+                Algorithm = new CircularAlgorithmSettings
+                {
+                    AllowedCoins = new[] {"BTC", "BNB"},
+                    ReferenceCoin = "USDT",
+                    TargetIncrease = 1.03m,
+                    InitialTarget = 0.5m,
+                    QuantityFactor = 10m,
+                    SampleInterval = TimeSpan.FromMinutes(1),
+                    WriteTrends = false,
+                }
+            });
 
             // Live test 2
             // allLoopSettings.Add(new LoopSettings
@@ -78,7 +124,7 @@
 
             void OnStatusChanged(StatusInfo statusInfo)
             {
-                if (statusInfo.HasFlag(StatusInfo.Important))
+                //if (statusInfo.HasFlag(StatusInfo.Important))
                 {
                     Console.Clear();
 
@@ -119,6 +165,7 @@
         public void HandleFinish(string message)
         {
             _output.WriteLine(message);
+            Console.ReadLine();
             Environment.Exit(-1);
         }
 

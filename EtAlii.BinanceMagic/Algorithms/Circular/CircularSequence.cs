@@ -51,7 +51,7 @@ namespace EtAlii.BinanceMagic
                 {
                     _details.NextCheck = _timeManager.GetNow() + _settings.SampleInterval;
 
-                    var isTransition = _details.NextCheck.Day != _details.LastCheck.Day;
+                    var isTransition = _details.NextCheck.Hour != _details.LastCheck.Hour;
                     _statusProvider.RaiseChanged(isTransition ? StatusInfo.Important : StatusInfo.Normal);
 
                     _timeManager.Wait(_settings.SampleInterval, cancellationToken);

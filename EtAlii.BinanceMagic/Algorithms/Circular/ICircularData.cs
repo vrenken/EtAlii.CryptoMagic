@@ -10,6 +10,7 @@ namespace EtAlii.BinanceMagic
         void Load();
         Coin FindLastPurchase(string coin);
         Coin FindLastSell(string coin);
+        decimal GetTotalProfits();
         bool TryGetSituation(TradeDetails status, CancellationToken cancellationToken, out Situation situation);
         void AddTransaction(Transaction transaction);
 

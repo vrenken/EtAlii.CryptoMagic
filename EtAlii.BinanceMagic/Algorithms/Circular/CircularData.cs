@@ -44,7 +44,11 @@
         
         public Coin FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Symbol == coin)?.To;
         public Coin FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Symbol == coin)?.From;
-        
+
+        public decimal GetTotalProfits()
+        {
+            return _transactions.Sum(t => t.Profit);
+        }
         public bool TryGetSituation(TradeDetails details, CancellationToken cancellationToken, out Situation situation)
         {
             if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourcePrice))

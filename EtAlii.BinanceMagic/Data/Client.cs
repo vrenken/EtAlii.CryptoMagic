@@ -221,7 +221,7 @@
                     Quantity = buyOrder.Data.QuantityFilled
                 },
                 Moment = getNow(),
-                TotalProfit = sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
+                Profit = sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
             };
             return true;
         }
