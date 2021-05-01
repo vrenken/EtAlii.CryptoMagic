@@ -12,7 +12,6 @@ namespace EtAlii.BinanceMagic.Tests
             return new()
             {
                 IsTest = true,
-                PlaceTestOrders = true,
             };
         }
 

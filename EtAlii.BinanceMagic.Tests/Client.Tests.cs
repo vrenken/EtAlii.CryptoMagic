@@ -23,7 +23,10 @@ namespace EtAlii.BinanceMagic.Tests
             var actionValidator = new ActionValidator();
             
             // Act.
-            var client = new Client(settings, program, actionValidator, output);
+            var client = new Client(settings, program, actionValidator, output)
+            {
+                PlaceTestOrders = true
+            };
             
             // Assert.
             Assert.NotNull(client);
@@ -37,7 +40,10 @@ namespace EtAlii.BinanceMagic.Tests
             var settings = _context.CreateProgramSettings();
             var program = new Program(settings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(settings, program, actionValidator, output);
+            var client = new Client(settings, program, actionValidator, output)
+            {
+                PlaceTestOrders = true
+            };
             
             // Act.
             client.Start();
@@ -56,7 +62,10 @@ namespace EtAlii.BinanceMagic.Tests
             var program = new Program(programSettings, output);
             var status = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output);
+            var client = new Client(programSettings, program, actionValidator, output)
+            {
+                PlaceTestOrders = true
+            };
             client.Start();
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();

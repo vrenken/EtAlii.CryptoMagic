@@ -2,8 +2,8 @@
 {
     public class LoopSettings
     {
-        public bool IsBackTest { get; init; }
-        
+        public IClient Client { get; init; }
+        public ITimeManager Time { get; init; }
         public IAlgorithmSettings Algorithm { get; init; }
     }
 }

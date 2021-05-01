@@ -19,6 +19,8 @@
         private readonly IActionValidator _validator;
         private readonly IOutput _output;
 
+        public bool PlaceTestOrders { get; init; }
+
         public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator, IOutput output)
         {
             _settings = settings;
@@ -148,7 +150,7 @@
             var sellCoin = $"{sellAction.Coin}{referenceCoin}";
 
             // ReSharper disable ExpressionIsAlwaysNull
-            var sellOrder = _settings.PlaceTestOrders
+            var sellOrder = PlaceTestOrders
                 ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.Price, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
                 : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.Price, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
@@ -160,7 +162,7 @@
                 return false;
             }
 
-            var isSold = _settings.PlaceTestOrders
+            var isSold = PlaceTestOrders
                 ? sellOrder.Data.Status == OrderStatus.New
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
@@ -173,7 +175,7 @@
             var buyCoin = $"{buyAction.Coin}{referenceCoin}";
 
             // ReSharper disable ExpressionIsAlwaysNull
-            var buyOrder = _settings.PlaceTestOrders
+            var buyOrder = PlaceTestOrders
                 ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.Price, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
                 : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.Price, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
@@ -186,7 +188,7 @@
                 return false;
             }
 
-            var isBought = _settings.PlaceTestOrders
+            var isBought = PlaceTestOrders
                 ? buyOrder.Data.Status == OrderStatus.New
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
