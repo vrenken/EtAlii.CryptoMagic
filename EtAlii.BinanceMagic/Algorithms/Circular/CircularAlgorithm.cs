@@ -1,21 +1,27 @@
 ﻿namespace EtAlii.BinanceMagic
 {
     using System.Linq;
-    using Binance.Net.Objects.Spot.MarketData;
 
     public class CircularAlgorithm : ICircularAlgorithm
     {
         private readonly CircularAlgorithmSettings _settings;
         private readonly ICircularData _data;
         private readonly IProgram _program;
+        private readonly IClient _client;
         private readonly TradeDetails _details;
         private readonly StatusProvider _statusProvider;
 
-        public CircularAlgorithm(CircularAlgorithmSettings settings, ICircularData data, IProgram program, TradeDetails details, StatusProvider statusProvider)
+        public CircularAlgorithm(
+            CircularAlgorithmSettings settings, 
+            ICircularData data, 
+            IProgram program,
+            IClient client,
+            TradeDetails details, StatusProvider statusProvider)
         {
             _settings = settings;
             _data = data;
             _program = program;
+            _client = client;
             _details = details;
             _statusProvider = statusProvider;
         }
@@ -33,8 +39,8 @@
             _details.SufficientProfit = _details.SellPrice - _details.BuyPrice > _details.Target;
             _details.Difference = _details.SellPrice - _details.BuyPrice;
 
-            _details.SellQuantityMinimum = GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
-            _details.BuyQuantityMinimum = GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+            _details.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
+            _details.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
             _details.SellPriceIsAboveNotionalMinimum = _details.SellPrice > _details.SellQuantityMinimum;
             _details.BuyPriceIsAboveNotionalMinimum = _details.BuyPrice > _details.BuyQuantityMinimum;
 
@@ -77,10 +83,10 @@
         {
             var lastPurchaseForSource = _data.FindLastPurchase(_details.SellCoin);
             var quantityToSell = lastPurchaseForSource == null
-                ? (1 / situation.Source.PresentPrice) * GetMinimalQuantity(_details.SellCoin, situation.ExchangeInfo, _settings)
+                ? (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(_details.SellCoin, situation.ExchangeInfo, _settings)
                 : lastPurchaseForSource.Quantity;
 
-            var quantityToBuy = (1 / situation.Destination.PresentPrice) * GetMinimalQuantity(_details.BuyCoin, situation.ExchangeInfo, _settings);
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(_details.BuyCoin, situation.ExchangeInfo, _settings);
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
@@ -126,12 +132,6 @@
                 Price = destinationPrice * quantityToBuy,
                 TransactionId = $"{_details.Step:000000}_1_{_details.BuyCoin}_{_details.SellCoin}",
             };
-        }
-
-        private decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings)//, CancellationToken cancellationToken)
-        {
-            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
-            return symbol.MinNotionalFilter!.MinNotional;
         }
     }
 }

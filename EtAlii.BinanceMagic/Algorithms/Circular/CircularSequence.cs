@@ -28,7 +28,7 @@ namespace EtAlii.BinanceMagic
             _details = new TradeDetails();
             _statusProvider = new StatusProvider(output, _details);
             _detailsBuilder = new TradeDetailsUpdater(_data, settings);
-            _circularAlgorithm = new CircularAlgorithm(settings, _data, program, _details, _statusProvider);
+            _circularAlgorithm = new CircularAlgorithm(settings, _data, program, client, _details, _statusProvider);
         }
 
         public void Initialize()
@@ -49,9 +49,10 @@ namespace EtAlii.BinanceMagic
             {
                 if (shouldDelay)
                 {
-                    var nextCheck = _timeManager.GetNow() + _settings.SampleInterval;
-                    _details.NextCheck = nextCheck;
-                    _statusProvider.RaiseChanged();
+                    _details.NextCheck = _timeManager.GetNow() + _settings.SampleInterval;
+
+                    var isTransition = _details.NextCheck.Day != _details.LastCheck.Day;
+                    _statusProvider.RaiseChanged(isTransition ? StatusInfo.Important : StatusInfo.Normal);
 
                     _timeManager.Wait(_settings.SampleInterval, cancellationToken);
                 }

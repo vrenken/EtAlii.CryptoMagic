@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -15,11 +16,25 @@ namespace EtAlii.BinanceMagic
         private readonly string _referenceCoin;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
 
+        private readonly Dictionary<string, HistoryEntry> _currentHistory = new();
+        
         public TimeSpan Interval { get; } = TimeSpan.FromMinutes(1);
 
         public DateTime FirstRecordedHistory { get; private set; }
         public DateTime LastRecordedHistory { get; private set; }
-        public DateTime Moment { get; set; }
+        
+        public DateTime Moment { get => _moment;
+            set
+            {
+                var changed = _moment != value; 
+                _moment = value;
+                if (changed)
+                {
+                    SetCurrentHistory();
+                }
+            }
+        }
+        private DateTime _moment;
         
         public void Start()
         {
@@ -38,16 +53,6 @@ namespace EtAlii.BinanceMagic
                     .Select(ToHistoryEntry)
                     .Reverse()
                     .ToArray();
-            }
-
-            var lengths = _history
-                .Select(h => h.Value.Length)
-                .ToArray();
-
-            var allSameLength = lengths.All(l => l == lengths[0]);
-            if (!allSameLength)
-            {
-                _program.HandleFail("History files have different lengths");
             }
 
             var startTimes = _history.Select(h => h.Value
@@ -85,7 +90,7 @@ namespace EtAlii.BinanceMagic
                 .Split(',')
                 .ToArray();
 
-            var moment = DateTime.Parse(items[1]);
+            var moment = DateTime.ParseExact(items[1], "yyyy-MM-dd HH:mm:ss", DateTimeFormatInfo.InvariantInfo);
             return new HistoryEntry
             {
                 To = moment,
@@ -107,11 +112,19 @@ namespace EtAlii.BinanceMagic
             _output = output;
             _program = program;
         }
+
+        private void SetCurrentHistory()
+        {
+            foreach (var history in _history)
+            {
+                _currentHistory[history.Key] = history.Value.Single(entry => entry.From < Moment && Moment <= entry.To);
+            }
+        }
         
         public bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price)
         {
-            var history = _history[coin].Single(entry => entry.From <= Moment && Moment <= entry.To);
-            
+            var history = _currentHistory[coin];
+
             price = (history.Close + history.Open) / 2m;
             return true;
         }
@@ -121,18 +134,29 @@ namespace EtAlii.BinanceMagic
         {
             transaction = new Transaction
             {
-                Moment = getNow(),
                 From = new Coin
                 {
+                    Symbol = sellAction.Coin,
+                    Price = sellAction.Price,
+                    Quantity = sellAction.Quantity
 
                 },
                 To = new Coin
                 {
-
-                }
+                    Symbol = buyAction.Coin,
+                    Price = buyAction.Price,
+                    Quantity = buyAction.Quantity
+                },
+                Moment = getNow(),
+                TotalProfit = sellAction.Price - buyAction.Price 
             };
             
             return true;
+        }
+
+        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings)
+        {
+            return 10m;
         }
 
         public bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
@@ -144,7 +168,9 @@ namespace EtAlii.BinanceMagic
 
         public bool TryGetTrend(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal trend)
         {
-            trend = 0m;            
+            var history = _currentHistory[coin];
+
+            trend = history.Close - history.Open;
             return true;
         }
 

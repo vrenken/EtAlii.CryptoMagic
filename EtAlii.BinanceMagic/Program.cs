@@ -32,34 +32,34 @@
             var allLoopSettings = new List<LoopSettings>();
 
             // Back-test.
-            // var allowedCoins = new[] {"BTC", "BNB"};
-            // var referenceCoin = "USDT";
-            // var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output, program);
-            // var time = new BackTestTimeManager(backTestClient);
-            // allLoopSettings.Add(new LoopSettings
-            // {
-            //     Client = backTestClient,
-            //     Time = time,
-            //     Algorithm = new CircularAlgorithmSettings
-            //     {
-            //         AllowedCoins = allowedCoins,
-            //         ReferenceCoin = referenceCoin,
-            //         MinimalIncrease = 0.05m,
-            //     }
-            // });
-
-            // Live test 1
+            var allowedCoins = new[] {"BTC", "BNB"};
+            var referenceCoin = "USDT";
+            var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output, program);
+            var time = new BackTestTimeManager(backTestClient, program);
             allLoopSettings.Add(new LoopSettings
             {
-                Client = client,
-                Time = new RealtimeTimeManager(),
+                Client = backTestClient,
+                Time = time,
                 Algorithm = new CircularAlgorithmSettings
                 {
-                    AllowedCoins = new[] {"BTC", "ZEN"},
-                    ReferenceCoin = "USDT",
+                    AllowedCoins = allowedCoins,
+                    ReferenceCoin = referenceCoin,
                     MinimalIncrease = 0.05m,
                 }
             });
+
+            // Live test 1
+            // allLoopSettings.Add(new LoopSettings
+            // {
+            //     Client = client,
+            //     Time = new RealtimeTimeManager(),
+            //     Algorithm = new CircularAlgorithmSettings
+            //     {
+            //         AllowedCoins = new[] {"BTC", "ZEN"},
+            //         ReferenceCoin = "USDT",
+            //         MinimalIncrease = 0.05m,
+            //     }
+            // });
 
             // Live test 2
             // allLoopSettings.Add(new LoopSettings
@@ -73,16 +73,19 @@
             // });
 
             var loops = allLoopSettings
-                .Select(ls => CreateLoop(ls, program, client, output))
+                .Select(ls => CreateLoop(ls, program, output))
                 .ToArray();
 
-            void OnStatusChanged()
+            void OnStatusChanged(StatusInfo statusInfo)
             {
-                Console.Clear();
-
-                foreach (var loop in loops)
+                if (statusInfo.HasFlag(StatusInfo.Important))
                 {
-                    loop.Status.Write();
+                    Console.Clear();
+
+                    foreach (var loop in loops)
+                    {
+                        loop.Status.Write();
+                    }
                 }
             }
             foreach (var loop in loops)
@@ -113,9 +116,15 @@
             _output.WriteLineNegative(message);
             Environment.Exit(-1);
         }
-
-        private static Loop CreateLoop(LoopSettings loopSettings, IProgram program, IClient client, IOutput output)
+        public void HandleFinish(string message)
         {
+            _output.WriteLine(message);
+            Environment.Exit(-1);
+        }
+
+        private static Loop CreateLoop(LoopSettings loopSettings, IProgram program, IOutput output)
+        {
+            var client = loopSettings.Client;
             if (client is not Client)
             {
                 client.Start();

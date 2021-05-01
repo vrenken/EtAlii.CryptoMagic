@@ -7,7 +7,7 @@
         private readonly IOutput _output;
         private readonly TradeDetails _details;
 
-        public event System.Action Changed;
+        public event Action<StatusInfo> Changed;
         
         public StatusProvider(IOutput output, TradeDetails details)
         {
@@ -15,7 +15,7 @@
             _details = details;
         }
 
-        public void RaiseChanged() => Changed?.Invoke();
+        public void RaiseChanged(StatusInfo statusInfo = StatusInfo.Normal) => Changed?.Invoke(statusInfo);
         
         public void Write()
         {
