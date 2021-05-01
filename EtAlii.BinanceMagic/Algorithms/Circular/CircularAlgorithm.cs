@@ -28,19 +28,18 @@
 
         public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            // TODO: This _details.Goal and _details.Target don't match.
-            _details.Target = _details.Goal / 15m; 
+            _details.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
+            _details.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+
             _details.SellQuantity = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
             _details.SellPrice = situation.Source.PresentPrice * _details.SellQuantity;
             _details.SellTrend = situation.SellTrend;
-            _details.BuyQuantity = _details.Goal / situation.Destination.PresentPrice * _settings.MaxQuantityToTrade;
+            _details.BuyQuantity = ((_details.BuyQuantityMinimum * _settings.QuantityFactor) / situation.Destination.PresentPrice) * _settings.MaxQuantityToTrade;
             _details.BuyPrice = _details.BuyQuantity * situation.Destination.PresentPrice;
             _details.BuyTrend = situation.BuyTrend;
             _details.SufficientProfit = _details.SellPrice - _details.BuyPrice > _details.Target;
             _details.Difference = _details.SellPrice - _details.BuyPrice;
 
-            _details.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
-            _details.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
             _details.SellPriceIsAboveNotionalMinimum = _details.SellPrice > _details.SellQuantityMinimum;
             _details.BuyPriceIsAboveNotionalMinimum = _details.BuyPrice > _details.BuyQuantityMinimum;
 
@@ -49,7 +48,10 @@
 
             _statusProvider.RaiseChanged();
 
-            _data.AddTrend(_details.Target, _details.SellPrice, _details.SellQuantity, _details.BuyPrice, _details.BuyQuantity, _details.Difference);
+            if (_settings.WriteTrends)
+            {
+                _data.AddTrend(_details.Target, _details.SellPrice, _details.SellQuantity, _details.BuyPrice, _details.BuyQuantity, _details.Difference);
+            }
             
             if (_details.IsWorthIt)
             {
@@ -90,8 +92,8 @@
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
-            quantityToBuy = quantityToBuy * _settings.NotionalMinCorrection * _settings.InitialBuyFactor;
-            quantityToSell = quantityToSell * _settings.NotionalMinCorrection;// * _settings.InitialSellFactor;
+            quantityToBuy = quantityToBuy * _settings.NotionalMinCorrection * _settings.QuantityFactor;
+            quantityToSell = quantityToSell * _settings.NotionalMinCorrection * _settings.QuantityFactor;
 
             var previousTransaction = _data.Transactions.LastOrDefault();
             if (previousTransaction == null)

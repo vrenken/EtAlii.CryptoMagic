@@ -39,9 +39,5 @@
         public bool Error { get; set; }
 
         public bool IsWorthIt { get; set; }
-
-        // TBD:
-        public decimal PreviousProfit { get; set; }
-        public decimal Goal { get; set; }
     }
 }

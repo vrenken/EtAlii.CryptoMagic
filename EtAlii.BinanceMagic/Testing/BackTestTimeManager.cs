@@ -20,7 +20,7 @@ namespace EtAlii.BinanceMagic
         {
             _client.Moment += _client.Interval;
 
-            //Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken).Wait(cancellationToken);
+            //Task.Delay(TimeSpan.FromSeconds(10), cancellationToken).Wait(cancellationToken);
             if (_client.Moment > _client.LastRecordedHistory)
             {
                 _program.HandleFinish("Back-test completed");

@@ -19,9 +19,12 @@
 
             if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, _details, cancellationToken, _timeManager.GetNow, out var transaction))
             {
-                transaction = transaction with {TotalProfit = 0m};
+                transaction = transaction with
+                {
+                    Target = _details.Target,
+                    Profit = 0m
+                };
 
-                _details.Profit = 0;
                 _details.Result = "Transaction done";
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged(StatusInfo.Important);

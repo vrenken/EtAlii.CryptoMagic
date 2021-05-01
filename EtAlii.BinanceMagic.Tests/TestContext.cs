@@ -40,7 +40,7 @@ namespace EtAlii.BinanceMagic.Tests
                     Quantity = toQuantity,
                 },
                 Moment = DateTime.Now,
-                TotalProfit = totalProfit,
+                Profit = totalProfit,
             };
         }
     }

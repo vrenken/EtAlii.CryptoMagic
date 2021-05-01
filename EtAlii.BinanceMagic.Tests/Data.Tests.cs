@@ -108,10 +108,10 @@ namespace EtAlii.BinanceMagic.Tests
 
             // Assert.
             Assert.Equal(2, data.Transactions.Count);
-            Assert.Equal(10, data.Transactions[0].TotalProfit);
+            Assert.Equal(10, data.Transactions[0].Profit);
             Assert.Equal(firstCoin, data.Transactions[0].From.Symbol);
             Assert.Equal(secondCoin, data.Transactions[0].To.Symbol);
-            Assert.Equal(12, data.Transactions[1].TotalProfit);
+            Assert.Equal(12, data.Transactions[1].Profit);
             Assert.Equal(secondCoin, data.Transactions[1].From.Symbol);
             Assert.Equal(firstCoin, data.Transactions[1].To.Symbol);
         }
@@ -144,10 +144,10 @@ namespace EtAlii.BinanceMagic.Tests
 
             // Assert.
             Assert.Equal(2, data.Transactions.Count);
-            Assert.Equal(10, data.Transactions[0].TotalProfit);
+            Assert.Equal(10, data.Transactions[0].Profit);
             Assert.Equal(firstCoin, data.Transactions[0].From.Symbol);
             Assert.Equal(secondCoin, data.Transactions[0].To.Symbol);
-            Assert.Equal(12, data.Transactions[1].TotalProfit);
+            Assert.Equal(12, data.Transactions[1].Profit);
             Assert.Equal(secondCoin, data.Transactions[1].From.Symbol);
             Assert.Equal(firstCoin, data.Transactions[1].To.Symbol);
         }
@@ -172,8 +172,8 @@ namespace EtAlii.BinanceMagic.Tests
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
-            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, algorithmSettings.MinimalTargetProfit, 2);
-            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, algorithmSettings.MinimalTargetProfit * (1 + algorithmSettings.MinimalIncrease), 2);
+            var firstTransaction = _context.CreateTransaction(firstCoin, 10, 2, secondCoin, 5, 1, algorithmSettings.InitialTarget, 2);
+            var secondTransaction = _context.CreateTransaction(secondCoin, 2, 5, firstCoin, 2, 5, algorithmSettings.InitialTarget * (1 + algorithmSettings.TargetIncrease), 2);
             
             // Act.
             targetBuilder.UpdateTargetDetails(details);
@@ -181,24 +181,24 @@ namespace EtAlii.BinanceMagic.Tests
             // Assert.
             Assert.Equal(firstCoin, details.SellCoin);
             Assert.Equal(secondCoin, details.BuyCoin);
-            var firstGoal = details.Goal;
-            Assert.Equal(algorithmSettings.MinimalTargetProfit, firstGoal);
+            var firstGoal = details.Target;
+            Assert.Equal(algorithmSettings.InitialTarget, firstGoal);
 
             data.AddTransaction(firstTransaction);
             targetBuilder.UpdateTargetDetails(details);
 
             Assert.Equal(secondCoin, details.SellCoin);
             Assert.Equal(firstCoin, details.BuyCoin);
-            var secondGoal = details.Goal;
-            Assert.Equal(firstGoal * (1 + algorithmSettings.MinimalIncrease), secondGoal);
+            var secondGoal = details.Target;
+            Assert.Equal(firstGoal * (1 + algorithmSettings.TargetIncrease), secondGoal);
 
             data.AddTransaction(secondTransaction);
             targetBuilder.UpdateTargetDetails(details);
 
             Assert.Equal(firstCoin, details.SellCoin);
             Assert.Equal(secondCoin, details.BuyCoin);
-            var thirdGoal = details.Goal;
-            Assert.Equal(secondGoal * (1 + algorithmSettings.MinimalIncrease), thirdGoal);
+            var thirdGoal = details.Target;
+            Assert.Equal(secondGoal * (1 + algorithmSettings.TargetIncrease), thirdGoal);
         }
 
         [Fact]
