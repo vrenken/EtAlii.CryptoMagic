@@ -59,6 +59,13 @@
             _output.WriteLine("Starting client: Done");
         }
 
+        public void Stop()
+        {
+            _output.WriteLine("Stopping client...");
+            _client.Dispose();
+            _output.WriteLine("Stopping client: Done");
+        }
+
         public bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price)
         {
             var coinComparedToReference = $"{coin}{referenceCoin}"; 
@@ -214,7 +221,7 @@
                     Quantity = buyOrder.Data.QuantityFilled
                 },
                 Moment = getNow(),
-                TotalProfit =  sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
+                TotalProfit = sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
             };
             return true;
         }
@@ -229,11 +236,10 @@
             }
         }
         
-        public void Stop()
+        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings)
         {
-            _output.WriteLine("Stopping client...");
-            _client.Dispose();
-            _output.WriteLine("Stopping client: Done");
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
+            return symbol.MinNotionalFilter!.MinNotional;
         }
     }
 }

@@ -24,7 +24,7 @@
                 _details.Profit = 0;
                 _details.Result = "Transaction done";
                 _details.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged();
+                _statusProvider.RaiseChanged(StatusInfo.Important);
                 _data.AddTransaction(transaction);
                 targetSucceeded = true;
             }
