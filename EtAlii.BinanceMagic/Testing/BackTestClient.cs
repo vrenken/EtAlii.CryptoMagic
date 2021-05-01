@@ -10,12 +10,15 @@ namespace EtAlii.BinanceMagic
     public class BackTestClient : IClient
     {
         private readonly IOutput _output;
+        private readonly IProgram _program;
         private readonly string[] _coins;
         private readonly string _referenceCoin;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
 
-        private readonly TimeSpan _interval = TimeSpan.FromMinutes(1);
-                
+        public TimeSpan Interval { get; } = TimeSpan.FromMinutes(1);
+
+        public DateTime FirstRecordedHistory { get; private set; }
+        public DateTime LastRecordedHistory { get; private set; }
         public DateTime Moment { get; set; }
         
         public void Start()
@@ -36,6 +39,42 @@ namespace EtAlii.BinanceMagic
                     .Reverse()
                     .ToArray();
             }
+
+            var lengths = _history
+                .Select(h => h.Value.Length)
+                .ToArray();
+
+            var allSameLength = lengths.All(l => l == lengths[0]);
+            if (!allSameLength)
+            {
+                _program.HandleFail("History files have different lengths");
+            }
+
+            var startTimes = _history.Select(h => h.Value
+                    .Select(e => e.To)
+                    .OrderBy(moment => moment)
+                    .First())
+                .ToArray();
+            var allSameStartTime = startTimes.All(time => time == startTimes[0]);
+            if(!allSameStartTime)            
+            {
+                _program.HandleFail("History files have different start times");
+            }
+
+            var endTimes = _history.Select(h => h.Value
+                    .Select(e => e.To)
+                    .OrderByDescending(moment => moment)
+                    .First())
+                .ToArray();
+            var allSameEndTime = endTimes.All(time => time == endTimes[0]);
+            if(!allSameEndTime)            
+            {
+                _program.HandleFail("History files have different end times");
+            }
+
+            FirstRecordedHistory = startTimes[0];
+            LastRecordedHistory = endTimes[0];
+            Moment = startTimes[0];
             
             _output.WriteLine("Starting back-testing: Done");
         }
@@ -50,7 +89,7 @@ namespace EtAlii.BinanceMagic
             return new HistoryEntry
             {
                 To = moment,
-                From = moment - _interval,
+                From = moment - Interval,
 
                 Open = decimal.Parse(items[3]),
                 High = decimal.Parse(items[4]),
@@ -61,11 +100,12 @@ namespace EtAlii.BinanceMagic
         
         public void Stop() { }
         
-        public BackTestClient(string[] coins, string referenceCoin, IOutput output)
+        public BackTestClient(string[] coins, string referenceCoin, IOutput output, IProgram program)
         {
             _coins = coins;
             _referenceCoin = referenceCoin;
             _output = output;
+            _program = program;
         }
         
         public bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price)

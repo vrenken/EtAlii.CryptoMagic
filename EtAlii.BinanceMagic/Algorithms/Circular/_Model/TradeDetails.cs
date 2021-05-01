@@ -34,18 +34,8 @@
         
         public decimal Profit { get; set; }
 
-        public string Result
-        {
-            get => _result;
-            set
-            {
-                _result = value; 
-                LastCheck = DateTime. Now;
-                Updated?.Invoke();
-            }
-        }
+        public string Result { get; set; }
 
-        private string _result;
         public bool Error { get; set; }
 
         public bool IsWorthIt { get; set; }
@@ -53,7 +43,5 @@
         // TBD:
         public decimal PreviousProfit { get; set; }
         public decimal Goal { get; set; }
-
-        public event System.Action Updated;
     }
 }

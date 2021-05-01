@@ -1,6 +1,7 @@
 ﻿namespace EtAlii.BinanceMagic
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     public class Program : IProgram
@@ -16,56 +17,63 @@
         static void Main()
         {
             var output = new ConsoleOutput();
-            var programSettings = new ProgramSettings
-            {
-                //PlaceTestOrders = true
-            };
+            var programSettings = new ProgramSettings();
             var program = new Program(programSettings, output);
 
             output.WriteLine("Starting Binance magic...");
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output);
+            var client = new Client(programSettings, program, actionValidator, output)
+            {
+                PlaceTestOrders = false,
+            };
+            
             client.Start();
 
-            var allLoopSettings = new[]
+            var allLoopSettings = new List<LoopSettings>();
+
+            // Back-test.
+            // var allowedCoins = new[] {"BTC", "BNB"};
+            // var referenceCoin = "USDT";
+            // var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output, program);
+            // var time = new BackTestTimeManager(backTestClient);
+            // allLoopSettings.Add(new LoopSettings
+            // {
+            //     Client = backTestClient,
+            //     Time = time,
+            //     Algorithm = new CircularAlgorithmSettings
+            //     {
+            //         AllowedCoins = allowedCoins,
+            //         ReferenceCoin = referenceCoin,
+            //         MinimalIncrease = 0.05m,
+            //     }
+            // });
+
+            // Live test 1
+            allLoopSettings.Add(new LoopSettings
             {
-                // new LoopSettings
-                // {
-                //     IsBackTest = true,
-                //     Algorithm = new CircularAlgorithmSettings
-                //     {
-                //         AllowedCoins = new []{ "BTC", "BNB" },
-                //         //InitialTransferFactor = 10.0m,
-                //         //MaxQuantityToTrade = 0.9m,
-                //         MinimalIncrease = 0.05m,
-                //     }
-                // },
-
-                new LoopSettings
+                Client = client,
+                Time = new RealtimeTimeManager(),
+                Algorithm = new CircularAlgorithmSettings
                 {
-                    Algorithm = new CircularAlgorithmSettings
-                    {
-                        AllowedCoins = new []{ "BTC", "ZEN" },
-                        ReferenceCoin = "USDT",
-                        //InitialTransferFactor = 10.0m,
-                        //MaxQuantityToTrade = 0.9m,
-                        MinimalIncrease = 0.05m,
-                    }
-                },
+                    AllowedCoins = new[] {"BTC", "ZEN"},
+                    ReferenceCoin = "USDT",
+                    MinimalIncrease = 0.05m,
+                }
+            });
 
-                // new LoopSettings
-                // {
-                //     Algorithm = new CircularAlgorithmSettings
-                //     {
-                //         AllowedCoins = new []{"ETH", "LTC"},
-                //         InitialPurchaseMinimalFactor = 10.0m,
-                //         MinimalIncrease = 0.05m,
-                //     }
-                // },
-            };
+            // Live test 2
+            // allLoopSettings.Add(new LoopSettings
+            // {
+            //     Client = new BackTestClient(new []{ "ETH", "LTC" }, "BUSD", output, program),
+            //     Time = new RealtimeTimeManager(),
+            //     Algorithm = new CircularAlgorithmSettings
+            //     {
+            //         AllowedCoins = new []{"ETH", "LTC"},
+            //     }
+            // });
 
             var loops = allLoopSettings
-                .Select(loopSettings => CreateLoop(loopSettings, program, client, output))
+                .Select(ls => CreateLoop(ls, program, client, output))
                 .ToArray();
 
             void OnStatusChanged()
@@ -108,23 +116,21 @@
 
         private static Loop CreateLoop(LoopSettings loopSettings, IProgram program, IClient client, IOutput output)
         {
+            if (client is not Client)
+            {
+                client.Start();
+            }
+
             switch (loopSettings.Algorithm)
             {
                 case CircularAlgorithmSettings algorithmSettings:
-                    if (loopSettings.IsBackTest)
-                    {
-                        client = new BackTestClient(algorithmSettings.AllowedCoins, algorithmSettings.ReferenceCoin, output);
-                        client.Start();
-                    }
-
-                    var sequence = new CircularSequence(algorithmSettings, program, client, output);
+                    var sequence = new CircularSequence(algorithmSettings, program, client, output, loopSettings.Time);
                     var loop = new Loop(sequence);
                     loop.Start();
                     return loop;
                 default:
                     throw new InvalidOperationException("Unsupported algorithm");
             }
-            
         }
     }
 }

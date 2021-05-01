@@ -13,7 +13,6 @@
         {
             _output = output;
             _details = details;
-            _details.Updated += () => Changed?.Invoke();
         }
 
         public void RaiseChanged() => Changed?.Invoke();

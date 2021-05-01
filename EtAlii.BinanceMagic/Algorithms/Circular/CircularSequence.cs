@@ -2,7 +2,6 @@ namespace EtAlii.BinanceMagic
 {
     using System;
     using System.Threading;
-    using System.Threading.Tasks;
 
     public partial class CircularSequence : ISequence
     {
@@ -12,20 +11,23 @@ namespace EtAlii.BinanceMagic
         private readonly TradeDetails _details;
         private readonly ICircularData _data;
         private readonly IClient _client;
+        private readonly ITimeManager _timeManager;
 
         public IStatusProvider Status => _statusProvider;
         private readonly StatusProvider _statusProvider;
 
-        public CircularSequence(CircularAlgorithmSettings settings, IProgram program, IClient client, IOutput output)
+        public CircularSequence(
+            CircularAlgorithmSettings settings, IProgram program, 
+            IClient client, IOutput output,
+            ITimeManager timeManager)
         {
             _settings = settings;
             _client = client;
+            _timeManager = timeManager;
             _data = new CircularData(_client, settings, output);
             _details = new TradeDetails();
             _statusProvider = new StatusProvider(output, _details);
-            _details.Updated += _statusProvider.Write;
             _detailsBuilder = new TradeDetailsUpdater(_data, settings);
-            
             _circularAlgorithm = new CircularAlgorithm(settings, _data, program, _details, _statusProvider);
         }
 
@@ -37,6 +39,8 @@ namespace EtAlii.BinanceMagic
         public void Run(CancellationToken cancellationToken)
         {
             _detailsBuilder.UpdateTargetDetails(_details);
+            _details.LastCheck = _timeManager.GetNow();
+            _statusProvider.RaiseChanged();
             
             var targetAchieved = false;
             var shouldDelay = false;
@@ -45,15 +49,17 @@ namespace EtAlii.BinanceMagic
             {
                 if (shouldDelay)
                 {
-                    var nextCheck = DateTime.Now + _settings.SampleInterval;
+                    var nextCheck = _timeManager.GetNow() + _settings.SampleInterval;
                     _details.NextCheck = nextCheck;
                     _statusProvider.RaiseChanged();
 
-                    Task.Delay(_settings.SampleInterval, cancellationToken).Wait(cancellationToken);
+                    _timeManager.Wait(_settings.SampleInterval, cancellationToken);
                 }
                 _details.NextCheck = DateTime.MinValue;
                 _details.Result = "Fetching current situation...";
-                
+                _details.LastCheck = _timeManager.GetNow();
+                _statusProvider.RaiseChanged();
+
                 if (!_data.TryGetSituation(_details, cancellationToken, out var situation))
                 {
                     shouldDelay = true;
@@ -61,6 +67,8 @@ namespace EtAlii.BinanceMagic
                 }
                 
                 _details.Result = "Fetching exchange info...";
+                _details.LastCheck = _timeManager.GetNow();
+                _statusProvider.RaiseChanged();
 
                 if (!_client.TryGetExchangeInfo(_details, cancellationToken, out var exchangeInfo))
                 {
@@ -82,6 +90,8 @@ namespace EtAlii.BinanceMagic
                 }
 
                 _details.Result = "No feasible transaction";
+                _details.LastCheck = _timeManager.GetNow();
+                _statusProvider.RaiseChanged();
                 shouldDelay = true;
             }
         }
