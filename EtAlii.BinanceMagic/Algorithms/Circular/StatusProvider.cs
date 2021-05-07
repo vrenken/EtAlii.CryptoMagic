@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic
+﻿namespace EtAlii.BinanceMagic.Circular
 {
     using System;
 

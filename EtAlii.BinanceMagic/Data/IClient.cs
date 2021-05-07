@@ -3,6 +3,7 @@ namespace EtAlii.BinanceMagic
     using System;
     using System.Threading;
     using Binance.Net.Objects.Spot.MarketData;
+    using EtAlii.BinanceMagic.Circular;
 
     public interface IClient
     {
@@ -17,6 +18,6 @@ namespace EtAlii.BinanceMagic
         
         bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction);
         
-        decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings);
+        decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, AlgorithmSettings loopSettings);
     }
 }

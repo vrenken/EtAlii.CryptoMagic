@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Tests
 {
     using System.Linq;
     using System.Threading;
+    using EtAlii.BinanceMagic.Circular;
     using Xunit;
 
     public class DataTests : IClassFixture<TestContext>
@@ -28,7 +29,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             
             // Assert.
             Assert.NotNull(data);
@@ -47,7 +48,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             
             // Act.
             data.Load();
@@ -69,7 +70,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
@@ -95,7 +96,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
@@ -129,7 +130,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
@@ -139,7 +140,7 @@ namespace EtAlii.BinanceMagic.Tests
             data.AddTransaction(secondTransaction);
             
             // Act.
-            data = new CircularData(client, algorithmSettings, output);
+            data = new Data(client, algorithmSettings, output);
             data.Load();
 
             // Assert.
@@ -167,7 +168,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
@@ -215,7 +216,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             client.Start();
             data.Load();
@@ -249,7 +250,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            var data = new CircularData(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, output);
             var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             client.Start();
             data.Load();

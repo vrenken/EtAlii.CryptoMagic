@@ -3,6 +3,7 @@ namespace EtAlii.BinanceMagic
     using System.Threading;
     using Binance.Net;
     using Binance.Net.Objects.Spot.MarketData;
+    using EtAlii.BinanceMagic.Circular;
 
     public interface IActionValidator
     {

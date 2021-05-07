@@ -10,6 +10,7 @@
     using Binance.Net.Objects.Spot.SpotData;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
+    using EtAlii.BinanceMagic.Circular;
 
     public class Client : IClient
     {
@@ -236,7 +237,7 @@
             }
         }
         
-        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings)
+        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, AlgorithmSettings loopSettings)
         {
             var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
             return symbol.MinNotionalFilter!.MinNotional;

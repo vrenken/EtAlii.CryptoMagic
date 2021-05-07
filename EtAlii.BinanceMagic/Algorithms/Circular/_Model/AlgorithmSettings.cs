@@ -1,8 +1,8 @@
-namespace EtAlii.BinanceMagic
+namespace EtAlii.BinanceMagic.Circular
 {
     using System;
 
-    public class CircularAlgorithmSettings : IAlgorithmSettings  
+    public class AlgorithmSettings : IAlgorithmSettings  
     {
         public string TransactionsFileFormat { get; init; }  = "Transactions_{0}_{1}.txt";
         public string TrendsFileFormat { get; init; }  = "Trends_{0}_{1}.txt";

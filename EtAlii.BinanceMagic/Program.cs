@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using EtAlii.BinanceMagic.Circular;
 
     public class Program : IProgram
     {
@@ -24,7 +25,7 @@
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output)
             {
-                PlaceTestOrders = false,
+                PlaceTestOrders = true,
             };
             
             client.Start();
@@ -95,9 +96,26 @@
             {
                 Client = client,
                 Time = new RealtimeTimeManager(),
-                Algorithm = new CircularAlgorithmSettings
+                Algorithm = new AlgorithmSettings
                 {
                     AllowedCoins = new[] {"BTC", "BNB"},
+                    ReferenceCoin = "USDT",
+                    TargetIncrease = 1.03m,
+                    InitialTarget = 0.5m,
+                    QuantityFactor = 10m,
+                    SampleInterval = TimeSpan.FromMinutes(1),
+                    WriteTrends = false,
+                }
+            });
+
+            // Live test 2
+            allLoopSettings.Add(new LoopSettings
+            {
+                Client = client,
+                Time = new RealtimeTimeManager(),
+                Algorithm = new AlgorithmSettings
+                {
+                    AllowedCoins = new[] {"BTC", "XMR"},
                     ReferenceCoin = "USDT",
                     TargetIncrease = 1.03m,
                     InitialTarget = 0.5m,
@@ -179,8 +197,8 @@
 
             switch (loopSettings.Algorithm)
             {
-                case CircularAlgorithmSettings algorithmSettings:
-                    var sequence = new CircularSequence(algorithmSettings, program, client, output, loopSettings.Time);
+                case Circular.AlgorithmSettings algorithmSettings:
+                    var sequence = new Circular.Sequence(algorithmSettings, program, client, output, loopSettings.Time);
                     var loop = new Loop(sequence);
                     loop.Start();
                     return loop;
