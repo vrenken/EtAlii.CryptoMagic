@@ -28,8 +28,8 @@
 
         public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            _details.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings);
-            _details.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings);
+            _details.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Coin, situation.ExchangeInfo, _settings.ReferenceCoin);
+            _details.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Coin, situation.ExchangeInfo, _settings.ReferenceCoin);
 
             _details.SellQuantity = situation.Source.PastQuantity * _settings.MaxQuantityToTrade;
             _details.SellPrice = situation.Source.PresentPrice * _details.SellQuantity;
@@ -85,10 +85,10 @@
         {
             var lastPurchaseForSource = _data.FindLastPurchase(_details.SellCoin);
             var quantityToSell = lastPurchaseForSource == null
-                ? (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(_details.SellCoin, situation.ExchangeInfo, _settings)
+                ? (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(_details.SellCoin, situation.ExchangeInfo, _settings.ReferenceCoin)
                 : lastPurchaseForSource.Quantity;
 
-            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(_details.BuyCoin, situation.ExchangeInfo, _settings);
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(_details.BuyCoin, situation.ExchangeInfo, _settings.ReferenceCoin);
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 

@@ -41,7 +41,7 @@
             ISequence sequence = loopSettings.Algorithm switch
             {
                 Circular.AlgorithmSettings algorithmSettings => new Circular.Sequence(algorithmSettings, program, client, output, loopSettings.Time),
-                Surfing.AlgorithmSettings algorithmSettings => new Surfing.Sequence(algorithmSettings),
+                Surfing.AlgorithmSettings algorithmSettings => new Surfing.Sequence(algorithmSettings, client, output),
                 _ => throw new InvalidOperationException("Unsupported algorithm")
             };
 

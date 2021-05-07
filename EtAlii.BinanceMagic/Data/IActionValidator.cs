@@ -3,7 +3,6 @@ namespace EtAlii.BinanceMagic
     using System.Threading;
     using Binance.Net;
     using Binance.Net.Objects.Spot.MarketData;
-    using EtAlii.BinanceMagic.Circular;
 
     public interface IActionValidator
     {
@@ -12,9 +11,9 @@ namespace EtAlii.BinanceMagic
             string type,
             string referenceCoin,
             BinanceExchangeInfo exchangeInfo,
-            TradeDetails details,
             CancellationToken cancellationToken,
-            out TAction outAction)
+            out TAction outAction,
+            out string error)
             where TAction : Action;
     }
 }

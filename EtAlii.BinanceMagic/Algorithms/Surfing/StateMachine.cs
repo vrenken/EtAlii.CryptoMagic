@@ -5,12 +5,23 @@
     public class StateMachine : SurfingStateMachineBase
     {
         private readonly AlgorithmSettings _settings;
+        private readonly Data _data;
 
-        public StateMachine(AlgorithmSettings settings)
+        public StateMachine(AlgorithmSettings settings, Data data)
         {
             _settings = settings;
+            _data = data;
         }
 
+        protected override void OnStartEntered()
+        {
+            _data.Load();
+            Continue();
+        }
+
+        protected override void OnGetTrendsEntered()
+        {
+        }
         /// <summary>
         /// Implement this method to handle the entry of the 'BuyOtherCoin' state.
         /// </summary>
@@ -26,14 +37,6 @@
         }
         
         /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// WaitUntilCoinSold --&gt; BuyOtherCoin : WaitUntilCoinSoldToBuyOtherCoin<br/>
-        /// </summary>
-        protected override void OnBuyOtherCoinEnteredFromWaitUntilCoinSoldToBuyOtherCoinTrigger()
-        {
-        }
-        
-        /// <summary>
         /// Implement this method to handle the entry of the 'DetermineOtherCoinValue' state.
         /// </summary>
         protected override void OnDetermineOtherCoinValueEntered(DetermineOtherCoinValueEventArgs e)
@@ -44,14 +47,6 @@
         /// Implement this method to handle the exit of the 'DetermineOtherCoinValue' state.
         /// </summary>
         protected override void OnDetermineOtherCoinValueExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// SelectOtherCoin --&gt; DetermineOtherCoinValue : SelectOtherCoinToDetermineOtherCoinValue<br/>
-        /// </summary>
-        protected override void OnDetermineOtherCoinValueEnteredFromSelectOtherCoinToDetermineOtherCoinValueTrigger(DetermineOtherCoinValueEventArgs e)
         {
         }
         
@@ -75,38 +70,8 @@
         /// </summary>
         protected override void OnDetermineSymbolPairEnteredFrom_BeginToDetermineSymbolPairTrigger(DetermineSymbolPairEventArgs e)
         {
-            e.IsNoSymbolPair();
+            //e.IsNoSymbolPair();
             e.IsSymbolPair();
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'SelectOtherCoin' state.
-        /// </summary>
-        protected override void OnSelectOtherCoinEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'SelectOtherCoin' state.
-        /// </summary>
-        protected override void OnSelectOtherCoinExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// _Begin --&gt; SelectOtherCoin : _BeginToSelectOtherCoin<br/>
-        /// </summary>
-        protected override void OnSelectOtherCoinEnteredFrom_BeginToSelectOtherCoinTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// Wait --&gt; SelectOtherCoin : WaitToSelectOtherCoin<br/>
-        /// </summary>
-        protected override void OnSelectOtherCoinEnteredFromContinueTrigger()
-        {
         }
         
         /// <summary>
@@ -272,34 +237,11 @@
         protected override void OnWaitUntilCoinBoughtExited()
         {
         }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// BuyOtherCoin --&gt; WaitUntilCoinBought : BuyOtherCoinToWaitUntilCoinBought<br/>
-        /// </summary>
-        protected override void OnWaitUntilCoinBoughtEnteredFromBuyOtherCoinToWaitUntilCoinBoughtTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'WaitUntilCoinSold' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldEntered()
-        {
-        }
-        
+
         /// <summary>
         /// Implement this method to handle the exit of the 'WaitUntilCoinSold' state.
         /// </summary>
         protected override void OnWaitUntilCoinSoldExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// SellCurrentCoin --&gt; WaitUntilCoinSold : SellCurrentCoinToWaitUntilCoinSold<br/>
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldEnteredFromSellCurrentCoinToWaitUntilCoinSoldTrigger()
         {
         }
         
@@ -318,14 +260,6 @@
         }
         
         /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// SellAsSymbolPair --&gt; WaitUntilCoinSoldAsSymbolPair : SellAsSymbolPairToWaitUntilCoinSoldAsSymbolPair<br/>
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldAsSymbolPairEnteredFromSellAsSymbolPairToWaitUntilCoinSoldAsSymbolPairTrigger()
-        {
-        }
-        
-        /// <summary>
         /// Implement this method to handle the entry of the 'WaitUntilCoinSoldInUsdtTransfer' state.
         /// </summary>
         protected override void OnWaitUntilCoinSoldInUsdtTransferEntered()
@@ -336,14 +270,6 @@
         /// Implement this method to handle the exit of the 'WaitUntilCoinSoldInUsdtTransfer' state.
         /// </summary>
         protected override void OnWaitUntilCoinSoldInUsdtTransferExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// SellCurrentCoinInUsdtTransfer --&gt; WaitUntilCoinSoldInUsdtTransfer : SellCurrentCoinInUsdtTransferToWaitUntilCoinSoldInUsdtTransfer<br/>
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldInUsdtTransferEnteredFromSellCurrentCoinInUsdtTransferToWaitUntilCoinSoldInUsdtTransferTrigger()
         {
         }
     }

@@ -4,8 +4,13 @@
 
 title Automatic trading mechanism B: Coin surfin'.
 
-[*] --> SelectOtherCoin
+[*] --> Start
+Start --> GetTrends : Continue
+Start : OnEntry:
+Start : - Load from disk.
+
 state DetermineOtherCoinValue <<choice>>
+GetTrends -down-> DetermineOtherCoinValue : Continue
 note left of DetermineOtherCoinValue
 Calculation of worth is done 
 by comparing the current coin's 
@@ -15,7 +20,6 @@ If the stakes for the other coin
 are better we are better of switching.
 end note
 
-SelectOtherCoin -down-> DetermineOtherCoinValue
 DetermineOtherCoinValue --> Wait : CurrentCoinHasBestTrend
 DetermineOtherCoinValue --> TransferToOtherCoin : OtherCoinHasBetterTrend
 DetermineOtherCoinValue --> TransferToUsdt : AllCoinsHaveDownwardTrends
@@ -29,8 +33,8 @@ state TransferToUsdt {
     state "SellCurrentCoin" as SellCurrentCoinInUsdtTransfer
     state "WaitUntilCoinSold" as WaitUntilCoinSoldInUsdtTransfer
     [*] --> SellCurrentCoinInUsdtTransfer
-    SellCurrentCoinInUsdtTransfer --> WaitUntilCoinSoldInUsdtTransfer
-    WaitUntilCoinSoldInUsdtTransfer --> [*]
+    SellCurrentCoinInUsdtTransfer --> WaitUntilCoinSoldInUsdtTransfer : Continue
+    WaitUntilCoinSoldInUsdtTransfer --> [*] : Continue
 }
 TransferToUsdt -down-> Wait
 
@@ -45,14 +49,14 @@ state TransferToOtherCoin {
     [*] --> DetermineSymbolPair
     DetermineSymbolPair --> SellCurrentCoin : IsNoSymbolPair
     DetermineSymbolPair --> SellAsSymbolPair : IsSymbolPair
-    SellAsSymbolPair --> WaitUntilCoinSoldAsSymbolPair
-    WaitUntilCoinSoldAsSymbolPair --> [*]
-    SellCurrentCoin --> WaitUntilCoinSold
-    WaitUntilCoinSold --> BuyOtherCoin
-    BuyOtherCoin --> WaitUntilCoinBought
-    WaitUntilCoinBought --> [*]
+    SellAsSymbolPair --> WaitUntilCoinSoldAsSymbolPair : Continue
+    WaitUntilCoinSoldAsSymbolPair --> [*] : Continue
+    SellCurrentCoin --> WaitUntilCoinSold : Continue
+    WaitUntilCoinSold --> BuyOtherCoin : Continue
+    BuyOtherCoin --> WaitUntilCoinBought : Continue
+    WaitUntilCoinBought --> [*] : Continue
 }
 TransferToOtherCoin -down-> Wait
-Wait -up-> SelectOtherCoin : Continue
+Wait -up-> GetTrends : Continue
 
 @enduml

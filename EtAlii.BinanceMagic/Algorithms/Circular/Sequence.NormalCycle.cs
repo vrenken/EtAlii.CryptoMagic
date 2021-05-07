@@ -18,7 +18,7 @@
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged();
 
-                if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, _details, cancellationToken, _timeManager.GetNow, out var transaction))
+                if (_client.TryConvert(sellAction, buyAction, _settings.ReferenceCoin, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
                 {
                     transaction = transaction with
                     {
@@ -32,6 +32,10 @@
 
                     _data.AddTransaction(transaction);
                     targetSucceeded = true;
+                }
+                else
+                {
+                    _details.Result = error;
                 }
             }
 

@@ -127,6 +127,7 @@ namespace EtAlii.BinanceMagic
                     AllowedCoins = new[] { "BTC", "BNB", "ETH", "LTC", "XMR", "ADA", "RUNE" },
                     PayoutCoin = "USDT",
                     ActionInterval = TimeSpan.FromMinutes(1),
+                    InitialPurchase = 100m // in USDT
                 }
             });
 

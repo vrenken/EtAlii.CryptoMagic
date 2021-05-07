@@ -7,9 +7,8 @@ namespace EtAlii.BinanceMagic
     using System.Linq;
     using System.Threading;
     using Binance.Net.Objects.Spot.MarketData;
-    using EtAlii.BinanceMagic.Circular;
 
-    public class BackTestClient : IClient
+    public partial class BackTestClient : IClient
     {
         private readonly IOutput _output;
         private readonly string[] _coins;
@@ -120,22 +119,24 @@ namespace EtAlii.BinanceMagic
             }
         }
         
-        public bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price)
+        public bool TryGetPrice(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal price, out string error)
         {
             var history = _currentHistory[coin];
 
             if (history == null)
             {
                 price = 0m;
+                error = "No history";
                 return false;
             }
             
             price = (history.Close + history.Open) / 2m;
+            error = null;
             return true;
         }
 
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error)
         {
             transaction = new Transaction
             {
@@ -155,38 +156,43 @@ namespace EtAlii.BinanceMagic
                 Moment = getNow(),
                 Profit = sellAction.Price - buyAction.Price 
             };
+            error = null;
             return true;
         }
 
-        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, AlgorithmSettings loopSettings)
+        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin)
         {
             return 10m;
         }
 
-        public bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
+        public bool TryGetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
         {
             makerFee = 0.1m;
             takerFee = 0.1m;
+            error = null;
             return true;
         }
 
-        public bool TryGetTrend(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal trend)
+        public bool TryGetTrend(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal trend, out string error)
         {
             var history = _currentHistory[coin];
 
             if (history == null)
             {
                 trend = 0m;
+                error = "No history";
                 return false;
             }
 
             trend = history.Close - history.Open;
+            error = null;
             return true;
         }
 
-        public bool TryGetExchangeInfo(TradeDetails details, CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo)
+        public bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo, out string error)
         {
             exchangeInfo = null;
+            error = null;
             return true;
         }
     }
