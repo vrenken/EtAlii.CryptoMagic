@@ -1,19 +1,19 @@
-﻿namespace EtAlii.BinanceMagic
+﻿namespace EtAlii.BinanceMagic.Circular
 {
     using System.Linq;
 
-    public class CircularAlgorithm : ICircularAlgorithm
+    public class Algorithm : ICircularAlgorithm
     {
-        private readonly CircularAlgorithmSettings _settings;
-        private readonly ICircularData _data;
+        private readonly AlgorithmSettings _settings;
+        private readonly IData _data;
         private readonly IProgram _program;
         private readonly IClient _client;
         private readonly TradeDetails _details;
         private readonly StatusProvider _statusProvider;
 
-        public CircularAlgorithm(
-            CircularAlgorithmSettings settings, 
-            ICircularData data, 
+        public Algorithm(
+            AlgorithmSettings settings, 
+            IData data, 
             IProgram program,
             IClient client,
             TradeDetails details, StatusProvider statusProvider)

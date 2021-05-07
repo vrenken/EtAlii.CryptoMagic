@@ -1,6 +1,7 @@
 namespace EtAlii.BinanceMagic.Tests
 {
     using System;
+    using EtAlii.BinanceMagic.Circular;
 
     public class TestContext
     {
@@ -15,7 +16,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
         }
 
-        public CircularAlgorithmSettings CreateCircularAlgorithmSettings()
+        public AlgorithmSettings CreateCircularAlgorithmSettings()
         {
             return new()
             {

@@ -1,34 +1,34 @@
-namespace EtAlii.BinanceMagic
+namespace EtAlii.BinanceMagic.Circular
 {
     using System;
     using System.Threading;
 
-    public partial class CircularSequence : ISequence
+    public partial class Sequence : ISequence
     {
-        private readonly CircularAlgorithmSettings _settings;
+        private readonly AlgorithmSettings _settings;
         private readonly ICircularAlgorithm _circularAlgorithm;
         private readonly ITradeDetailsBuilder _detailsBuilder;
         private readonly TradeDetails _details;
-        private readonly ICircularData _data;
+        private readonly IData _data;
         private readonly IClient _client;
         private readonly ITimeManager _timeManager;
 
         public IStatusProvider Status => _statusProvider;
         private readonly StatusProvider _statusProvider;
 
-        public CircularSequence(
-            CircularAlgorithmSettings settings, IProgram program, 
+        public Sequence(
+            AlgorithmSettings settings, IProgram program, 
             IClient client, IOutput output,
             ITimeManager timeManager)
         {
             _settings = settings;
             _client = client;
             _timeManager = timeManager;
-            _data = new CircularData(_client, settings, output);
+            _data = new Data(_client, settings, output);
             _details = new TradeDetails();
             _statusProvider = new StatusProvider(output, _details);
             _detailsBuilder = new TradeDetailsUpdater(_data, settings);
-            _circularAlgorithm = new CircularAlgorithm(settings, _data, program, client, _details, _statusProvider);
+            _circularAlgorithm = new Algorithm(settings, _data, program, client, _details, _statusProvider);
         }
 
         public void Initialize()

@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic
+﻿namespace EtAlii.BinanceMagic.Circular
 {
     using System;
     using System.Collections.Generic;
@@ -6,17 +6,20 @@
     using System.Linq;
     using System.Threading;
 
-    public class CircularData : ICircularData
+    public class Data : IData
     {        
         private readonly IClient _client;
-        private readonly CircularAlgorithmSettings _settings;
+        private readonly AlgorithmSettings _settings;
         private readonly IOutput _output;
         public IReadOnlyList<Transaction> Transactions { get; } 
         private readonly List<Transaction> _transactions;
 
         private readonly string _trendsFile;
         private readonly string _transactionsFile;
-        public CircularData(IClient client, CircularAlgorithmSettings settings, IOutput output)
+        private FileStream _file;
+        private StreamWriter _sw;
+
+        public Data(IClient client, AlgorithmSettings settings, IOutput output)
         {
             _client = client;
             _settings = settings;
@@ -40,6 +43,16 @@
                 .ToArray();
             _transactions.AddRange(transactions);
             _output.WriteLine("Loading previous transactions from file: Done");
+            
+            var writeHeader = !File.Exists(_trendsFile); 
+            _file = new FileStream(_trendsFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
+            _sw = new StreamWriter(_file);
+
+            if (writeHeader)
+            {
+                _sw.WriteLine($"Target;Sell price;Sell quantity;Buy price;Buy quantity;Difference");
+            }
+
         }
         
         public Coin FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Symbol == coin)?.To;
@@ -129,15 +142,7 @@
 
         public void AddTrend(decimal target, decimal sellPrice, decimal sellQuantity, decimal buyPrice, decimal buyQuantity, decimal difference)
         {
-            var writeHeader = !File.Exists(_trendsFile); 
-            using var file = new FileStream(_trendsFile, FileMode.Append, FileAccess.Write, FileShare.Read);
-            using var sw = new StreamWriter(file);
-
-            if (writeHeader)
-            {
-                sw.WriteLine($"Target;Sell price;Sell quantity;Buy price;Buy quantity;Difference");
-            }
-            sw.WriteLine($"{target};{sellPrice};{sellQuantity};{buyPrice};{buyQuantity};{difference}");
+            _sw.WriteLine($"{target};{sellPrice};{sellQuantity};{buyPrice};{buyQuantity};{difference}");
         }
     }
 }

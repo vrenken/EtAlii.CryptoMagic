@@ -1,8 +1,8 @@
-﻿namespace EtAlii.BinanceMagic
+﻿namespace EtAlii.BinanceMagic.Circular
 {
     using System.Threading;
 
-    public partial class CircularSequence
+    public partial class Sequence
     {
         private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation)
         {

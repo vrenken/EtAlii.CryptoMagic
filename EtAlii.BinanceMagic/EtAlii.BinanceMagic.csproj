@@ -6,7 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Binance.Net" Version="6.13.2" />
+      <PackageReference Include="Binance.Net" Version="6.13.3" />
+      <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.16" />
+      <PackageReference Include="stateless" Version="5.11.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,7 +36,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Algorithms\Oracle" />
+      <Compile Update="Algorithms\Surfing\SurfingStateMachine.cs">
+        <DependentUpon>SurfingStateMachine.puml</DependentUpon>
+      </Compile>
+      <StatelessFile Include="Algorithms\Surfing\SurfingStateMachine.puml" />
     </ItemGroup>
 
 </Project>

@@ -7,6 +7,7 @@ namespace EtAlii.BinanceMagic
     using System.Linq;
     using System.Threading;
     using Binance.Net.Objects.Spot.MarketData;
+    using EtAlii.BinanceMagic.Circular;
 
     public class BackTestClient : IClient
     {
@@ -157,7 +158,7 @@ namespace EtAlii.BinanceMagic
             return true;
         }
 
-        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, CircularAlgorithmSettings loopSettings)
+        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, AlgorithmSettings loopSettings)
         {
             return 10m;
         }

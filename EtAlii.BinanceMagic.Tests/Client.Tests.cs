@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Tests
 {
     using System;
     using System.Threading;
+    using EtAlii.BinanceMagic.Circular;
     using Xunit;
 
     public class ClientTests : IClassFixture<TestContext>

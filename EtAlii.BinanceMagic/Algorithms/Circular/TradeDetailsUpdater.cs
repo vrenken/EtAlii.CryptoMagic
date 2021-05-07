@@ -1,14 +1,14 @@
-﻿namespace EtAlii.BinanceMagic
+﻿namespace EtAlii.BinanceMagic.Circular
 {
     using System;
     using System.Linq;
 
     public class TradeDetailsUpdater : ITradeDetailsBuilder
     {
-        private readonly ICircularData _data;
-        private readonly CircularAlgorithmSettings _settings;
+        private readonly IData _data;
+        private readonly AlgorithmSettings _settings;
 
-        public TradeDetailsUpdater(ICircularData data, CircularAlgorithmSettings settings)
+        public TradeDetailsUpdater(IData data, AlgorithmSettings settings)
         {
             _data = data;
             _settings = settings;

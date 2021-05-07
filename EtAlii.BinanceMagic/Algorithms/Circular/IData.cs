@@ -1,9 +1,9 @@
-namespace EtAlii.BinanceMagic
+namespace EtAlii.BinanceMagic.Circular
 {
     using System.Collections.Generic;
     using System.Threading;
 
-    public interface ICircularData
+    public interface IData
     {
         IReadOnlyList<Transaction> Transactions { get; }
         
