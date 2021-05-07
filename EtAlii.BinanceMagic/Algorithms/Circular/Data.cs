@@ -64,37 +64,43 @@
         }
         public bool TryGetSituation(TradeDetails details, CancellationToken cancellationToken, out Situation situation)
         {
-            if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourcePrice))
+            if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sourcePrice, out var error))
             {
+                details.Result = error;
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetPrice(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var targetPrice))
+            if (!_client.TryGetPrice(details.BuyCoin, _settings.ReferenceCoin, cancellationToken, out var targetPrice, out error))
             {
+                details.Result = error;
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetTradeFees(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourceMakerFee, out var _))
+            if (!_client.TryGetTradeFees(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sourceMakerFee, out var _, out error))
             {
+                details.Result = error;
                 situation = null;
                 return false;
             }
             
-            if (!_client.TryGetTradeFees(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var _, out var destinationTakerFee))
+            if (!_client.TryGetTradeFees(details.BuyCoin, _settings.ReferenceCoin, cancellationToken, out var _, out var destinationTakerFee, out error))
             {
+                details.Result = error;
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetTrend(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sellTrend))
+            if (!_client.TryGetTrend(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sellTrend, out error))
             {
+                details.Result = error;
                 situation = null;
                 return false;
             }
-            if (!_client.TryGetTrend(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var buyTrend))
+            if (!_client.TryGetTrend(details.BuyCoin, _settings.ReferenceCoin, cancellationToken, out var buyTrend, out error))
             {
+                details.Result = error;
                 situation = null;
                 return false;
             }

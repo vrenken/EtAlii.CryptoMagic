@@ -88,10 +88,11 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, algorithmSettings.ReferenceCoin, status, cancellationToken, () => DateTime.Now, out var transaction);
+            client.TryConvert(sellAction, buyAction, algorithmSettings.ReferenceCoin, cancellationToken, () => DateTime.Now, out var transaction, out var error);
             
             // Assert.
             Assert.NotNull(transaction);
+            Assert.Null(error);
         }
     }
 }

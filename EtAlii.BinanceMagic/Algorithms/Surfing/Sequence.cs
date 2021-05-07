@@ -9,9 +9,10 @@
 
         private readonly StateMachine _stateMachine;
 
-        public Sequence(AlgorithmSettings settings)
+        public Sequence(AlgorithmSettings settings, IClient client, IOutput output)
         {
-            _stateMachine = new StateMachine(settings);
+            var data = new Data(client, settings, output);
+            _stateMachine = new StateMachine(settings, data);
         }
         
         public void Run(CancellationToken cancellationToken)

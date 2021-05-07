@@ -10,9 +10,8 @@
     using Binance.Net.Objects.Spot.SpotData;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
-    using EtAlii.BinanceMagic.Circular;
 
-    public class Client : IClient
+    public partial class Client : IClient
     {
         private BinanceClient _client;
         private readonly ProgramSettings _settings;
@@ -67,44 +66,46 @@
             _output.WriteLine("Stopping client: Done");
         }
 
-        public bool TryGetPrice(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal price)
+        public bool TryGetPrice(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal price, out string error)
         {
             var coinComparedToReference = $"{coin}{referenceCoin}"; 
             var result = _client.Spot.Market.GetPrice(coinComparedToReference, cancellationToken);
             if (result.Error != null)
             {
-                details.Result = $"Failure fetching price for {coin}: {result.Error}";
+                error = $"Failure fetching price for {coin}: {result.Error}";
                 price = decimal.Zero;
                 return false;
             }
 
             price = result.Data.Price;
+            error = null;
             return true;
         }
 
-        public bool TryGetTrend(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal trend)
+        public bool TryGetTrend(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal trend, out string error)
         {
             var coinComparedToReference = $"{coin}{referenceCoin}"; 
             var result = _client.Spot.Market.GetKlines(coinComparedToReference, KlineInterval.FiveMinutes, limit:1 , ct: cancellationToken);
             if (result.Error != null)
             {
-                details.Result = $"Failure fetching candlestick data for {coin}: {result.Error}";
+                error = $"Failure fetching candlestick data for {coin}: {result.Error}";
                 trend = 0m;
                 return false;
             }
 
             var data = result.Data.Single();
             trend = data.Close - data.Open;
+            error = null;
             return true;
         }
         
-        public bool TryGetTradeFees(string coin, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee)
+        public bool TryGetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
         {
             var coinComparedToReference = $"{coin}{referenceCoin}"; 
             var result = _client.Spot.Market.GetTradeFee(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
-                details.Result = $"Failure fetching trade fees for {coin}: {result.Error}";
+                error = $"Failure fetching trade fees for {coin}: {result.Error}";
                 makerFee = 0m;
                 takerFee = 0m;
                 return false;
@@ -113,28 +114,30 @@
             var fees = result.Data.First();
             makerFee = fees.MakerFee;
             takerFee = fees.TakerFee;
+            error = null;
             return true;
         }
         
-        public bool TryGetExchangeInfo(TradeDetails details, CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo)
+        public bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo, out string error)
         {
             var exchangeResult = _client.Spot.System.GetExchangeInfo(cancellationToken);
             if (!exchangeResult.Success)
             {
-                details.Result = $"Failed to fetch exchange info: {exchangeResult.Error}";
+                error = $"Failed to fetch exchange info: {exchangeResult.Error}";
                 exchangeInfo = null;
                 return false;
             }
             exchangeInfo = exchangeResult.Data;
+            error = null;
             return true;
         }
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, TradeDetails details, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error)
         {
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
             {
-                details.Result = $"Failed to fetch exchange info: {exchangeResult.Error}";
+                error = $"Failed to fetch exchange info: {exchangeResult.Error}";
                 transaction = null;
                 return false;
             }
@@ -144,12 +147,12 @@
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
             var orderType = OrderType.Market;
 
-            if (!_validator.TryValidate(_client, sellAction, "Sell", referenceCoin, exchangeInfo, details, cancellationToken, out sellAction))
+            if (!_validator.TryValidate(_client, sellAction, "Sell", referenceCoin, exchangeInfo, cancellationToken, out sellAction, out error))
             {
                 transaction = null;
                 return false;
             }
-            if(!_validator.TryValidate(_client, buyAction, "Buy", referenceCoin, exchangeInfo, details, cancellationToken, out buyAction))
+            if(!_validator.TryValidate(_client, buyAction, "Buy", referenceCoin, exchangeInfo, cancellationToken, out buyAction, out error))
             {
                 transaction = null;
                 return false;
@@ -165,7 +168,7 @@
 
             if (sellOrder.Error != null)
             {
-                details.Result = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
+                error = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
                 transaction = null;
                 return false;
             }
@@ -175,7 +178,7 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                details.Result = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
+                error = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
                 transaction = null;
                 return false;
             }
@@ -190,7 +193,7 @@
 
             if (buyOrder.Error != null)
             {
-                details.Result = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
+                error = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
@@ -201,7 +204,7 @@
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
             {
-                details.Result = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
+                error = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
@@ -237,9 +240,9 @@
             }
         }
         
-        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, AlgorithmSettings loopSettings)
+        public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin)
         {
-            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == loopSettings.ReferenceCoin);
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == referenceCoin);
             return symbol.MinNotionalFilter!.MinNotional;
         }
     }
