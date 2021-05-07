@@ -2,11 +2,11 @@
 {
     using System.Threading.Tasks;
 
-    public class SurfingStateMachine : SurfingStateMachineBase
+    public class StateMachine : SurfingStateMachineBase
     {
-        private readonly SurfingAlgorithmSettings _settings;
+        private readonly AlgorithmSettings _settings;
 
-        public SurfingStateMachine(SurfingAlgorithmSettings settings)
+        public StateMachine(AlgorithmSettings settings)
         {
             _settings = settings;
         }
