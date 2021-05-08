@@ -45,9 +45,7 @@
                 _ => throw new InvalidOperationException("Unsupported algorithm")
             };
 
-            var loop = new Loop(sequence);
-            loop.Start();
-            return loop;
+            return new Loop(sequence);
         }
     }
 }

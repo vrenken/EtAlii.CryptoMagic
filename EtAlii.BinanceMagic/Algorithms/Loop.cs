@@ -35,7 +35,7 @@
 
             lock (LockObject)
             {
-                _sequence.Initialize();
+                _sequence.Initialize(cancellationToken);
             }
 
             while (!cancellationToken.IsCancellationRequested)

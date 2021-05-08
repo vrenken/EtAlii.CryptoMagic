@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading;
 
     public class Data 
     {        
@@ -55,74 +56,21 @@
             return _transactions.Sum(t => t.Profit);
         }
 
-        // public bool TryGetSituation(TradeDetails details, CancellationToken cancellationToken, out Situation situation)
-        // {
-        //     if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourcePrice))
-        //     {
-        //         situation = null;
-        //         return false;
-        //     }
-        //
-        //     if (!_client.TryGetPrice(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var targetPrice))
-        //     {
-        //         situation = null;
-        //         return false;
-        //     }
-        //
-        //     if (!_client.TryGetTradeFees(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sourceMakerFee, out var _))
-        //     {
-        //         situation = null;
-        //         return false;
-        //     }
-        //     
-        //     if (!_client.TryGetTradeFees(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var _, out var destinationTakerFee))
-        //     {
-        //         situation = null;
-        //         return false;
-        //     }
-        //
-        //     if (!_client.TryGetTrend(details.SellCoin, _settings.ReferenceCoin, details, cancellationToken, out var sellTrend))
-        //     {
-        //         situation = null;
-        //         return false;
-        //     }
-        //     if (!_client.TryGetTrend(details.BuyCoin, _settings.ReferenceCoin, details, cancellationToken, out var buyTrend))
-        //     {
-        //         situation = null;
-        //         return false;
-        //     }
-        //
-        //
-        //     var lastSourcePurchase = FindLastPurchase(details.SellCoin);
-        //     var sourceDelta = new Delta
-        //     {
-        //         Coin = details.SellCoin,
-        //         PastPrice = lastSourcePurchase?.Price ?? sourcePrice,
-        //         PastQuantity = lastSourcePurchase?.Quantity ?? 0,
-        //         PresentPrice = sourcePrice,
-        //     };
-        //
-        //     var lastTargetSell = FindLastSell(details.BuyCoin);
-        //     var targetDelta = new Delta
-        //     {
-        //         Coin = details.BuyCoin,
-        //         PastPrice = lastTargetSell?.Price ?? targetPrice,
-        //         PastQuantity = lastTargetSell?.Quantity ?? 0,
-        //         PresentPrice = targetPrice
-        //     };
-        //     situation = new Situation
-        //     {
-        //         Source = sourceDelta,
-        //         SellFee = sourceMakerFee,
-        //         SellTrend = sellTrend,
-        //         Destination = targetDelta,
-        //         BuyFee = destinationTakerFee,
-        //         BuyTrend = buyTrend,
-        //         IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
-        //     };
-        //     
-        //     return true;
-        // }
+        public bool TryGetSituation(CancellationToken cancellationToken, TradeDetails details, out Situation situation)
+        {
+            if (!_client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, cancellationToken, out var trends, out var error))
+            {
+                details.Status = error;
+                situation = null;
+                return false;
+            }
+
+            situation = new Situation
+            {
+                Trends = trends
+            };
+            return true;
+        }
 
         public void AddTransaction(Transaction transaction)
         {
