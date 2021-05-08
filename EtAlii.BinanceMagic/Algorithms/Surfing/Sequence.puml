@@ -1,16 +1,17 @@
 @startuml
 'stateless namespace EtAlii.BinanceMagic.Surfing
-'stateless class SurfingStateMachineBase
+'stateless class SequenceBase
 
 title Automatic trading mechanism B: Coin surfin'.
 
-[*] --> Start
-Start --> GetTrends : Continue
+[*] --> Start : Start
+Start --> GetSituation : Continue
 Start : OnEntry:
 Start : - Load from disk.
 
 state DetermineOtherCoinValue <<choice>>
-GetTrends -down-> DetermineOtherCoinValue : Continue
+GetSituation -down-> DetermineOtherCoinValue << (Situation situation) >> : Continue 
+GetSituation -down-> Wait : Error
 note left of DetermineOtherCoinValue
 Calculation of worth is done 
 by comparing the current coin's 
@@ -57,6 +58,6 @@ state TransferToOtherCoin {
     WaitUntilCoinBought --> [*] : Continue
 }
 TransferToOtherCoin -down-> Wait
-Wait -up-> GetTrends : Continue
+Wait -up-> GetSituation : Continue
 
 @enduml

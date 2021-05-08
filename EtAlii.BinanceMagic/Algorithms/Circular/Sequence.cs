@@ -31,7 +31,7 @@ namespace EtAlii.BinanceMagic.Circular
             _circularAlgorithm = new Algorithm(settings, _data, program, client, _details, _statusProvider);
         }
 
-        public void Initialize()
+        public void Initialize(CancellationToken cancellationToken)
         {
             _data.Load();
         }

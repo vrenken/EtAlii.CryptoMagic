@@ -7,6 +7,6 @@ namespace EtAlii.BinanceMagic
         public IStatusProvider Status { get; }
         void Run(CancellationToken cancellationToken);
 
-        void Initialize();
+        void Initialize(CancellationToken cancellationToken);
     }
 }

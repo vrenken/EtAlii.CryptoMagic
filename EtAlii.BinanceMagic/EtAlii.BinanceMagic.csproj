@@ -36,10 +36,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Algorithms\Surfing\StateMachine.cs">
+      <Compile Update="Algorithms\Surfing\Sequence.cs">
         <DependentUpon>StateMachine.puml</DependentUpon>
       </Compile>
-      <StatelessFile Include="Algorithms\Surfing\StateMachine.puml" />
+      <StatelessFile Include="Algorithms\Surfing\Sequence.puml" />
     </ItemGroup>
 
 </Project>

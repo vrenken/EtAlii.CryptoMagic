@@ -2,7 +2,6 @@ namespace EtAlii.BinanceMagic.Tests
 {
     using System;
     using System.Threading;
-    using EtAlii.BinanceMagic.Circular;
     using Xunit;
 
     public class ClientTests : IClassFixture<TestContext>
@@ -61,7 +60,6 @@ namespace EtAlii.BinanceMagic.Tests
             var programSettings = _context.CreateProgramSettings();
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
-            var status = new TradeDetails();
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output)
             {
