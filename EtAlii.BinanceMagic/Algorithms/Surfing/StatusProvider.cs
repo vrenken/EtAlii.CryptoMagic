@@ -1,6 +1,7 @@
 ﻿namespace EtAlii.BinanceMagic.Surfing
 {
     using System;
+    using System.Threading.Tasks;
 
     public class StatusProvider : IStatusProvider
     {
@@ -21,22 +22,21 @@
         {
             var nextCheck = _details.NextCheck != DateTime.MinValue ? _details.NextCheck.ToString("yyyy-MM-dd HH:mm:ss") : "Now...";
             var lastSuccess = _details.LastSuccess != DateTime.MinValue ? _details.LastSuccess.ToString("yyyy-MM-dd HH:mm:ss") : "None";
-            var status = _details.Status ?? "Idle";
+            var status = _details.Status ?? "Waiting";
             
             _output.WriteLine("");
             WriteCoins();
+            WriteVolumes();
             WritePrices();
             WriteTrends();
-            //Write
-            //WriteColumns($"Sell         : +{_details.SellPrice:000.000000000} {_details.ReferenceCoin}",                  $"Quantity : +{_details.SellQuantity:000.000000000} {_details.SellCoin}",   $"Trend : {_details.SellTrend:+000.000;-000.000}", _details.SellPriceIsAboveNotionalMinimum ? InfoType.Positive : InfoType.Negative);
-            //WriteColumns($"Buy          : -{_details.BuyPrice:000.000000000} {_details.ReferenceCoin}",                   $"Quantity : -{_details.BuyQuantity:000.000000000} {_details.BuyCoin}",     $"Trend : {_details.BuyTrend:+000.000;-000.000}", _details.BuyPriceIsAboveNotionalMinimum ? InfoType.Positive : InfoType.Negative);
-            //WriteColumns($"Diff         : {differencePrefix}{_details.Difference:000.000000000} {_details.ReferenceCoin}",$"Target   : +{_details.Target:000.000000000} {_details.ReferenceCoin}", _details.SufficientProfit ? InfoType.Positive : InfoType.Negative);
             WriteColumns($"Last success  : {lastSuccess}", $"Last profit   : +{_details.LastProfit:000.000000000} {_details.PayoutCoin}");
             WriteColumns($"Next check    : {nextCheck}",   $"Total profit  : +{_details.LastProfit:000.000000000} {_details.PayoutCoin}");
             _output.WriteLine($"Step          : {_details.Step}");
             
             _output.WriteLine("");
             _output.WriteLine($"Status        : {status}");
+            
+            Task.Delay(TimeSpan.FromSeconds(2)).Wait();
         }
 
         private void WriteCoins()
@@ -53,7 +53,7 @@
                 Console.ForegroundColor = _details.CurrentCoin == trend.Coin
                     ? ConsoleColor.Yellow
                     : color;
-
+                
                 _output.Write(line);
                 Console.ForegroundColor = color;
                 _output.Write("|");
@@ -69,18 +69,41 @@
             Console.ForegroundColor = color;
         }
 
-        private void WriteTrends()
+        private void WriteVolumes()
         {
             string line;
-            ConsoleColor color;
+            string volumeAsText;
+            _output.Write("Volume        :");
             
+            foreach (var trend in _details.Trends)
+            {
+                volumeAsText = trend.Coin == _details.CurrentCoin
+                    ? $"{_details.CurrentVolume:000.000000000}"
+                    : "";
+                line = CenteredString(volumeAsText, CoinColumnWidth);
+                _output.Write(line);
+                _output.Write("|");
+            }
+            
+            volumeAsText = _details.CurrentCoin == _details.PayoutCoin
+                ? $"{_details.CurrentVolume:000.000000000}"
+                : "";
+            line = CenteredString(volumeAsText, CoinColumnWidth);
+            _output.WriteLine(line);
+        }
+
+        private void WriteTrends()
+        {
             _output.Write("Trends        :");
             
             foreach (var trend in _details.Trends)
             {
-                var trendAsText = $"{trend.Change}";
-                line = CenteredString(trendAsText, CoinColumnWidth);
-                color = Console.ForegroundColor;
+                var trendPrefix = trend.Change > 0 ? "+" : "";
+                trendPrefix = trend.Change == 0m ? " " : trendPrefix;
+
+                var trendAsText = $"{trendPrefix}{trend.Change}";
+                var line = CenteredString(trendAsText, CoinColumnWidth);
+                var color = Console.ForegroundColor;
                 Console.ForegroundColor = trend.Change > 0 
                     ? ConsoleColor.Green
                     : ConsoleColor.Red;

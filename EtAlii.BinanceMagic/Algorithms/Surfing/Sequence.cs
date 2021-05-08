@@ -1,4 +1,5 @@
-﻿#pragma warning disable SL2001
+﻿#nullable enable
+#pragma warning disable SL2001
 
 namespace EtAlii.BinanceMagic.Surfing
 {
@@ -7,7 +8,7 @@ namespace EtAlii.BinanceMagic.Surfing
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class Sequence : SequenceBase, ISequence
+    public partial class Sequence : SequenceBase, ISequence
     {
         private readonly AlgorithmSettings _settings;
         private readonly Data _data;
@@ -18,12 +19,20 @@ namespace EtAlii.BinanceMagic.Surfing
         private CancellationToken _cancellationToken;
         private readonly TradeDetails _details;
 
+        private Situation? _situation;
+        private Trend? _currentCoinTrend;
+        private Trend? _bestCoinTrend;
+
         public Sequence(AlgorithmSettings settings, IClient client, IOutput output)
         {
             _settings = settings;
-            _details = _details = new TradeDetails();
-            _details.PayoutCoin = _settings.PayoutCoin;
-             _status = new StatusProvider(output, _details);
+            _details = new TradeDetails
+            {
+                PayoutCoin = _settings.PayoutCoin, 
+                CurrentCoin = _settings.PayoutCoin,
+                CurrentVolume = _settings.InitialPurchase,
+            };
+            _status = new StatusProvider(output, _details);
             _data = new Data(client, settings, output);
         }
 
@@ -40,126 +49,78 @@ namespace EtAlii.BinanceMagic.Surfing
         protected override void OnStartEntered()
         {
             _data.Load();
+
+            var lastTransaction = _data.Transactions.LastOrDefault();
+            if (lastTransaction != null)
+            {
+                _details.CurrentVolume = lastTransaction.To.Quantity;
+                _details.CurrentCoin = lastTransaction.To.Symbol;
+                _details.LastSuccess = lastTransaction.Moment;
+                _details.LastProfit = lastTransaction.Profit;
+                _details.TotalProfit = _data.Transactions.Sum(t => t.Profit);
+            }
+            
             Continue();
         }
 
         protected override void OnGetSituationEntered()
         {
-            if(!_data.TryGetSituation(_cancellationToken, _details, out var situation))
+            _details.NextCheck = DateTime.MinValue;
+            _details.Status = "Fetching situation...";
+            _status.RaiseChanged();
+
+            if(!_data.TryGetSituation(_cancellationToken, _details, out _situation))
             {
                 Error();
+                return;
             }
 
-            _details.Trends = situation.Trends;
-            _details.CurrentCoin = situation.CurrentCoin;
-            _details.NextCheck = DateTime.Now;
+            _details.Trends = _situation.Trends;
             _status.RaiseChanged();
-            
-            Continue(situation);
+
+            Continue();
         }
-        /// <summary>
-        /// Implement this method to handle the entry of the 'BuyOtherCoin' state.
-        /// </summary>
-        protected override void OnBuyOtherCoinEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'BuyOtherCoin' state.
-        /// </summary>
-        protected override void OnBuyOtherCoinExited()
-        {
-        }
+   
         
         /// <summary>
         /// Implement this method to handle the entry of the 'DetermineOtherCoinValue' state.
         /// </summary>
-        protected override void OnDetermineOtherCoinValueEnteredFromContinueTrigger(DetermineOtherCoinValueEventArgs e, Situation situation)
+        protected override void OnDetermineCoinToBetOnEnteredFromContinueTrigger(DetermineCoinToBetOnEventArgs e)
         {
-            //situation.Trends
+            _currentCoinTrend = _situation!.Trends.SingleOrDefault(t => t.Coin == _situation.CurrentCoin);
+            _bestCoinTrend = _situation.Trends.OrderByDescending(t => t.Change).First();
 
-            if (_details.Trends.All(t => t.Change <= 0))
+            if (_situation.Trends.All(t => t.Change <= 0))
             {
-                e.AllCoinsHaveDownwardTrends();
+                if (_currentCoinTrend != null)
+                {
+                    e.AllCoinsHaveDownwardTrends();
+                }
+                else
+                {
+                    e.CurrentCoinHasBestTrend();
+                }
             }
-            
-            // e.CurrentCoinHasBestTrend();
-            // e.OtherCoinHasBetterTrend();
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'DetermineOtherCoinValue' state.
-        /// </summary>
-        protected override void OnDetermineOtherCoinValueExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'DetermineSymbolPair' state.
-        /// </summary>
-        protected override void OnDetermineSymbolPairEntered(DetermineSymbolPairEventArgs e)
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'DetermineSymbolPair' state.
-        /// </summary>
-        protected override void OnDetermineSymbolPairExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// _Begin --&gt; DetermineSymbolPair : _BeginToDetermineSymbolPair<br/>
-        /// </summary>
-        protected override void OnDetermineSymbolPairEnteredFrom_BeginToDetermineSymbolPairTrigger(DetermineSymbolPairEventArgs e)
-        {
-            //e.IsNoSymbolPair();
-            e.IsSymbolPair();
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'SellAsSymbolPair' state.
-        /// </summary>
-        protected override void OnSellAsSymbolPairEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'SellAsSymbolPair' state.
-        /// </summary>
-        protected override void OnSellAsSymbolPairExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// DetermineSymbolPair --&gt; SellAsSymbolPair : IsSymbolPair<br/>
-        /// </summary>
-        protected override void OnSellAsSymbolPairEnteredFromIsSymbolPairTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'SellCurrentCoin' state.
-        /// </summary>
-        protected override void OnSellCurrentCoinEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'SellCurrentCoin' state.
-        /// </summary>
-        protected override void OnSellCurrentCoinExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// DetermineSymbolPair --&gt; SellCurrentCoin : IsNoSymbolPair<br/>
-        /// </summary>
-        protected override void OnSellCurrentCoinEnteredFromIsNoSymbolPairTrigger()
-        {
+            else if (_currentCoinTrend == null)
+            {
+                // No coin. we need to select one.
+                e.NoPreviousCoin();
+            }
+            else
+            {
+                if (_bestCoinTrend.Coin == _situation.CurrentCoin)
+                {
+                    // The current coin still has the best trend. Let's stick with it.
+                    _details.Status = "No better situation found";
+                    _status.RaiseChanged();
+                    e.CurrentCoinHasBestTrend();
+                }
+                else
+                {
+                    // The current coin does no longer have the best trend. Let's dump it.
+                    e.OtherCoinHasBetterTrend();
+                }
+            }
         }
         
         /// <summary>
@@ -185,55 +146,14 @@ namespace EtAlii.BinanceMagic.Surfing
         }
         
         /// <summary>
-        /// Implement this method to handle the entry of the 'TransferToOtherCoin' state.
-        /// </summary>
-        protected override void OnTransferToOtherCoinEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'TransferToOtherCoin' state.
-        /// </summary>
-        protected override void OnTransferToOtherCoinExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// DetermineOtherCoinValue --&gt; TransferToOtherCoin : OtherCoinHasBetterTrend<br/>
-        /// </summary>
-        protected override void OnTransferToOtherCoinEnteredFromOtherCoinHasBetterTrendTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'TransferToUsdt' state.
-        /// </summary>
-        protected override void OnTransferToUsdtEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'TransferToUsdt' state.
-        /// </summary>
-        protected override void OnTransferToUsdtExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// DetermineOtherCoinValue --&gt; TransferToUsdt : AllCoinsHaveDownwardTrends<br/>
-        /// </summary>
-        protected override void OnTransferToUsdtEnteredFromAllCoinsHaveDownwardTrendsTrigger()
-        {
-        }
-        
-        /// <summary>
         /// Implement this method to handle the entry of the 'Wait' state.
         /// </summary>
         protected override void OnWaitEntered()
         {
-            Task.Delay(_settings.ActionInterval).Wait();
+            _details.Status = null;
+            _details.NextCheck = DateTime.Now + _settings.ActionInterval;
+            _status.RaiseChanged();
+            Task.Delay(_settings.ActionInterval, _cancellationToken).Wait(_cancellationToken);
             Continue();
         }
         
@@ -249,71 +169,6 @@ namespace EtAlii.BinanceMagic.Surfing
         /// DetermineOtherCoinValue --&gt; Wait : CurrentCoinHasBestTrend<br/>
         /// </summary>
         protected override void OnWaitEnteredFromCurrentCoinHasBestTrendTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// TransferToUsdt --&gt; Wait : TransferToUsdtToWait<br/>
-        /// </summary>
-        protected override void OnWaitEnteredFromTransferToUsdtToWaitTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// TransferToOtherCoin --&gt; Wait : TransferToOtherCoinToWait<br/>
-        /// </summary>
-        protected override void OnWaitEnteredFromTransferToOtherCoinToWaitTrigger()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'WaitUntilCoinBought' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinBoughtEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'WaitUntilCoinBought' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinBoughtExited()
-        {
-        }
-
-        /// <summary>
-        /// Implement this method to handle the exit of the 'WaitUntilCoinSold' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'WaitUntilCoinSoldAsSymbolPair' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldAsSymbolPairEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'WaitUntilCoinSoldAsSymbolPair' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldAsSymbolPairExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'WaitUntilCoinSoldInUsdtTransfer' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldInUsdtTransferEntered()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the exit of the 'WaitUntilCoinSoldInUsdtTransfer' state.
-        /// </summary>
-        protected override void OnWaitUntilCoinSoldInUsdtTransferExited()
         {
         }
     }

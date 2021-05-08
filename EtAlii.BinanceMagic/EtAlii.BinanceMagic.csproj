@@ -7,7 +7,7 @@
 
     <ItemGroup>
       <PackageReference Include="Binance.Net" Version="6.13.3" />
-      <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.16" />
+      <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.17" />
       <PackageReference Include="stateless" Version="5.11.0" />
     </ItemGroup>
 
@@ -37,9 +37,24 @@
 
     <ItemGroup>
       <Compile Update="Algorithms\Surfing\Sequence.cs">
-        <DependentUpon>StateMachine.puml</DependentUpon>
+        <DependentUpon>Sequence.puml</DependentUpon>
       </Compile>
       <StatelessFile Include="Algorithms\Surfing\Sequence.puml" />
+      <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.IsNoSymbolPair.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.SymbolPair.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Algorithms\Surfing\Sequence.ToUsdt.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Algorithms\Surfing\Sequence.FromUsdt.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
