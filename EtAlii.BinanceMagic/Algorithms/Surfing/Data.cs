@@ -67,6 +67,7 @@
 
             situation = new Situation
             {
+                CurrentCoin = details.CurrentCoin,
                 Trends = trends
             };
             return true;

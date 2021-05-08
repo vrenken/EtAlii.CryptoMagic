@@ -9,8 +9,10 @@ Start --> GetSituation : Continue
 Start : OnEntry:
 Start : - Load from disk.
 
-state DetermineOtherCoinValue <<choice>>
-GetSituation -down-> DetermineOtherCoinValue << (Situation situation) >> : Continue 
+Wait -up-> GetSituation : Continue
+
+state DetermineCoinToBetOn <<choice>>
+GetSituation -down-> DetermineCoinToBetOn : Continue 
 GetSituation -down-> Wait : Error
 note left of DetermineOtherCoinValue
 Calculation of worth is done 
@@ -21,9 +23,10 @@ If the stakes for the other coin
 are better we are better of switching.
 end note
 
-DetermineOtherCoinValue --> Wait : CurrentCoinHasBestTrend
-DetermineOtherCoinValue --> TransferToOtherCoin : OtherCoinHasBetterTrend
-DetermineOtherCoinValue --> TransferToUsdt : AllCoinsHaveDownwardTrends
+DetermineCoinToBetOn --> Wait : CurrentCoinHasBestTrend
+DetermineCoinToBetOn --> TransferToOtherCoin : OtherCoinHasBetterTrend
+DetermineCoinToBetOn --> TransferToUsdt : AllCoinsHaveDownwardTrends
+DetermineCoinToBetOn --> TransferFromUsdt : NoPreviousCoin
 note left of TransferToUsdt
 In case all coins signal a 
 downwards trend there is 
@@ -35,9 +38,18 @@ state TransferToUsdt {
     state "WaitUntilCoinSold" as WaitUntilCoinSoldInUsdtTransfer
     [*] --> SellCurrentCoinInUsdtTransfer
     SellCurrentCoinInUsdtTransfer --> WaitUntilCoinSoldInUsdtTransfer : Continue
-    WaitUntilCoinSoldInUsdtTransfer --> [*] : Continue
+    WaitUntilCoinSoldInUsdtTransfer --> [*]
 }
-TransferToUsdt -down-> Wait
+TransferToUsdt -down-> Wait : Continue
+
+state TransferFromUsdt {
+    state "BuyCurrentCoin" as BuyCurrentCoinInUsdtTransfer
+    state "WaitUntilCoinBought" as WaitUntilCoinBoughtInUsdtTransfer
+    [*] --> BuyCurrentCoinInUsdtTransfer
+    BuyCurrentCoinInUsdtTransfer --> WaitUntilCoinBoughtInUsdtTransfer : Continue
+    WaitUntilCoinBoughtInUsdtTransfer --> [*]
+}
+TransferFromUsdt -down-> Wait : Continue
 
 note right of TransferToOtherCoin
 If another coin has better future predictions 
@@ -51,13 +63,11 @@ state TransferToOtherCoin {
     DetermineSymbolPair --> SellCurrentCoin : IsNoSymbolPair
     DetermineSymbolPair --> SellAsSymbolPair : IsSymbolPair
     SellAsSymbolPair --> WaitUntilCoinSoldAsSymbolPair : Continue
-    WaitUntilCoinSoldAsSymbolPair --> [*] : Continue
+    WaitUntilCoinSoldAsSymbolPair --> [*]
     SellCurrentCoin --> WaitUntilCoinSold : Continue
     WaitUntilCoinSold --> BuyOtherCoin : Continue
     BuyOtherCoin --> WaitUntilCoinBought : Continue
-    WaitUntilCoinBought --> [*] : Continue
+    WaitUntilCoinBought --> [*]
 }
-TransferToOtherCoin -down-> Wait
-Wait -up-> GetSituation : Continue
-
+TransferToOtherCoin -down-> Wait : Continue
 @enduml

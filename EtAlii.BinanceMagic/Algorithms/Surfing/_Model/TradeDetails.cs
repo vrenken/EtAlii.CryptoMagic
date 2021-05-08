@@ -5,9 +5,10 @@
     public class TradeDetails
     {
         public string CurrentCoin { get; set; }
+        public decimal CurrentVolume { get; set; }
         public string PayoutCoin { get; set; }
-        public decimal[] Owned { get; set; } 
-        public Trend[] Trends { get; set; }
+        public decimal[] Owned { get; set; }
+        public Trend[] Trends { get; set; } = Array.Empty<Trend>();
         
         public DateTime LastSuccess { get; set; }
         public DateTime NextCheck { get; set; }
