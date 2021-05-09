@@ -15,6 +15,20 @@
             _details.Status = $"Buying {_bestCoinTrend!.Coin}/{_details.PayoutCoin}...";
             _status.RaiseChanged();
 
+            var buyAction = new BuyAction
+            {
+                Coin = _bestCoinTrend.Coin,
+                Price = _details.CurrentVolume * _settings.TransferFactor,
+                TransactionId = "Surfing" 
+            };
+            
+            if (!_client.TryBuy(buyAction, _settings.PayoutCoin, _cancellationToken, _timeManager.GetNow, out _coinsBought, out var error))
+            {
+                _details.Status = error;
+                _status.RaiseChanged();
+                return;
+            }
+                
             Continue();
         }
 
@@ -29,22 +43,17 @@
 
         protected override void OnWaitUntilCoinBoughtInUsdtTransferExited()
         {
-            var now = DateTime.Now;
+            var now = _timeManager.GetNow();
             var transaction = new Transaction
             {
                 Moment = now,
                 From = new Coin
                 {
                     Symbol = _details.PayoutCoin,
-                    Price = 0,
+                    QuoteQuantity = 0,
                     Quantity = 0,
                 },
-                To = new Coin
-                {
-                    Symbol = _bestCoinTrend!.Coin,
-                    Price = _bestCoinTrend.Price,
-                    Quantity = 0,
-                },
+                To = _coinsBought,
                 Profit = 0,
                 Target = 0,
             };
@@ -53,7 +62,9 @@
             _details.Status = null;
             _details.Step += 1;
             _details.LastSuccess = now;
+            _details.TotalProfit = _coinsBought!.Quantity * _coinsBought.Price - _settings.InitialPurchase;
             _details.CurrentCoin = _bestCoinTrend!.Coin;
+            _details.CurrentVolume = _coinsBought!.Quantity;
             _status.RaiseChanged();
         }
     }

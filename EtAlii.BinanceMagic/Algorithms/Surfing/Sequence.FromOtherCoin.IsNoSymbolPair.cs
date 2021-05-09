@@ -13,6 +13,20 @@ namespace EtAlii.BinanceMagic.Surfing
             _details.Status = $"Selling {_details.CurrentCoin}/{_details.PayoutCoin}...";
             _status.RaiseChanged();
             
+            var sellAction = new SellAction
+            {
+                Coin = _currentCoinTrend!.Coin,
+                Quantity = _details.CurrentVolume * _settings.TransferFactor,
+                TransactionId = "Surfing" 
+            };
+            
+            if (!_client.TrySell(sellAction, _settings.PayoutCoin, _cancellationToken, _timeManager.GetNow, out _coinsSold, out var error))
+            {
+                _details.Status = error;
+                _status.RaiseChanged();
+                return;
+            }
+
             Continue();
         }
 
@@ -31,6 +45,20 @@ namespace EtAlii.BinanceMagic.Surfing
         {
             _details.Status = $"Buying {_bestCoinTrend!.Coin}/{_details.PayoutCoin}...";
             _status.RaiseChanged();
+
+            var buyAction = new BuyAction
+            {
+                Coin = _bestCoinTrend.Coin,
+                Price = _coinsSold!.QuoteQuantity * _settings.TransferFactor,
+                TransactionId = "Surfing" 
+            };
+            
+            if (!_client.TryBuy(buyAction, _settings.PayoutCoin, _cancellationToken, _timeManager.GetNow, out _coinsBought, out var error))
+            {
+                _details.Status = error;
+                _status.RaiseChanged();
+                return;
+            }
 
             Continue();
         }

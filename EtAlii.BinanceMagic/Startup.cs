@@ -16,7 +16,7 @@ namespace EtAlii.BinanceMagic
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output)
             {
-                PlaceTestOrders = true,
+                //PlaceTestOrders = true,
             };
             
             client.Start();
@@ -126,7 +126,7 @@ namespace EtAlii.BinanceMagic
                 {
                     AllowedCoins = new[] { "BTC", "BNB", "ETH", "LTC", "XMR", "ADA", "RUNE" },
                     PayoutCoin = "USDT",
-                    ActionInterval = TimeSpan.FromSeconds(20),// TimeSpan.FromMinutes(1),
+                    ActionInterval = TimeSpan.FromMinutes(1), // TimeSpan.FromSeconds(20),// 
                     InitialPurchase = 100m // in USDT
                 }
             });

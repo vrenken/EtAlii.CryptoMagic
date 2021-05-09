@@ -33,19 +33,9 @@
             var transaction = new Transaction
             {
                 Moment = now,
-                From = new Coin
-                {
-                    Symbol = _currentCoinTrend!.Coin,
-                    Price = _currentCoinTrend.Price,
-                    Quantity = 0,
-                },
-                To = new Coin
-                {
-                    Symbol = _bestCoinTrend!.Coin,
-                    Price = _bestCoinTrend.Price,
-                    Quantity = 0,
-                },
-                Profit = 0,
+                From = _coinsSold,
+                To = _coinsBought,
+                Profit = _coinsSold!.QuoteQuantity - _coinsBought!.QuoteQuantity,
                 Target = 0,
             };
             _data.AddTransaction(transaction);
@@ -53,7 +43,10 @@
             _details.Status = null;
             _details.Step += 1;
             _details.LastSuccess = now;
+            _details.LastProfit = transaction.Profit;
+            _details.TotalProfit = _coinsBought!.Quantity * _coinsBought.Price - _settings.InitialPurchase;
             _details.CurrentCoin = _bestCoinTrend!.Coin;
+            _details.CurrentVolume = _coinsBought!.Quantity;
             _status.RaiseChanged();
         }
     }

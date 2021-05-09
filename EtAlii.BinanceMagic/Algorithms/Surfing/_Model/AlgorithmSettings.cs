@@ -8,6 +8,7 @@ namespace EtAlii.BinanceMagic.Surfing
         public string[] AllowedCoins { get; init; }  = { "BTC", "BNB", "ETH", "LTC", "XMR", "ADA", "RUNE" }; // "ETH"
         public string PayoutCoin  { get; init; } = "USDT";
         public decimal InitialPurchase { get; init; }
+        public decimal TransferFactor { get; init; } = 0.98m;
         public TimeSpan ActionInterval  { get; init; } = TimeSpan.FromMinutes(1);
     }
 }

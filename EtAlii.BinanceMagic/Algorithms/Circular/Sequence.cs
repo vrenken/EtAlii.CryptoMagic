@@ -61,8 +61,10 @@ namespace EtAlii.BinanceMagic.Circular
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged();
 
-                if (!_data.TryGetSituation(_details, cancellationToken, out var situation))
+                if (!_data.TryGetSituation(_details, cancellationToken, out var situation, out var error))
                 {
+                    _details.Result = error;
+                    _statusProvider.RaiseChanged();
                     shouldDelay = true;
                     continue;
                 }
@@ -71,10 +73,11 @@ namespace EtAlii.BinanceMagic.Circular
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged();
 
-                if (!_client.TryGetExchangeInfo(cancellationToken, out var exchangeInfo, out var error))
+                if (!_client.TryGetExchangeInfo(cancellationToken, out var exchangeInfo, out error))
                 {
                     shouldDelay = true;
                     _details.Result = error;
+                    _statusProvider.RaiseChanged();
                     continue;
                 }
                 situation = situation with { ExchangeInfo = exchangeInfo };

@@ -143,14 +143,14 @@ namespace EtAlii.BinanceMagic
                 From = new Coin
                 {
                     Symbol = sellAction.Coin,
-                    Price = sellAction.Price,
+                    QuoteQuantity = sellAction.Price,
                     Quantity = sellAction.Quantity
 
                 },
                 To = new Coin
                 {
                     Symbol = buyAction.Coin,
-                    Price = buyAction.Price,
+                    QuoteQuantity = buyAction.Price,
                     Quantity = buyAction.Quantity
                 },
                 Moment = getNow(),
@@ -158,6 +158,18 @@ namespace EtAlii.BinanceMagic
             };
             error = null;
             return true;
+        }
+
+        public bool TrySell(SellAction sellAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow,
+            out Coin coinsSold, out string error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryBuy(BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow,
+            out Coin coinsBought, out string error)
+        {
+            throw new NotImplementedException();
         }
 
         public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin)

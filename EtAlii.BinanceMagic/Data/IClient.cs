@@ -17,8 +17,12 @@ namespace EtAlii.BinanceMagic
 
         bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo, out string error);
         
-        bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error);
         
         decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin);
+
+        bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error);
+        bool TrySell(SellAction sellAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Coin coinsSold, out string error);
+
+        bool TryBuy(BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Coin coinsBought, out string error);
     }
 }

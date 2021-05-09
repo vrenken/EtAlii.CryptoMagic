@@ -23,20 +23,24 @@
             var nextCheck = _details.NextCheck != DateTime.MinValue ? _details.NextCheck.ToString("yyyy-MM-dd HH:mm:ss") : "Now...";
             var lastSuccess = _details.LastSuccess != DateTime.MinValue ? _details.LastSuccess.ToString("yyyy-MM-dd HH:mm:ss") : "None";
             var status = _details.Status ?? "Waiting";
-            
+
+            var totalProfit = _details.TotalProfit;
+            var totalProfitPrefix = totalProfit > 0 ? "+" : "";
+            totalProfitPrefix = totalProfit == 0m ? " " : totalProfitPrefix;
+
             _output.WriteLine("");
             WriteCoins();
             WriteVolumes();
             WritePrices();
             WriteTrends();
             WriteColumns($"Last success  : {lastSuccess}", $"Last profit   : +{_details.LastProfit:000.000000000} {_details.PayoutCoin}");
-            WriteColumns($"Next check    : {nextCheck}",   $"Total profit  : +{_details.LastProfit:000.000000000} {_details.PayoutCoin}");
+            WriteColumns($"Next check    : {nextCheck}",   $"Total profit  : {totalProfitPrefix}{totalProfit:000.000000000} {_details.PayoutCoin}");
             _output.WriteLine($"Step          : {_details.Step}");
             
             _output.WriteLine("");
             _output.WriteLine($"Status        : {status}");
             
-            Task.Delay(TimeSpan.FromSeconds(2)).Wait();
+            Task.Delay(TimeSpan.FromMilliseconds(10)).Wait();
         }
 
         private void WriteCoins()

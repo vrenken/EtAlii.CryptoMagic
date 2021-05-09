@@ -62,55 +62,48 @@
         {
             return _transactions.Sum(t => t.Profit);
         }
-        public bool TryGetSituation(TradeDetails details, CancellationToken cancellationToken, out Situation situation)
+        public bool TryGetSituation(TradeDetails details, CancellationToken cancellationToken, out Situation situation, out string error)
         {
-            if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sourcePrice, out var error))
+            if (!_client.TryGetPrice(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sourcePrice, out error))
             {
-                details.Result = error;
                 situation = null;
                 return false;
             }
 
             if (!_client.TryGetPrice(details.BuyCoin, _settings.ReferenceCoin, cancellationToken, out var targetPrice, out error))
             {
-                details.Result = error;
                 situation = null;
                 return false;
             }
 
             if (!_client.TryGetTradeFees(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sourceMakerFee, out var _, out error))
             {
-                details.Result = error;
                 situation = null;
                 return false;
             }
             
             if (!_client.TryGetTradeFees(details.BuyCoin, _settings.ReferenceCoin, cancellationToken, out var _, out var destinationTakerFee, out error))
             {
-                details.Result = error;
                 situation = null;
                 return false;
             }
 
             if (!_client.TryGetTrend(details.SellCoin, _settings.ReferenceCoin, cancellationToken, out var sellTrend, out error))
             {
-                details.Result = error;
                 situation = null;
                 return false;
             }
             if (!_client.TryGetTrend(details.BuyCoin, _settings.ReferenceCoin, cancellationToken, out var buyTrend, out error))
             {
-                details.Result = error;
                 situation = null;
                 return false;
             }
-
 
             var lastSourcePurchase = FindLastPurchase(details.SellCoin);
             var sourceDelta = new Delta
             {
                 Coin = details.SellCoin,
-                PastPrice = lastSourcePurchase?.Price ?? sourcePrice,
+                PastPrice = lastSourcePurchase?.QuoteQuantity ?? sourcePrice,
                 PastQuantity = lastSourcePurchase?.Quantity ?? 0,
                 PresentPrice = sourcePrice,
             };
@@ -119,7 +112,7 @@
             var targetDelta = new Delta
             {
                 Coin = details.BuyCoin,
-                PastPrice = lastTargetSell?.Price ?? targetPrice,
+                PastPrice = lastTargetSell?.QuoteQuantity ?? targetPrice,
                 PastQuantity = lastTargetSell?.Quantity ?? 0,
                 PresentPrice = targetPrice
             };
@@ -133,7 +126,8 @@
                 BuyTrend = buyTrend,
                 IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
             };
-            
+
+            error = null;
             return true;
         }
 
