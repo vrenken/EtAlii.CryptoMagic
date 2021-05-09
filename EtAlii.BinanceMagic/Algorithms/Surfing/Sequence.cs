@@ -11,21 +11,27 @@ namespace EtAlii.BinanceMagic.Surfing
     public partial class Sequence : SequenceBase, ISequence
     {
         private readonly AlgorithmSettings _settings;
+        private readonly IClient _client;
         private readonly Data _data;
-
+        private readonly ITimeManager _timeManager;
+        private readonly TradeDetails _details;
+        
         public IStatusProvider Status => _status;
         private readonly StatusProvider _status;
 
         private CancellationToken _cancellationToken;
-        private readonly TradeDetails _details;
-
         private Situation? _situation;
         private Trend? _currentCoinTrend;
         private Trend? _bestCoinTrend;
+        private Coin? _coinsSold;
+        private Coin? _coinsBought;
 
-        public Sequence(AlgorithmSettings settings, IClient client, IOutput output)
+        public Sequence(AlgorithmSettings settings, IClient client, IOutput output, ITimeManager timeManager)
         {
             _settings = settings;
+            _client = client;
+            _timeManager = timeManager;
+            
             _details = new TradeDetails
             {
                 PayoutCoin = _settings.PayoutCoin, 
@@ -57,7 +63,7 @@ namespace EtAlii.BinanceMagic.Surfing
                 _details.CurrentCoin = lastTransaction.To.Symbol;
                 _details.LastSuccess = lastTransaction.Moment;
                 _details.LastProfit = lastTransaction.Profit;
-                _details.TotalProfit = _data.Transactions.Sum(t => t.Profit);
+                _details.TotalProfit = lastTransaction.To.Quantity * lastTransaction.To.Price - _settings.InitialPurchase;
             }
             
             Continue();
@@ -69,13 +75,16 @@ namespace EtAlii.BinanceMagic.Surfing
             _details.Status = "Fetching situation...";
             _status.RaiseChanged();
 
-            if(!_data.TryGetSituation(_cancellationToken, _details, out _situation))
+            if(!_data.TryGetSituation(_cancellationToken, _details, out _situation, out string error))
             {
+                _details.Status = error;
+                _status.RaiseChanged();
                 Error();
                 return;
             }
 
             _details.Trends = _situation.Trends;
+            _details.Status = "Fetching situation: Done";
             _status.RaiseChanged();
 
             Continue();
@@ -87,6 +96,9 @@ namespace EtAlii.BinanceMagic.Surfing
         /// </summary>
         protected override void OnDetermineCoinToBetOnEnteredFromContinueTrigger(DetermineCoinToBetOnEventArgs e)
         {
+            _details.Status = "Determining best trend...";
+            _status.RaiseChanged();
+
             _currentCoinTrend = _situation!.Trends.SingleOrDefault(t => t.Coin == _situation.CurrentCoin);
             _bestCoinTrend = _situation.Trends.OrderByDescending(t => t.Change).First();
 
@@ -94,16 +106,22 @@ namespace EtAlii.BinanceMagic.Surfing
             {
                 if (_currentCoinTrend != null)
                 {
+                    _details.Status = "Determining best trend: All coins have downward trends";
+                    _status.RaiseChanged();
                     e.AllCoinsHaveDownwardTrends();
                 }
                 else
                 {
+                    _details.Status = "Determining best trend: Current coin has best trend";
+                    _status.RaiseChanged();
                     e.CurrentCoinHasBestTrend();
                 }
             }
             else if (_currentCoinTrend == null)
             {
                 // No coin. we need to select one.
+                _details.Status = "Determining best trend: No previous coin";
+                _status.RaiseChanged();
                 e.NoPreviousCoin();
             }
             else
@@ -111,13 +129,15 @@ namespace EtAlii.BinanceMagic.Surfing
                 if (_bestCoinTrend.Coin == _situation.CurrentCoin)
                 {
                     // The current coin still has the best trend. Let's stick with it.
-                    _details.Status = "No better situation found";
+                    _details.Status = "Determining best trend: Current coin has best trend";
                     _status.RaiseChanged();
                     e.CurrentCoinHasBestTrend();
                 }
                 else
                 {
                     // The current coin does no longer have the best trend. Let's dump it.
+                    _details.Status = "Determining best trend: Other coin has better trend";
+                    _status.RaiseChanged();
                     e.OtherCoinHasBetterTrend();
                 }
             }

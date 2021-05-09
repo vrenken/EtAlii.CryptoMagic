@@ -7,12 +7,15 @@
         public string Symbol { get; init; }
         public decimal Quantity { get; init; }
         public decimal Price { get; init; }
+        public decimal QuoteQuantity { get; init; }
 
         public static void Write(StreamWriter sw, Coin coin)
         {
             sw.Write(coin.Symbol);
             sw.Write("=");
             sw.Write(coin.Quantity);
+            sw.Write("=");
+            sw.Write(coin.QuoteQuantity);
             sw.Write("=");
             sw.Write(coin.Price);
         }
@@ -24,7 +27,8 @@
             {
                 Symbol = parts[0],
                 Quantity = decimal.Parse(parts[1]),
-                Price = decimal.Parse(parts[2]),
+                QuoteQuantity = decimal.Parse(parts[2]),
+                Price = decimal.Parse(parts[3]),
             };
         }
     }

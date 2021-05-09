@@ -56,11 +56,10 @@
             return _transactions.Sum(t => t.Profit);
         }
 
-        public bool TryGetSituation(CancellationToken cancellationToken, TradeDetails details, out Situation situation)
+        public bool TryGetSituation(CancellationToken cancellationToken, TradeDetails details, out Situation situation, out string error)
         {
-            if (!_client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, cancellationToken, out var trends, out var error))
+            if (!_client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, cancellationToken, out var trends, out error))
             {
-                details.Status = error;
                 situation = null;
                 return false;
             }

@@ -31,13 +31,13 @@ namespace EtAlii.BinanceMagic.Tests
                 From = new Coin
                 {
                     Symbol = fromCoin,
-                    Price = fromPrice,
+                    QuoteQuantity = fromPrice,
                     Quantity = fromQuantity,
                 },
                 To = new Coin
                 {
                     Symbol = toCoin,
-                    Price = toPrice,
+                    QuoteQuantity = toPrice,
                     Quantity = toQuantity,
                 },
                 Moment = DateTime.Now,
