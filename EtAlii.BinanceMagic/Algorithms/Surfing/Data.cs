@@ -58,7 +58,7 @@
 
         public bool TryGetSituation(CancellationToken cancellationToken, TradeDetails details, out Situation situation, out string error)
         {
-            if (!_client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, cancellationToken, out var trends, out error))
+            if (!_client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, _settings.RsiPeriod, cancellationToken, out var trends, out error))
             {
                 situation = null;
                 return false;

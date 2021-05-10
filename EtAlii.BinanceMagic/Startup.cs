@@ -124,10 +124,14 @@ namespace EtAlii.BinanceMagic
                 Time = new RealtimeTimeManager(),
                 Algorithm = new Surfing.AlgorithmSettings
                 {
-                    AllowedCoins = new[] { "BTC", "BNB", "ETH", "LTC", "XMR", "ADA", "RUNE" },
+                    AllowedCoins = new[] { "BTC", "BNB", "LTC", "XMR", "ADA", "RUNE" }, // "ETH", 
                     PayoutCoin = "USDT",
                     ActionInterval = TimeSpan.FromMinutes(1), // TimeSpan.FromSeconds(20),// 
-                    InitialPurchase = 100m // in USDT
+                    InitialPurchase = 100m, // in USDT
+                    TransferFactor = 0.995m,
+                    RsiOverSold = 0.60m,
+                    RsiOverBought = 0.70m,
+                    RsiPeriod = 6,
                 }
             });
 

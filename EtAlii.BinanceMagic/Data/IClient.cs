@@ -13,7 +13,7 @@ namespace EtAlii.BinanceMagic
 
         bool TryGetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error);
         bool TryGetTrend(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal trend, out string error);
-        bool TryGetTrends(string[] coin, string referenceCoin, CancellationToken cancellationToken, out Trend[] trends, out string error);
+        bool TryGetTrends(string[] coin, string referenceCoin, int period, CancellationToken cancellationToken, out Trend[] trends, out string error);
 
         bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo, out string error);
         
