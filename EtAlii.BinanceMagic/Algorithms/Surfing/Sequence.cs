@@ -38,7 +38,7 @@ namespace EtAlii.BinanceMagic.Surfing
                 CurrentCoin = _settings.PayoutCoin,
                 CurrentVolume = _settings.InitialPurchase,
             };
-            _status = new StatusProvider(output, _details);
+            _status = new StatusProvider(output, _details, settings);
             _data = new Data(client, settings, output);
         }
 
@@ -100,68 +100,62 @@ namespace EtAlii.BinanceMagic.Surfing
             _status.RaiseChanged();
 
             _currentCoinTrend = _situation!.Trends.SingleOrDefault(t => t.Coin == _situation.CurrentCoin);
-            _bestCoinTrend = _situation.Trends.OrderByDescending(t => t.Change).First();
+            _bestCoinTrend = _situation.Trends.OrderByDescending(t => t.Rsi).First();
 
-            if (_situation.Trends.All(t => t.Change <= 0))
+            if (_currentCoinTrend == null)
             {
-                if (_currentCoinTrend != null)
+                if (_bestCoinTrend.Rsi >= _settings.RsiOverBought)
                 {
-                    _details.Status = "Determining best trend: All coins have downward trends";
+                    // No coin. we need to select one.
+                    _details.Status = "Determining best trend: No previous coin";
                     _status.RaiseChanged();
-                    e.AllCoinsHaveDownwardTrends();
+                    e.NoPreviousCoin();
                 }
                 else
                 {
-                    _details.Status = "Determining best trend: Current coin has best trend";
+                    _details.Status = "Determining best trend: No coin has upward trend";
                     _status.RaiseChanged();
                     e.CurrentCoinHasBestTrend();
                 }
-            }
-            else if (_currentCoinTrend == null)
-            {
-                // No coin. we need to select one.
-                _details.Status = "Determining best trend: No previous coin";
-                _status.RaiseChanged();
-                e.NoPreviousCoin();
             }
             else
             {
-                if (_bestCoinTrend.Coin == _situation.CurrentCoin)
+                if (_currentCoinTrend.Coin == _bestCoinTrend.Coin && _bestCoinTrend.Rsi >= _settings.RsiOverSold)
                 {
-                    // The current coin still has the best trend. Let's stick with it.
                     _details.Status = "Determining best trend: Current coin has best trend";
                     _status.RaiseChanged();
                     e.CurrentCoinHasBestTrend();
                 }
-                else
+                // if (_currentCoinTrend.Rsi >= _settings.RsiOverBought)
+                // {
+                //     _details.Status = "Determining best trend: Current coin has best trend";
+                //     _status.RaiseChanged();
+                //     e.CurrentCoinHasBestTrend();
+                // }
+                else 
                 {
-                    // The current coin does no longer have the best trend. Let's dump it.
-                    _details.Status = "Determining best trend: Other coin has better trend";
-                    _status.RaiseChanged();
-                    e.OtherCoinHasBetterTrend();
+                    //if (_bestCoinTrend.Rsi > _currentCoinTrend.Rsi &&  > _bestCoinTrend.Rsi >= _settings.RsiOverSold)
+                    if (_bestCoinTrend.Rsi > _currentCoinTrend.Rsi && _bestCoinTrend.Rsi >= _settings.RsiOverBought)
+                    {
+                        // The current coin does no longer have the best trend. Let's dump it.
+                        _details.Status = "Determining best trend: Other coin has better trend";
+                        _status.RaiseChanged();
+                        e.OtherCoinHasBetterTrend();
+                    }
+                    else
+                    {
+                        _details.Status = "Determining best trend: All coins have downward trends";
+                        _status.RaiseChanged();
+                        e.AllCoinsHaveDownwardTrends();
+                    }
                 }
             }
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the entry of the 'SellCurrentCoinInUsdtTransfer' state.
-        /// </summary>
-        protected override void OnSellCurrentCoinInUsdtTransferEntered()
-        {
         }
         
         /// <summary>
         /// Implement this method to handle the exit of the 'SellCurrentCoinInUsdtTransfer' state.
         /// </summary>
         protected override void OnSellCurrentCoinInUsdtTransferExited()
-        {
-        }
-        
-        /// <summary>
-        /// Implement this method to handle the transition below:<br/>
-        /// _Begin --&gt; SellCurrentCoinInUsdtTransfer : _BeginToSellCurrentCoinInUsdtTransfer<br/>
-        /// </summary>
-        protected override void OnSellCurrentCoinInUsdtTransferEnteredFrom_BeginToSellCurrentCoinInUsdtTransferTrigger()
         {
         }
         
