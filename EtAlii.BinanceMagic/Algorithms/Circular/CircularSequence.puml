@@ -1,0 +1,29 @@
+@startuml
+'stateless namespace EtAlii.BinanceMagic.Circular
+'stateless class CircularSequenceBase
+
+title Automatic trading mechanism A: Circular.
+
+state CheckIfInitialCycle <<choice>>
+state TransferIsWorthIt <<choice>>
+
+[*] --> Start : Start
+Start --> CheckIfInitialCycle : Continue
+Start : OnEntry:
+Start : - Load from disk.
+
+CheckIfInitialCycle --> InitialPurchase : IsInitialCycle
+CheckIfInitialCycle --> GetSituation : IsNormalCycle
+
+InitialPurchase --> Wait
+
+GetSituation -> TransferIsWorthIt
+
+TransferIsWorthIt --> Transfer : Yes
+TransferIsWorthIt --> Wait : No
+
+Transfer --> Wait
+
+Wait -up-> GetSituation : Continue
+
+@enduml

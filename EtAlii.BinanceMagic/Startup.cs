@@ -16,13 +16,33 @@ namespace EtAlii.BinanceMagic
             var actionValidator = new ActionValidator();
             var client = new Client(programSettings, program, actionValidator, output)
             {
-                //PlaceTestOrders = true,
+                PlaceTestOrders = true,
             };
             
             client.Start();
 
             var allLoopSettings = new List<LoopSettings>();
 
+            // // Back-test 1.
+            var allowedCoins = new[] {"BTC", "BNB"};
+            var referenceCoin = "USDT";
+            var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            var time = new BackTestTimeManager(backTestClient, program);
+            allLoopSettings.Add(new LoopSettings
+            {
+                Client = backTestClient,
+                Time = time,
+                Algorithm = new Circular.AlgorithmSettings
+                {
+                    AllowedCoins = allowedCoins,
+                    ReferenceCoin = referenceCoin,
+                    TargetIncrease = 1.03m,
+                    QuantityFactor = 10m,
+                    InitialTarget = 0.5m,
+                    WriteTrends = false,
+                }
+            });
+            
             // // Back-test 1.
             // var allowedCoins = new[] {"BTC", "XMR"};
             // var referenceCoin = "USDT";
@@ -117,23 +137,23 @@ namespace EtAlii.BinanceMagic
             });
             */
             
-            // Live test 3
-            allLoopSettings.Add(new LoopSettings
-            {
-                Client = client,
-                Time = new RealtimeTimeManager(),
-                Algorithm = new Surfing.AlgorithmSettings
-                {
-                    AllowedCoins = new[] { "BTC", "BNB", "LTC", "XMR", "ADA", "RUNE" }, // "ETH", 
-                    PayoutCoin = "USDT",
-                    ActionInterval = TimeSpan.FromMinutes(1), // TimeSpan.FromSeconds(20),// 
-                    InitialPurchase = 100m, // in USDT
-                    TransferFactor = 0.995m,
-                    RsiOverSold = 0.60m,
-                    RsiOverBought = 0.70m,
-                    RsiPeriod = 6,
-                }
-            });
+            // // Live test 3
+            // allLoopSettings.Add(new LoopSettings
+            // {
+            //     Client = client,
+            //     Time = new RealtimeTimeManager(),
+            //     Algorithm = new Surfing.AlgorithmSettings
+            //     {
+            //         AllowedCoins = new[] { "BTC", "BNB", "LTC", "XMR", "ADA", "RUNE" }, // "ETH", 
+            //         PayoutCoin = "USDT",
+            //         ActionInterval = TimeSpan.FromMinutes(1), // TimeSpan.FromSeconds(20),// 
+            //         InitialPurchase = 100m, // in USDT
+            //         TransferFactor = 0.995m,
+            //         RsiOverSold = 0.60m,
+            //         RsiOverBought = 0.70m,
+            //         RsiPeriod = 6,
+            //     }
+            // });
 
             var loops = allLoopSettings
                 .Select(ls => program.CreateLoop(ls, program, output))
