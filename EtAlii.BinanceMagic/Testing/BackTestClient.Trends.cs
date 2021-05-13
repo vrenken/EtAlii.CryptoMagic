@@ -44,7 +44,7 @@
                 volume: k.Volume
             )).ToArray();
             var rsiSequence = candles.StochRsi(period).ToArray();
-            trend = (decimal)rsiSequence.Last().Tick;
+            trend = (decimal)rsiSequence.Last().Tick!;
             error = null;
             return true;
         }
