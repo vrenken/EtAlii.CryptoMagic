@@ -106,6 +106,7 @@ namespace EtAlii.BinanceMagic
                 High = decimal.Parse(items[4]),
                 Low = decimal.Parse(items[5]),
                 Close = decimal.Parse(items[6]),
+                Volume = decimal.Parse(items[7]),
             };
         }
         
@@ -181,22 +182,6 @@ namespace EtAlii.BinanceMagic
         {
             makerFee = 0.1m;
             takerFee = 0.1m;
-            error = null;
-            return true;
-        }
-
-        public bool TryGetTrend(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal trend, out string error)
-        {
-            var history = _currentHistory[coin];
-
-            if (history == null)
-            {
-                trend = 0m;
-                error = "No history";
-                return false;
-            }
-
-            trend = history.Close - history.Open;
             error = null;
             return true;
         }
