@@ -1,14 +1,10 @@
 namespace EtAlii.BinanceMagic.Service
 {
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Components.Authorization;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using EtAlii.BinanceMagic.Service.Areas.Identity;
     using EtAlii.BinanceMagic.Service.Data;
 
     public class Startup
@@ -24,17 +20,8 @@ namespace EtAlii.BinanceMagic.Service
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services
-                .AddScoped<AuthenticationStateProvider,
-                    RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<WeatherForecastService>();
         }
 
@@ -44,7 +31,6 @@ namespace EtAlii.BinanceMagic.Service
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -57,9 +43,6 @@ namespace EtAlii.BinanceMagic.Service
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

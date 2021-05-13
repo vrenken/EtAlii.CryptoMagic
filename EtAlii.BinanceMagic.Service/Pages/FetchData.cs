@@ -12,6 +12,5 @@
         {
             _forecasts = await _forecastService.GetForecastAsync(DateTime.Now);
         }
-
     }
 }

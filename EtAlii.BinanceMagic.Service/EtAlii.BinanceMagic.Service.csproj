@@ -2,40 +2,27 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>aspnet-EtAlii.BinanceMagic.Service-2B57C7FD-DD5B-4593-9002-E88CD15120DC</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.6" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Update="Shared\MainLayout.razor.css">
       <DependentUpon>MainLayout.razor</DependentUpon>
     </Content>
-    <Content Update="Shared\NavMenu.razor.css">
-      <DependentUpon>NavMenu.razor</DependentUpon>
+    <Content Update="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Shared\NavMenu.cs">
-      <DependentUpon>NavMenu.razor</DependentUpon>
-    </Compile>
     <Compile Update="Pages\FetchData.cs">
       <DependentUpon>FetchData.razor</DependentUpon>
     </Compile>
     <Compile Update="Pages\Counter.cs">
       <DependentUpon>Counter.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\SurveyPrompt.cs">
+      <DependentUpon>SurveyPrompt.razor</DependentUpon>
     </Compile>
   </ItemGroup>
 
