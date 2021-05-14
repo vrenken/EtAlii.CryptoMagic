@@ -15,15 +15,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Pages\FetchData.cs">
-      <DependentUpon>FetchData.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\Counter.cs">
-      <DependentUpon>Counter.razor</DependentUpon>
-    </Compile>
     <Compile Update="Shared\SurveyPrompt.cs">
       <DependentUpon>SurveyPrompt.razor</DependentUpon>
     </Compile>
+    <Compile Update="Pages\Index.cs">
+      <DependentUpon>Index.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Error.cs">
+      <DependentUpon>Error.cshtml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />
   </ItemGroup>
 
 </Project>
