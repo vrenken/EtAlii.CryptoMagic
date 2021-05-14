@@ -1,16 +1,11 @@
 ﻿namespace EtAlii.BinanceMagic.Service.Pages
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using EtAlii.BinanceMagic.Service.Data;
 
     public partial class Index
     {
-        private int _currentCount;
-
-        private WeatherForecast[] _forecasts;
-
         private readonly Experiment[] _experiments;
         private Experiment _currentExperiment;
 
@@ -18,7 +13,7 @@
         {
             _experiments = new[]
             {
-                new Experiment { Name = "Circular: BTC-BNB" },
+                new Experiment { Name = "Circular: BTC-BNB", Steps = new []{ new ExperimentStep(), new ExperimentStep(), } },
                 new Experiment { Name = "Circular: LTC-XMR" },
                 new Experiment { Name = "Surfing: BTC-BNB-XMR" },
             };
@@ -45,9 +40,9 @@
             }
         }
         
-        protected override async Task OnInitializedAsync()
+        protected override Task OnInitializedAsync()
         {
-            _forecasts = await _forecastService.GetForecastAsync(DateTime.Now);
+            return Task.CompletedTask;
         }
 
         protected override void OnInitialized()
@@ -55,11 +50,7 @@
             base.OnInitialized();
             _algorithmRunnerService.Tick += () =>
             {
-                InvokeAsync(() =>
-                {
-                    _currentCount += 1;
-                    StateHasChanged();
-                });
+                InvokeAsync(StateHasChanged);
             };
         }
     }

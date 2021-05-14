@@ -1,6 +1,7 @@
 namespace EtAlii.BinanceMagic.Service.Data
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
@@ -12,6 +13,8 @@ namespace EtAlii.BinanceMagic.Service.Data
         private CancellationToken _cancellationToken;
 
         public event Action Tick;
+
+        public ObservableCollection<LoopSettings> LoopSettings { get; } = new();
         
         public Task StartAsync(CancellationToken cancellationToken)
         {
