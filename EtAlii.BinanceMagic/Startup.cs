@@ -44,24 +44,24 @@ namespace EtAlii.BinanceMagic
             });
             
             // // Back-test 1.
-            // var allowedCoins = new[] {"BTC", "XMR"};
-            // var referenceCoin = "USDT";
-            // var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
-            // var time = new BackTestTimeManager(backTestClient, program);
-            // allLoopSettings.Add(new LoopSettings
-            // {
-            //     Client = backTestClient,
-            //     Time = time,
-            //     Algorithm = new CircularAlgorithmSettings
-            //     {
-            //         AllowedCoins = allowedCoins,
-            //         ReferenceCoin = referenceCoin,
-            //         TargetIncrease = 1.03m,
-            //         QuantityFactor = 10m,
-            //         InitialTarget = 0.5m,
-            //         WriteTrends = false,
-            //     }
-            // });
+            allowedCoins = new[] {"BTC", "XMR"};
+            referenceCoin = "USDT";
+            backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            time = new BackTestTimeManager(backTestClient, program);
+            allLoopSettings.Add(new LoopSettings
+            {
+                Client = backTestClient,
+                Time = time,
+                Algorithm = new Circular.AlgorithmSettings
+                {
+                    AllowedCoins = allowedCoins,
+                    ReferenceCoin = referenceCoin,
+                    TargetIncrease = 1.03m,
+                    QuantityFactor = 10m,
+                    InitialTarget = 0.5m,
+                    WriteTrends = false,
+                }
+            });
 
             // Back-test 2.
             // var allowedCoins = new[] {"LTC", "DASH"};
