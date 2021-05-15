@@ -30,7 +30,7 @@
             Environment.Exit(-1);
         }
 
-        public Loop CreateLoop(LoopSettings loopSettings, IProgram program, IOutput output)
+        public Loop CreateLoop(LoopSettings loopSettings, ProgramSettings programSettings, IProgram program, IOutput output)
         {
             var client = loopSettings.Client;
             if (client is not Client)
@@ -38,12 +38,20 @@
                 client.Start();
             }
 
-            ISequence sequence = loopSettings.Algorithm switch
+            ISequence sequence;
+            switch(loopSettings.Algorithm) 
             {
-                Circular.AlgorithmSettings algorithmSettings => new Circular.Sequence(algorithmSettings, program, client, output, loopSettings.Time, loopSettings.Persistence),
-                Surfing.AlgorithmSettings algorithmSettings => new Surfing.Sequence(algorithmSettings, client, output, loopSettings.Time, loopSettings.Persistence),
-                _ => throw new InvalidOperationException("Unsupported algorithm")
-            };
+                case Circular.AlgorithmSettings algorithmSettings:
+                    var tradeDetailsPersistence = new Persistence<Circular.TradeDetails>(programSettings, loopSettings.Identifier);
+                    sequence = new Circular.Sequence(algorithmSettings, program, client, output, loopSettings.Time, tradeDetailsPersistence);
+                    break;
+                case Surfing.AlgorithmSettings algorithmSettings:
+                    var transactionPersistence = new Persistence<Transaction>(programSettings, loopSettings.Identifier);
+                    sequence = new Surfing.Sequence(algorithmSettings, client, output, loopSettings.Time, transactionPersistence);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unsupported algorithm");
+            }
 
             return new Loop(sequence);
         }

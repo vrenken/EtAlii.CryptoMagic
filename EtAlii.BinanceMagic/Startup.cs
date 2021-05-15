@@ -32,12 +32,15 @@ namespace EtAlii.BinanceMagic
             var allowedCoins = new[] {"BTC", "BNB"};
             var referenceCoin = "USDT";
             var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
-            var time = new BackTestTimeManager(backTestClient, program);
             allLoopSettings.Add(new LoopSettings
             {
-                Persistence = new Persistence<Transaction>(programSettings, "BTC-BNB"),
+                Identifier = "BTC-BNB",
                 Client = backTestClient,
-                Time = time,
+                Time = new BackTestTimeManager
+                {
+                    Client = backTestClient,
+                    Program = program,
+                },
                 Algorithm = new Circular.AlgorithmSettings
                 {
                     AllowedCoins = allowedCoins,
@@ -45,19 +48,22 @@ namespace EtAlii.BinanceMagic
                     TargetIncrease = 1.03m,
                     QuantityFactor = 10m,
                     InitialTarget = 0.5m,
-                }
+                },
             });
             
             // // Back-test 1.
             allowedCoins = new[] {"BTC", "XMR"};
             referenceCoin = "USDT";
             backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
-            time = new BackTestTimeManager(backTestClient, program);
             allLoopSettings.Add(new LoopSettings
             {
-                Persistence = new Persistence<Transaction>(programSettings, "BTC-XMR"),
+                Identifier = "BTC-XMR",
                 Client = backTestClient,
-                Time = time,
+                Time = new BackTestTimeManager
+                {
+                    Client = backTestClient,
+                    Program = program,
+                },
                 Algorithm = new Circular.AlgorithmSettings
                 {
                     AllowedCoins = allowedCoins,
@@ -145,7 +151,7 @@ namespace EtAlii.BinanceMagic
             // Live test 3
             allLoopSettings.Add(new LoopSettings
             {
-                Persistence = new Persistence<Transaction>(programSettings, "BTC-BNB-LTC-XMR-ADA-RUNE"),
+                Identifier = "BTC-BNB-LTC-XMR-ADA-RUNE",
                 Client = client,
                 Time = new RealtimeTimeManager(),
                 Algorithm = new Surfing.AlgorithmSettings
@@ -162,7 +168,7 @@ namespace EtAlii.BinanceMagic
             });
 
             var loops = allLoopSettings
-                .Select(ls => program.CreateLoop(ls, program, output))
+                .Select(ls => program.CreateLoop(ls, programSettings, program, output))
                 .ToArray();
 
             void OnStatusChanged(StatusInfo statusInfo)

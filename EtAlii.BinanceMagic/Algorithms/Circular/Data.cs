@@ -8,10 +8,10 @@
     {        
         private readonly IClient _client;
         private readonly AlgorithmSettings _settings;
-        private readonly IPersistence<Transaction> _persistence;
-        public IReadOnlyList<Transaction> Transactions => _persistence.Items;
+        private readonly IPersistence<TradeDetails> _persistence;
+        public IReadOnlyList<TradeDetails> History => _persistence.Items;
 
-        public Data(IClient client, AlgorithmSettings settings, IPersistence<Transaction> persistence)
+        public Data(IClient client, AlgorithmSettings settings, IPersistence<TradeDetails> persistence)
         {
             _client = client;
             _settings = settings;
@@ -19,10 +19,10 @@
         }
 
         public void Load() => _persistence.Load();
-        public void AddTransaction(Transaction transaction) => _persistence.Add(transaction);
+        public void Add(TradeDetails tradeDetails) => _persistence.Add(tradeDetails);
         
-        public Coin FindLastPurchase(string coin) => _persistence.Items.LastOrDefault(t => t.To.Symbol == coin)?.To;
-        public Coin FindLastSell(string coin) => _persistence.Items.LastOrDefault(t => t.To.Symbol == coin)?.From;
+        public TradeDetails FindLastPurchase(string coin) => _persistence.Items.LastOrDefault(t => t.BuyCoin == coin);
+        public TradeDetails FindLastSell(string coin) => _persistence.Items.LastOrDefault(t => t.SellCoin == coin);
 
         public decimal GetTotalProfits()
         {
@@ -69,8 +69,8 @@
             var sourceDelta = new Delta
             {
                 Coin = details.SellCoin,
-                PastPrice = lastSourcePurchase?.QuoteQuantity ?? sourcePrice,
-                PastQuantity = lastSourcePurchase?.Quantity ?? 0,
+                PastPrice = lastSourcePurchase?.BuyPrice ?? sourcePrice,
+                PastQuantity = lastSourcePurchase?.BuyQuantity ?? 0,
                 PresentPrice = sourcePrice,
             };
 
@@ -78,8 +78,8 @@
             var targetDelta = new Delta
             {
                 Coin = details.BuyCoin,
-                PastPrice = lastTargetSell?.QuoteQuantity ?? targetPrice,
-                PastQuantity = lastTargetSell?.Quantity ?? 0,
+                PastPrice = lastTargetSell?.SellPrice ?? targetPrice,
+                PastQuantity = lastTargetSell?.SellQuantity ?? 0,
                 PresentPrice = targetPrice
             };
             situation = new Situation

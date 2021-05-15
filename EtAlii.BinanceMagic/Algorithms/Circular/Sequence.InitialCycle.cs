@@ -19,16 +19,10 @@
 
             if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
             {
-                transaction = transaction with
-                {
-                    Target = _details.Target,
-                    Profit = 0m
-                };
-
                 _details.Result = "Transaction done";
                 _details.LastCheck = _timeManager.GetNow();
                 _statusProvider.RaiseChanged(StatusInfo.Important);
-                _data.AddTransaction(transaction);
+                _data.Add(_details);
                 targetSucceeded = true;
             }
             else

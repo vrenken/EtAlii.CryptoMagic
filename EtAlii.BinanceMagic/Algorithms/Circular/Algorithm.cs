@@ -79,9 +79,9 @@
         public void ToInitialConversionActions(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
             var lastPurchaseForSource = _data.FindLastPurchase(_details.SellCoin);
-            var quantityToSell = lastPurchaseForSource == null
-                ? (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(_details.SellCoin, situation.ExchangeInfo, _settings.ReferenceCoin)
-                : lastPurchaseForSource.Quantity;
+            var quantityToSell = 
+                lastPurchaseForSource?.BuyQuantity ?? 
+                (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(_details.SellCoin, situation.ExchangeInfo, _settings.ReferenceCoin);
 
             var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(_details.BuyCoin, situation.ExchangeInfo, _settings.ReferenceCoin);
 
@@ -90,7 +90,7 @@
             quantityToBuy = quantityToBuy * _settings.NotionalMinCorrection * _settings.QuantityFactor;
             quantityToSell = quantityToSell * _settings.NotionalMinCorrection * _settings.QuantityFactor;
 
-            var previousTransaction = _data.Transactions.LastOrDefault();
+            var previousTransaction = _data.History.LastOrDefault();
             if (previousTransaction == null)
             {
                 sellAction = new SellAction
@@ -104,12 +104,12 @@
             }
             else
             {
-                if (previousTransaction.To.Symbol != _details.SellCoin)
+                if (previousTransaction.BuyCoin != _details.SellCoin)
                 {
                     _program.HandleFail($"Previous initial transaction did not purchase {_details.SellCoin}");
                 }
                 
-                var sourceQuantityToSell = previousTransaction.To.Quantity;
+                var sourceQuantityToSell = previousTransaction.BuyQuantity;
                 sellAction = new SellAction
                 {
                     Coin = _details.SellCoin,
