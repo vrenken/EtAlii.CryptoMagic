@@ -46,8 +46,8 @@
       <Compile Update="Algorithms\Surfing\Sequence.cs">
         <DependentUpon>Sequence.puml</DependentUpon>
       </Compile>
-      <StatelessFile Include="Algorithms\Circular\CircularSequence.puml" />
-      <StatelessFile Include="Algorithms\Surfing\Sequence.puml" />
+      <StatelessFile Include="Experiments\Circular\CircularSequence.puml" />
+      <StatelessFile Include="Experiments\Surfing\Sequence.puml" />
       <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.cs">
         <DependentUpon>Sequence.puml</DependentUpon>
       </Compile>
@@ -63,6 +63,13 @@
       <Compile Update="Algorithms\Surfing\Sequence.FromUsdt.cs">
         <DependentUpon>Sequence.puml</DependentUpon>
       </Compile>
+      <Compile Update="Experiments\Circular\CircularSequence.cs">
+        <DependentUpon>CircularSequence.puml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Experiments\Configurable" />
     </ItemGroup>
 
 </Project>
