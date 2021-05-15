@@ -15,20 +15,43 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Shared\SurveyPrompt.cs">
-      <DependentUpon>SurveyPrompt.razor</DependentUpon>
-    </Compile>
     <Compile Update="Pages\Index.cs">
       <DependentUpon>Index.razor</DependentUpon>
     </Compile>
     <Compile Update="Pages\Error.cs">
       <DependentUpon>Error.cshtml</DependentUpon>
     </Compile>
+    <Compile Update="Shared\Transaction.cs">
+      <DependentUpon>Transaction.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Settings.cs">
+      <DependentUpon>Settings.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\NavMenu.cs">
+      <DependentUpon>NavMenu.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
     <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.6" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Experiments" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Shared\NavMenu.razor.css">
+      <DependentUpon>NavMenu.razor</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>
