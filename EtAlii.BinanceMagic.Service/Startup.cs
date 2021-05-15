@@ -9,22 +9,26 @@ namespace EtAlii.BinanceMagic.Service
 
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DataContext>();
+            
             services.AddSingleton<AlgorithmRunnerService>();
             services.AddHostedService(sp => sp.GetService<AlgorithmRunnerService>());
             
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+            new DatabaseInitializer().InitializeWhenNeeded();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
