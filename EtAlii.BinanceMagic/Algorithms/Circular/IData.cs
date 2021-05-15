@@ -5,13 +5,13 @@ namespace EtAlii.BinanceMagic.Circular
 
     public interface IData
     {
-        IReadOnlyList<Transaction> Transactions { get; }
+        IReadOnlyList<TradeDetails> History { get; }
         
         void Load();
-        Coin FindLastPurchase(string coin);
-        Coin FindLastSell(string coin);
+        TradeDetails FindLastPurchase(string coin);
+        TradeDetails FindLastSell(string coin);
         decimal GetTotalProfits();
         bool TryGetSituation(TradeDetails status, CancellationToken cancellationToken, out Situation situation, out string error);
-        void AddTransaction(Transaction transaction);
+        void Add(TradeDetails tradeDetails);
     }
 }
