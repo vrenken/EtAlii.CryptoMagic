@@ -13,7 +13,5 @@ namespace EtAlii.BinanceMagic.Circular
         decimal GetTotalProfits();
         bool TryGetSituation(TradeDetails status, CancellationToken cancellationToken, out Situation situation, out string error);
         void AddTransaction(Transaction transaction);
-
-        void AddTrend(decimal target, decimal sellPrice, decimal sellQuantity, decimal buyPrice, decimal buyQuantity, decimal difference);
     }
 }

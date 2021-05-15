@@ -23,7 +23,7 @@ namespace EtAlii.BinanceMagic.Tests
             var actionValidator = new ActionValidator();
             
             // Act.
-            var client = new Client(settings, program, actionValidator, output)
+            var client = new Client(settings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
@@ -40,7 +40,7 @@ namespace EtAlii.BinanceMagic.Tests
             var settings = _context.CreateProgramSettings();
             var program = new Program(settings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(settings, program, actionValidator, output)
+            var client = new Client(settings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
@@ -61,7 +61,7 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };

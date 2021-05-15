@@ -1,60 +1,24 @@
 ﻿namespace EtAlii.BinanceMagic.Surfing
 {
-    using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Threading;
 
     public class Data 
     {        
         private readonly IClient _client;
         private readonly AlgorithmSettings _settings;
-        private readonly IOutput _output;
-        public IReadOnlyList<Transaction> Transactions { get; } 
-        private readonly List<Transaction> _transactions;
+        private readonly IPersistence<Transaction> _persistence;
+        public IReadOnlyList<Transaction> Transactions => _persistence.Items; 
 
-        private readonly string _transactionsFile;
-        private FileStream _file;
-        private StreamWriter _sw;
-
-        public Data(IClient client, AlgorithmSettings settings, IOutput output)
+        public Data(IClient client, AlgorithmSettings settings, IPersistence<Transaction> persistence)
         {
             _client = client;
             _settings = settings;
-            _output = output;
-            _transactions = new List<Transaction>();
-            Transactions = _transactions.AsReadOnly();
-
-            var coins = string.Join("_", _settings.AllowedCoins);
-            _transactionsFile = string.Format(_settings.FileFormat, coins); 
+            _persistence = persistence;
         }
 
-        public void Load()
-        {
-            _output.WriteLine("Loading previous transactions from file...");
-            
-            var lines = File.Exists(_transactionsFile) 
-                ? File.ReadAllLines(_transactionsFile) 
-                : Array.Empty<string>();
-            var transactions = lines
-                .Select(Transaction.Read)
-                .ToArray();
-            _transactions.AddRange(transactions);
-            
-            _file = new FileStream(_transactionsFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
-            _sw = new StreamWriter(_file);
-
-            _output.WriteLine("Loading previous transactions from file: Done");
-        }
-        
-        public Coin FindLastPurchase(string coin) => _transactions.LastOrDefault(t => t.To.Symbol == coin)?.To;
-        public Coin FindLastSell(string coin) => _transactions.LastOrDefault(t => t.To.Symbol == coin)?.From;
-
-        public decimal GetTotalProfits()
-        {
-            return _transactions.Sum(t => t.Profit);
-        }
+        public void Load() => _persistence.Load();
+        public void AddTransaction(Transaction transaction) => _persistence.Add(transaction);
 
         public bool TryGetSituation(CancellationToken cancellationToken, TradeDetails details, out Situation situation, out string error)
         {
@@ -70,12 +34,6 @@
                 Trends = trends
             };
             return true;
-        }
-
-        public void AddTransaction(Transaction transaction)
-        {
-            _transactions.Add(transaction);
-            Transaction.Write(_sw, transaction);
         }
     }
 }

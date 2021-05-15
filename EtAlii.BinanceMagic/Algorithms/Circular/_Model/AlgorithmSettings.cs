@@ -16,7 +16,5 @@ namespace EtAlii.BinanceMagic.Circular
         public decimal MaxQuantityToTrade  { get; init; } = 1.0m; // in %.
         public decimal NotionalMinCorrection  { get; init; } = 1.05m; // in %.
         public TimeSpan SampleInterval  { get; init; } = TimeSpan.FromMinutes(1);
-
-        public bool WriteTrends { get; init; } = true;
     }
 }

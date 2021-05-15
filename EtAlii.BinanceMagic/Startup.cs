@@ -3,18 +3,23 @@ namespace EtAlii.BinanceMagic
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Serilog;
 
     public static class Startup
     {
-         static void Main()
+        static void Main()
         {
+            var loggerConfiguration = new LoggerConfiguration();
+            Logging.Configure(loggerConfiguration);
+            Log.Logger = loggerConfiguration.CreateLogger();
+
             var output = new ConsoleOutput();
             var programSettings = new ProgramSettings();
             var program = new Program(programSettings, output);
 
             output.WriteLine("Starting Binance magic...");
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true,
             };
@@ -30,6 +35,7 @@ namespace EtAlii.BinanceMagic
             var time = new BackTestTimeManager(backTestClient, program);
             allLoopSettings.Add(new LoopSettings
             {
+                Persistence = new Persistence<Transaction>(programSettings, "BTC-BNB"),
                 Client = backTestClient,
                 Time = time,
                 Algorithm = new Circular.AlgorithmSettings
@@ -39,7 +45,6 @@ namespace EtAlii.BinanceMagic
                     TargetIncrease = 1.03m,
                     QuantityFactor = 10m,
                     InitialTarget = 0.5m,
-                    WriteTrends = false,
                 }
             });
             
@@ -50,6 +55,7 @@ namespace EtAlii.BinanceMagic
             time = new BackTestTimeManager(backTestClient, program);
             allLoopSettings.Add(new LoopSettings
             {
+                Persistence = new Persistence<Transaction>(programSettings, "BTC-XMR"),
                 Client = backTestClient,
                 Time = time,
                 Algorithm = new Circular.AlgorithmSettings
@@ -59,7 +65,6 @@ namespace EtAlii.BinanceMagic
                     TargetIncrease = 1.03m,
                     QuantityFactor = 10m,
                     InitialTarget = 0.5m,
-                    WriteTrends = false,
                 }
             });
 
@@ -137,23 +142,24 @@ namespace EtAlii.BinanceMagic
             });
             */
             
-            // // Live test 3
-            // allLoopSettings.Add(new LoopSettings
-            // {
-            //     Client = client,
-            //     Time = new RealtimeTimeManager(),
-            //     Algorithm = new Surfing.AlgorithmSettings
-            //     {
-            //         AllowedCoins = new[] { "BTC", "BNB", "LTC", "XMR", "ADA", "RUNE" }, // "ETH", 
-            //         PayoutCoin = "USDT",
-            //         ActionInterval = TimeSpan.FromMinutes(1), // TimeSpan.FromSeconds(20),// 
-            //         InitialPurchase = 100m, // in USDT
-            //         TransferFactor = 0.995m,
-            //         RsiOverSold = 0.60m,
-            //         RsiOverBought = 0.70m,
-            //         RsiPeriod = 6,
-            //     }
-            // });
+            // Live test 3
+            allLoopSettings.Add(new LoopSettings
+            {
+                Persistence = new Persistence<Transaction>(programSettings, "BTC-BNB-LTC-XMR-ADA-RUNE"),
+                Client = client,
+                Time = new RealtimeTimeManager(),
+                Algorithm = new Surfing.AlgorithmSettings
+                {
+                    AllowedCoins = new[] { "BTC", "BNB", "LTC", "XMR", "ADA", "RUNE" }, // "ETH", 
+                    PayoutCoin = "USDT",
+                    ActionInterval = TimeSpan.FromMinutes(1), // TimeSpan.FromSeconds(20),// 
+                    InitialPurchase = 100m, // in USDT
+                    TransferFactor = 0.995m,
+                    RsiOverSold = 0.60m,
+                    RsiOverBought = 0.70m,
+                    RsiPeriod = 6,
+                }
+            });
 
             var loops = allLoopSettings
                 .Select(ls => program.CreateLoop(ls, program, output))
