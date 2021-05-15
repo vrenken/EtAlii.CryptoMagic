@@ -26,7 +26,7 @@ namespace EtAlii.BinanceMagic.Surfing
         private Coin? _coinsSold;
         private Coin? _coinsBought;
 
-        public Sequence(AlgorithmSettings settings, IClient client, IOutput output, ITimeManager timeManager)
+        public Sequence(AlgorithmSettings settings, IClient client, IOutput output, ITimeManager timeManager, IPersistence<Transaction> persistence)
         {
             _settings = settings;
             _client = client;
@@ -39,7 +39,7 @@ namespace EtAlii.BinanceMagic.Surfing
                 CurrentVolume = _settings.InitialPurchase,
             };
             _status = new StatusProvider(output, _details, settings);
-            _data = new Data(client, settings, output);
+            _data = new Data(client, settings, persistence);
         }
 
         public void Run(CancellationToken cancellationToken)

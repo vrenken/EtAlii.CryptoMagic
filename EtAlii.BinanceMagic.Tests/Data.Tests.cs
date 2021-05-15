@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic.Tests
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using EtAlii.BinanceMagic.Circular;
@@ -23,13 +24,14 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
             
             // Act.
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             
             // Assert.
             Assert.NotNull(data);
@@ -44,11 +46,12 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             
             // Act.
             data.Load();
@@ -66,11 +69,12 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
@@ -92,11 +96,12 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
@@ -126,11 +131,12 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
             var secondCoin = algorithmSettings.AllowedCoins.Skip(1).First();
@@ -140,7 +146,8 @@ namespace EtAlii.BinanceMagic.Tests
             data.AddTransaction(secondTransaction);
             
             // Act.
-            data = new Data(client, algorithmSettings, output);
+            persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            data = new Data(client, algorithmSettings, persistence);
             data.Load();
 
             // Assert.
@@ -164,11 +171,12 @@ namespace EtAlii.BinanceMagic.Tests
             var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             data.Load();
             var firstCoin = algorithmSettings.AllowedCoins.First();
@@ -212,11 +220,12 @@ namespace EtAlii.BinanceMagic.Tests
             var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             client.Start();
             data.Load();
@@ -247,11 +256,12 @@ namespace EtAlii.BinanceMagic.Tests
             var program = new Program(programSettings, output);
             var details = new TradeDetails();
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator, output)
+            var persistence = new Persistence<Transaction>(programSettings, Guid.NewGuid().ToString());
+            var client = new Client(programSettings, program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            var data = new Data(client, algorithmSettings, output);
+            var data = new Data(client, algorithmSettings, persistence);
             var targetBuilder = new TradeDetailsUpdater(data, algorithmSettings);
             client.Start();
             data.Load();

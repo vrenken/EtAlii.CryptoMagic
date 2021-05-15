@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Service
 {
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
+    using Serilog;
 
     public class Program
     {
@@ -12,6 +13,11 @@ namespace EtAlii.BinanceMagic.Service
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webHostBuilder =>
+                {
+                    webHostBuilder
+                        .UseSerilog((_, loggerConfiguration) => Logging.Configure(loggerConfiguration), true)
+                        .UseStartup<Startup>();
+                });
     }
 }

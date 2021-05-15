@@ -8,28 +8,28 @@
     using Binance.Net.Objects.Spot.MarketData;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
+    using Serilog;
 
     public partial class Client : IClient
     {
+        private readonly ILogger _logger = Log.ForContext<Client>();
         private BinanceClient _client;
         private readonly ProgramSettings _settings;
         private readonly IProgram _program;
         private readonly IActionValidator _validator;
-        private readonly IOutput _output;
 
         public bool PlaceTestOrders { get; init; }
 
-        public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator, IOutput output)
+        public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator)
         {
             _settings = settings;
             _program = program;
             _validator = actionValidator;
-            _output = output;
         }
 
         public void Start()
         {
-            _output.WriteLine("Starting client...");
+            _logger.Information("Starting client");
             
             var options = new BinanceClientOptions
             {
@@ -54,14 +54,14 @@
                 _program.HandleFail(message);
             }
             
-            _output.WriteLine("Starting client: Done");
+            _logger.Information("Starting client: Done");
         }
 
         public void Stop()
         {
-            _output.WriteLine("Stopping client...");
+            _logger.Information("Stopping client");
             _client.Dispose();
-            _output.WriteLine("Stopping client: Done");
+            _logger.Information("Stopping client: Done");
         }
 
         public bool TryGetPrice(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal price, out string error)

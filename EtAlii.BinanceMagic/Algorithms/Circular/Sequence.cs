@@ -19,12 +19,12 @@ namespace EtAlii.BinanceMagic.Circular
         public Sequence(
             AlgorithmSettings settings, IProgram program, 
             IClient client, IOutput output,
-            ITimeManager timeManager)
+            ITimeManager timeManager, IPersistence<Transaction> persistence)
         {
             _settings = settings;
             _client = client;
             _timeManager = timeManager;
-            _data = new Data(_client, settings, output);
+            _data = new Data(_client, settings, persistence);
             _details = new TradeDetails();
             _statusProvider = new StatusProvider(output, _details);
             _detailsBuilder = new TradeDetailsUpdater(_data, settings);

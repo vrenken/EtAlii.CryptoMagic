@@ -48,11 +48,6 @@
 
             _statusProvider.RaiseChanged();
 
-            if (_settings.WriteTrends)
-            {
-                _data.AddTrend(_details.Target, _details.SellPrice, _details.SellQuantity, _details.BuyPrice, _details.BuyQuantity, _details.Difference);
-            }
-            
             if (_details.IsWorthIt)
             {
                 sellAction = new SellAction
