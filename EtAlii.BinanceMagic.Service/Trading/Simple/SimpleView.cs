@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using EtAlii.BinanceMagic.Service.Data;
     using Microsoft.AspNetCore.Components;
 
     public partial class SimpleView

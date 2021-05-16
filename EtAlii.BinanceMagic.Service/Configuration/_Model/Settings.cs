@@ -1,14 +1,10 @@
-namespace EtAlii.BinanceMagic.Service
+namespace EtAlii.BinanceMagic.Service.Configuration
 {
+    using EtAlii.BinanceMagic.Service.Shared;
+
     public class Setting : Entity
     {
         public string Key { get; init; }
         public string Value { get; set; }
-    }
-
-    public static class SettingKey
-    {
-        public const string ApiKey = "ApiKey";
-        public const string SecretKey = "SecretKey";
     }
 }

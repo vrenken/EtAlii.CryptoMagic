@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Data
+namespace EtAlii.BinanceMagic.Service.Trading
 {
     public class ExperimentStep
     {

@@ -1,5 +1,10 @@
-namespace EtAlii.BinanceMagic.Service
+namespace EtAlii.BinanceMagic.Service.Shared
 {
+    using EtAlii.BinanceMagic.Service.Trading;
+    using EtAlii.BinanceMagic.Service.Trading.Circular;
+    using EtAlii.BinanceMagic.Service.Trading.Experimental;
+    using EtAlii.BinanceMagic.Service.Trading.Simple;
+    using EtAlii.BinanceMagic.Service.Trading.Surfing;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +20,7 @@ namespace EtAlii.BinanceMagic.Service
                 .HasDiscriminator<string>("trading_type")
                 .HasValue<CircularTrading>("circular")
                 .HasValue<SurfingTrading>("surfing")
-                .HasValue<SurfingTrading>("simple")
+                .HasValue<SimpleTrading>("simple")
                 .HasValue<ExperimentalTrading>("experimental");
         }
     }
