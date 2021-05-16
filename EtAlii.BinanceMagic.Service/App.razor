@@ -1,12 +1,64 @@
-<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+@*
+    The Router component displays whichever component has a @page
+    directive matching the current URI.
+*@
+<Blazorise.ThemeProvider Theme="@_theme">
+    <Router AppAssembly="typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+            <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
         </Found>
         <NotFound>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <p>Sorry, there's nothing at this address.</p>
-            </LayoutView>
+            <p>Sorry, there's nothing at this address.</p>
         </NotFound>
     </Router>
-</CascadingAuthenticationState>
+</Blazorise.ThemeProvider>
+@code{
+    private readonly Theme _theme = new Theme
+    {
+        BarOptions = new ThemeBarOptions
+        {
+            HorizontalHeight = "64px"
+        },
+        BreakpointOptions = new ThemeBreakpointOptions
+        {
+        },
+        ColorOptions = new ThemeColorOptions
+        {
+            Primary = "#165b16",
+            //Secondary = "#A65529",
+            //Success = "#23C02E",
+            //Info = "#9BD8FE",
+            //Warning = "#F8B86C",
+            //Danger = "#F95741",
+            //Light = "#F0F0F0",
+            //Dark = "#535353",
+        },
+        BackgroundOptions = new ThemeBackgroundOptions
+        {
+            Primary = "#165b16",
+        },
+        TextColorOptions = new ThemeTextColorOptions
+        {
+        },
+        //ButtonOptions = new ThemeButtonOptions { },
+        //DropdownOptions = new ThemeDropdownOptions { },
+        InputOptions = new ThemeInputOptions
+        {
+            CheckColor = "#165b16",
+        },
+        //CardOptions = new ThemeCardOptions { },
+        //ModalOptions = new ThemeModalOptions { },
+        //TabsOptions = new ThemeTabsOptions { },
+        //ProgressOptions = new ThemeProgressOptions { },
+        //AlertOptions = new ThemeAlertOptions { },
+        //BreadcrumbOptions = new ThemeBreadcrumbOptions { },
+        //BadgeOptions = new ThemeBadgeOptions { },
+        //PaginationOptions = new ThemePaginationOptions { },
+        //TooltipOptions = new ThemeTooltipOptions
+        //{
+        //    BackgroundColor = "#22c8ce",
+        //    BackgroundOpacity = .7f,
+        //    Color = "#ff0000",
+        //},
+    };
+}

@@ -3,50 +3,59 @@
 @using EtAlii.BinanceMagic.Service.Data
 @inject AlgorithmRunnerService _algorithmRunnerService
 
-<ul class="nav nav-tabs">
-@foreach (var experiment in _experiments)
-{
-    <li class="nav-item">
-        <a class="nav-link @(experiment.IsActive ? "active" : "")" href="#" @onclick="@(() => SelectExperiment(experiment.Name))">@experiment.Name</a>
-    </li>
-}
-</ul>
 
-@if (_currentExperiment == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <Transaction Title="Current experiment"/>
+<Card>
+    <CardHeader>
+        <Icon Name="@("fa-magic")" />
+        Accumulated 
+    </CardHeader>
+    <CardBody>
+        <CardTitle Size="5">Card title</CardTitle>
+        <CardText>
+            Some quick example text to build on the card title and make up the bulk of the card's content.
+        </CardText>
+        <Button Color="Color.Primary">Button</Button>
+    </CardBody>
+</Card>
 
-    @foreach (var _ in _currentExperiment.Steps.Skip(1))
-    {
-        <Transaction Title="How is Blazor working for you?"/>
-    }
-}
-@* { *@
-@*      *@
-@*     <table class="table"> *@
-@*         <thead> *@
-@*         <tr> *@
-@*             <th>Date</th> *@
-@*             <th>Temp. (C)</th> *@
-@*             <th>Temp. (F)</th> *@
-@*             <th>Summary</th> *@
-@*         </tr> *@
-@*         </thead> *@
-@*         <tbody> *@
-@*         @foreach (var forecast in _forecasts) *@
-@*         { *@
-@*             <tr> *@
-@*                 <td>@forecast.Date.ToShortDateString()</td> *@
-@*                 <td>@forecast.TemperatureC</td> *@
-@*                 <td>@forecast.TemperatureF</td> *@
-@*                 <td>@forecast.Summary</td> *@
-@*             </tr> *@
-@*         } *@
-@*         </tbody> *@
-@*     </table> *@
+<Card>
+    <CardHeader>
+        <Icon Name="@("fa-chart-line")" />
+        Simple trading 
+    </CardHeader>
+    <CardBody>
+        <CardTitle Size="5">Card title</CardTitle>
+        <CardText>
+            Some quick example text to build on the card title and make up the bulk of the card's content.
+        </CardText>
+        <Button Color="Color.Primary">Button</Button>
+    </CardBody>
+</Card>
+
+<Card>
+    <CardHeader>
+        <Icon Name="@("fa-infinity")" />
+        Cyclic trading 
+    </CardHeader>
+    <CardBody>
+        <CardTitle Size="5">Card title</CardTitle>
+        <CardText>
+            Some quick example text to build on the card title and make up the bulk of the card's content.
+        </CardText>
+        <Button Color="Color.Primary">Button</Button>
+    </CardBody>
+</Card>
+
+<Card>
+    <CardHeader>
+        <Icon Name="@("fa-flask")" />
+        Experimental trading 
+    </CardHeader>
+    <CardBody>
+        <CardTitle Size="5">Card title</CardTitle>
+        <CardText>
+            Some quick example text to build on the card title and make up the bulk of the card's content.
+        </CardText>
+        <Button Color="Color.Primary">Button</Button>
+    </CardBody>
+</Card>

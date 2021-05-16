@@ -12,6 +12,9 @@
     <Content Update="appsettings.Development.json">
       <DependentUpon>appsettings.json</DependentUpon>
     </Content>
+    <Content Update="Shared\NavMenu.razor.css">
+      <DependentUpon>NavMenu.razor</DependentUpon>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,12 +33,33 @@
     <Compile Update="Shared\NavMenu.cs">
       <DependentUpon>NavMenu.razor</DependentUpon>
     </Compile>
-    <Compile Update="Shared\SurveyPrompt.cs">
-      <DependentUpon>SurveyPrompt.razor</DependentUpon>
+    <Compile Update="Pages\CircularView.cs">
+      <DependentUpon>CircularView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\CircularEdit.cs">
+      <DependentUpon>CircularEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Experiments.cs">
+      <DependentUpon>Experiments.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\SimpleView.cs">
+      <DependentUpon>SimpleView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\MainLayout.cs">
+      <DependentUpon>MainLayout.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\SimpleEdit.cs">
+      <DependentUpon>SimpleEdit.razor</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Charts" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.9.3.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
     <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />

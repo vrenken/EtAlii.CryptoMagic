@@ -6,8 +6,12 @@ namespace EtAlii.BinanceMagic.Service
 
     public class DataContext : DbContext
     {
-        public DbSet<Setting> Settings { get; set; }
-        public DbSet<Experiment> Experiments { get; set; }
+        public DbSet<Setting> Settings { get; init; }
+        
+        public DbSet<SimpleTrading> SimpleTradings { get; init; }
+        public DbSet<CircularTrading> CircularTradings { get; init; }
+        public DbSet<SurfingTrading> SurfingTradings { get; init; }
+        public DbSet<ExperimentalTrading> ExperimentalTradings { get; init; }
         
         private readonly ILogger _logger = Log.ForContext<DataContext>();
 
@@ -29,7 +33,7 @@ namespace EtAlii.BinanceMagic.Service
             }
             
             modelBuilder.ApplyConfiguration(new SettingEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ExperimentEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TradingsEntityTypeConfiguration());
         }
     }
 }

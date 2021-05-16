@@ -7,7 +7,7 @@
     using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.EntityFrameworkCore;
 
-    public partial class CircularEdit
+    public partial class SimpleEdit
     {
         private Model _model = new();
         private EditContext _editContext;
@@ -20,9 +20,9 @@
             {
                 var id = Guid.Parse(Id);
                 var data = new DataContext();
-                var circularTrading = data.CircularTradings.Single(t => t.Id == id);
-                _model.Name = circularTrading?.Name;
-                _model.Id = circularTrading?.Id ?? Guid.Empty;
+                var simpleTrading = data.SimpleTradings.Single(t => t.Id == id);
+                _model.Name = simpleTrading?.Name;
+                _model.Id = simpleTrading?.Id ?? Guid.Empty;
             }
 
             _editContext = new EditContext(_model);
@@ -33,8 +33,8 @@
             var data = new DataContext();
 
             var trading = _model.Id == Guid.Empty
-                ? new CircularTrading()
-                : data.CircularTradings.Single(t => t.Id == _model.Id);
+                ? new SimpleTrading()
+                : data.SimpleTradings.Single(t => t.Id == _model.Id);
 
             data.Entry(trading).State = _model.Id == Guid.Empty
                 ? EntityState.Added
@@ -44,7 +44,7 @@
 
             data.SaveChanges();
             
-            _navigationManager.NavigateTo($"/circular/view/{trading.Id}");
+            _navigationManager.NavigateTo($"/simple/view/{trading.Id}");
         }
 
         private void HandleReset()

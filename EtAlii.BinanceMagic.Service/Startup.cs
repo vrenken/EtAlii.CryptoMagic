@@ -1,5 +1,8 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using Blazorise;
+    using Blazorise.Bootstrap;
+    using Blazorise.Icons.FontAwesome;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -24,9 +27,22 @@ namespace EtAlii.BinanceMagic.Service
             
             services.AddSingleton<AlgorithmRunnerService>();
             services.AddHostedService(sp => sp.GetService<AlgorithmRunnerService>());
+
+            services
+                .AddBlazorise(options =>
+                {
+                    options.ChangeTextOnKeyPress = true;
+                })
+                .AddBootstrapProviders()
+                .AddFontAwesomeIcons();
             
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services
+                .AddServerSideBlazor()
+                .AddHubOptions( ( o ) =>
+            {
+                o.MaximumReceiveMessageSize = 1024 * 1024 * 100;
+            } );
 
             new DatabaseInitializer().InitializeWhenNeeded();
         }
@@ -52,7 +68,7 @@ namespace EtAlii.BinanceMagic.Service
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                //endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
