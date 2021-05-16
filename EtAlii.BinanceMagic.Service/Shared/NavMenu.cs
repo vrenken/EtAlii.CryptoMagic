@@ -15,8 +15,6 @@
 
     public partial class NavMenu : IDisposable
     {
-        private bool _uiElementsVisible = true;
-
         private ObservableCollection<IAlgorithmRunner> CircularTradings { get; } = new();
         private ObservableCollection<IAlgorithmRunner> SimpleTradings { get; } = new();
         private ObservableCollection<IAlgorithmRunner> SurfingTradings { get; } = new();

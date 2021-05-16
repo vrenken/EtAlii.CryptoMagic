@@ -27,7 +27,7 @@
                 </BarItem>
                 
                 <BarItem>
-                    <BarDropdown @bind-Visible="@_uiElementsVisible" ElementId="simple-tradings">
+                    <BarDropdown>
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-chart-line")" />
                             Simple trading
@@ -38,7 +38,7 @@
                                     @context.Trading.Name
                                 </BarDropdownItem>
                             </Repeater>
-                            <BarDropdownItem To="/simple/edit" ElementId="simple-edit">
+                            <BarDropdownItem To="/simple/edit">
                                 <Icon Name="@("fa-plus")" />
                                 Add
                             </BarDropdownItem>
@@ -47,7 +47,7 @@
                 </BarItem>
                 
                 <BarItem>                    
-                    <BarDropdown @bind-Visible="@_uiElementsVisible" ElementId="circular-tradings">
+                    <BarDropdown>
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-infinity")"/>
                             Circular trading
@@ -58,7 +58,7 @@
                                     @context.Trading.Name
                                 </BarDropdownItem>
                             </Repeater>
-                            <BarDropdownItem To="/circular/edit" ElementId="circular-edit">
+                            <BarDropdownItem To="/circular/edit">
                                 <Icon Name="@("fa-plus")"/>
                                 Add
                             </BarDropdownItem>
@@ -67,7 +67,7 @@
                 </BarItem>
                 
                 <BarItem>                    
-                    <BarDropdown @bind-Visible="@_uiElementsVisible" ElementId="experimental-tradings">
+                    <BarDropdown>
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-flask")" />
                             Experimental trading 
@@ -78,7 +78,7 @@
                                     @context.Trading.Name
                                 </BarDropdownItem>
                             </Repeater>
-                            <BarDropdownItem To="experimental/edit" ElementId="experimental-edit">
+                            <BarDropdownItem To="experimental/edit">
                                 <Icon Name="@("fa-plus")" />
                                 Add
                             </BarDropdownItem>
