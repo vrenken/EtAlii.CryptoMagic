@@ -30,6 +30,9 @@
     <Compile Update="Shared\NavMenu.cs">
       <DependentUpon>NavMenu.razor</DependentUpon>
     </Compile>
+    <Compile Update="Shared\SurveyPrompt.cs">
+      <DependentUpon>SurveyPrompt.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
