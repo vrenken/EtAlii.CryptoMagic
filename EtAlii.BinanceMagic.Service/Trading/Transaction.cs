@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Shared
+﻿namespace EtAlii.BinanceMagic.Service.Trading
 {
     using System;
     using Microsoft.AspNetCore.Components;

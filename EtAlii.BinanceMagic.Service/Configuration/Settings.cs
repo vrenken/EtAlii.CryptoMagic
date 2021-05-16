@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Pages
+﻿namespace EtAlii.BinanceMagic.Service.Configuration
 {
     using System.ComponentModel.DataAnnotations;
     using System.Linq;

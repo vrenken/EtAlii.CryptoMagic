@@ -36,13 +36,13 @@ namespace EtAlii.BinanceMagic.Service
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
             
-            services.AddRazorPages();
+            services.AddRazorPages(options => options.RootDirectory = "/Shared"); // This is where the _Host.cshtml can be found.
             services
                 .AddServerSideBlazor()
-                .AddHubOptions( ( o ) =>
-            {
-                o.MaximumReceiveMessageSize = 1024 * 1024 * 100;
-            } );
+                .AddHubOptions(options =>
+                {
+                    options.MaximumReceiveMessageSize = 1024 * 1024 * 100;
+                });
 
             new DatabaseInitializer().InitializeWhenNeeded();
         }
