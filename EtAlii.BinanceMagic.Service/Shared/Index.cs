@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Pages
+﻿namespace EtAlii.BinanceMagic.Service.Shared
 {
     using System.Linq;
     using System.Threading.Tasks;

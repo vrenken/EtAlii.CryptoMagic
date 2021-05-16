@@ -1,6 +1,6 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    public class Trading : Entity
+    public class TradingBase : Entity
     {
         public string Name { get; set; }
     }

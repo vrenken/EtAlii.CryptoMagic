@@ -18,38 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Pages\Index.cs">
-      <DependentUpon>Index.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\Error.cs">
-      <DependentUpon>Error.cshtml</DependentUpon>
-    </Compile>
-    <Compile Update="Shared\Transaction.cs">
-      <DependentUpon>Transaction.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\Settings.cs">
-      <DependentUpon>Settings.razor</DependentUpon>
-    </Compile>
     <Compile Update="Shared\NavMenu.cs">
       <DependentUpon>NavMenu.razor</DependentUpon>
     </Compile>
-    <Compile Update="Pages\CircularView.cs">
-      <DependentUpon>CircularView.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\CircularEdit.cs">
-      <DependentUpon>CircularEdit.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\Experiments.cs">
-      <DependentUpon>Experiments.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\SimpleView.cs">
-      <DependentUpon>SimpleView.razor</DependentUpon>
-    </Compile>
     <Compile Update="Shared\MainLayout.cs">
       <DependentUpon>MainLayout.razor</DependentUpon>
-    </Compile>
-    <Compile Update="Pages\SimpleEdit.cs">
-      <DependentUpon>SimpleEdit.razor</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -72,13 +45,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Experiments" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Shared\NavMenu.razor.css">
       <DependentUpon>NavMenu.razor</DependentUpon>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages" />
   </ItemGroup>
 
 </Project>
