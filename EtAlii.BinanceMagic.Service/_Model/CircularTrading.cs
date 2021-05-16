@@ -2,7 +2,7 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System.Collections.Generic;
 
-    public class CircularExperiment : Experiment
+    public class CircularTrading : Trading
     {
         public IList<CircularTradeDetailsSnapshot> Snapshots { get; private set; } = new List<CircularTradeDetailsSnapshot>();
     }

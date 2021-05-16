@@ -1,26 +1,34 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
+<Layout Sider="true">
+    <LayoutSider>
         <NavMenu/>
-    </div>
-
-    <div class="main">
-        <div class="top-row px-4">
-
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
-                    <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    <li><a href="#">HTML</a></li>
-                    <li><a href="#">CSS</a></li>
-                    <li><a href="#">JavaScript</a></li>
-                </ul>
-            </div>
-            
-        </div>
-        <div class="content px-4">
+    </LayoutSider>
+    <Layout>
+        <LayoutHeader Fixed="true">
+            <Bar 
+                @bind-Visible="@_topbarVisible" 
+                Breakpoint="Breakpoint.Desktop" Background="Background.Primary" 
+                ThemeContrast="ThemeContrast.Light">
+                <BarBrand>
+                    <BarItem>
+                        <BarLink To="">
+                            <BarIcon IconName="@("fa-magic")" />
+                            Binance Magic
+                        </BarLink>
+                    </BarItem>
+                </BarBrand>
+                <BarEnd>
+                    <BarItem>
+                        <BarLink To="https://github.com/vrenken/EtAlii.BinanceMagic">
+                            <BarIcon IconName="@("fab fa-github")"/>
+                        </BarLink>
+                    </BarItem>
+                </BarEnd>
+            </Bar>
+        </LayoutHeader>
+        <LayoutContent Padding="Padding.Is4.OnX">
             @Body
-        </div>
-    </div>
-</div>
+        </LayoutContent>
+    </Layout>
+</Layout>

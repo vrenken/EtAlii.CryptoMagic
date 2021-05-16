@@ -3,13 +3,16 @@
     using System.Linq;
     using System.Threading.Tasks;
     using EtAlii.BinanceMagic.Service.Data;
+    using Microsoft.AspNetCore.Components;
 
-    public partial class Circular
+    public partial class CircularView
     {
         private readonly Experiment[] _experiments;
         private Experiment _currentExperiment;
 
-        public Circular()
+        [Parameter] public string Id { get; set; }
+
+        public CircularView()
         {
             _experiments = new[]
             {

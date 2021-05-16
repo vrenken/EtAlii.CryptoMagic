@@ -28,8 +28,9 @@ namespace EtAlii.BinanceMagic
                 .Enrich.WithProperty("UniqueProcessId", Guid.NewGuid()) // An int process ID is not enough
                 .WriteTo.Async(writeTo =>
                 {
+                    writeTo.Seq("http://localhost:5341");
                     //writeTo.Seq("http://vrenken.duckdns.org:5341");
-                    writeTo.Seq("http://192.168.1.130:5341");
+                    //writeTo.Seq("http://192.168.1.130:5341");
                 });
         }
     }

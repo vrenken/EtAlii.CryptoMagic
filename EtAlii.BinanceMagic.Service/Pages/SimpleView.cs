@@ -3,13 +3,16 @@
     using System.Linq;
     using System.Threading.Tasks;
     using EtAlii.BinanceMagic.Service.Data;
+    using Microsoft.AspNetCore.Components;
 
-    public partial class Simple
+    public partial class SimpleView
     {
         private readonly Experiment[] _experiments;
         private Experiment _currentExperiment;
 
-        public Simple()
+        [Parameter] public string Id { get; set; }
+
+        public SimpleView()
         {
             _experiments = new[]
             {

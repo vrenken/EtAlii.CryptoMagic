@@ -1,0 +1,20 @@
+﻿@page "/circular/view/{id?}"
+
+@using EtAlii.BinanceMagic.Service.Data
+@inject AlgorithmRunnerService _algorithmRunnerService
+
+@if (_currentExperiment == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <Transaction Title="Current experiment"/>
+
+    @foreach (var _ in _currentExperiment.Steps.Skip(1))
+    {
+        <Transaction Title="How is Blazor working for you?"/>
+    }
+}

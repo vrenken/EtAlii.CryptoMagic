@@ -1,31 +1,99 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">Binance Magic</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+﻿<LayoutSiderContent>
+    <Bar 
+        Breakpoint="Breakpoint.Desktop" 
+        NavigationBreakpoint="Breakpoint.Tablet" 
+        ThemeContrast="ThemeContrast.Dark"
+        Mode="BarMode.VerticalInline" 
+        CollapseMode="BarCollapseMode.Small">
+        <BarToggler />
+        <BarBrand>
+            <BarItem>
+                <BarLink To="">
+                    <BarIcon IconName="@("fa-magic")" />
+                    Binance Magic
+                </BarLink>
+            </BarItem>
+        </BarBrand>
+        <BarMenu>
+            <BarStart>
+                <BarItem>
+                    <BarLink To="">
+                        <BarIcon IconName="IconName.Dashboard" />
+                        Dashboard
+                    </BarLink>
+                </BarItem>
+                
+                <BarItem>
+                    <BarDropdown @bind-Visible="@_uiElementsVisible">
+                        <BarDropdownToggle>
+                            <BarIcon IconName="@("fa-chart-line")" />
+                            Simple trading
+                        </BarDropdownToggle>
+                        <BarDropdownMenu>
+                            <Repeater Items="@SimpleTradings">
+                                <BarDropdownItem To="@($"/simple/view/{context.Id}")">
+                                    @context.Name
+                                </BarDropdownItem>
+                            </Repeater>
+                            <BarDropdownItem To="/simple/edit">
+                                <Icon Name="@("fa-plus")" />
+                                Add
+                            </BarDropdownItem>
+                        </BarDropdownMenu>
+                    </BarDropdown>
+                </BarItem>
+                
+                <BarItem>                    
+                    <BarDropdown @bind-Visible="@_uiElementsVisible">
+                        <BarDropdownToggle>
+                            <BarIcon IconName="@("fa-infinity")"/>
+                            Circular trading
+                        </BarDropdownToggle>
+                        <BarDropdownMenu>
+                            <Repeater Items="@CircularTradings">
+                                <BarDropdownItem To="@($"/circular/view/{context.Id}")">
+                                    @context.Name
+                                </BarDropdownItem>
+                            </Repeater>
+                            <BarDropdownItem To="/circular/edit">
+                                <Icon Name="@("fa-plus")"/>
+                                Add
+                            </BarDropdownItem>
+                        </BarDropdownMenu>
+                    </BarDropdown>
+                </BarItem>
+                
+                <BarItem>                    
+                    <BarDropdown @bind-Visible="@_uiElementsVisible">
+                        <BarDropdownToggle>
+                            <BarIcon IconName="@("fa-flask")" />
+                            Experimental trading 
+                        </BarDropdownToggle>
+                        <BarDropdownMenu>
+                            <Repeater Items="@ExperimentalTradings">
+                                <BarDropdownItem To="@($"/experimental/view/{context.Id}")">
+                                    @context.Name
+                                </BarDropdownItem>
+                            </Repeater>
+                            <BarDropdownItem To="experimental/edit">
+                                <Icon Name="@("fa-plus")" />
+                                Add
+                            </BarDropdownItem>
+                        </BarDropdownMenu>
+                    </BarDropdown>
+                </BarItem>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="simple" Match="NavLinkMatch.All">
-                <span class="oi oi-graph" aria-hidden="true"></span> Simple trading
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="circular" Match="NavLinkMatch.All">
-                <span class="oi oi-loop-circular" aria-hidden="true"></span> Circular trading
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="experiments" Match="NavLinkMatch.All">
-                <span class="oi oi-beaker" aria-hidden="true"></span> Experiments
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="settings">
-                <span class="oi oi-cog" aria-hidden="true"></span> Settings
-            </NavLink>
-        </li>
-    </ul>
-</div>
+                
+                <BarItem>
+                    <BarLink To="/settings">
+                        <BarIcon IconName="@("fa-cog")" />
+                        Settings
+                    </BarLink>
+                </BarItem>
+            </BarStart>
+            <BarEnd>
+            </BarEnd>
+        </BarMenu>
+    </Bar>
+</LayoutSiderContent>
+   
