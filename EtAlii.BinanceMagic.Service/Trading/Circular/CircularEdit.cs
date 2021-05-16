@@ -5,7 +5,6 @@
     using System.Linq;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
-    using Microsoft.EntityFrameworkCore;
 
     public partial class CircularEdit
     {
@@ -36,13 +35,9 @@
                 ? new CircularTrading()
                 : data.CircularTradings.Single(t => t.Id == _model.Id);
 
-            data.Entry(trading).State = _model.Id == Guid.Empty
-                ? EntityState.Added
-                : EntityState.Modified;
-
             trading.Name = _model.Name;
-
-            data.SaveChanges();
+            
+            _algorithmManager.Update(trading);
             
             _navigationManager.NavigateTo($"/circular/view/{trading.Id}");
         }

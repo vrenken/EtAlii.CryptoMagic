@@ -6,14 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Update="Shared\MainLayout.razor.css">
-      <DependentUpon>MainLayout.razor</DependentUpon>
-    </Content>
     <Content Update="appsettings.Development.json">
       <DependentUpon>appsettings.json</DependentUpon>
-    </Content>
-    <Content Update="Shared\NavMenu.razor.css">
-      <DependentUpon>NavMenu.razor</DependentUpon>
     </Content>
   </ItemGroup>
 
@@ -24,7 +18,7 @@
     <Compile Update="Shared\MainLayout.cs">
       <DependentUpon>MainLayout.razor</DependentUpon>
     </Compile>
-    <Compile Update="Trading\Experimental\Experiments.cs">
+    <Compile Update="Trading\Experimental\ExperimentalView.cs">
       <DependentUpon>Experiments.razor</DependentUpon>
     </Compile>
     <Compile Update="Trading\Circular\CircularEdit.cs">
