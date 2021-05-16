@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using EtAlii.BinanceMagic.Service.Data;
     using Microsoft.AspNetCore.Components;
 
     public partial class CircularView
@@ -24,16 +23,16 @@
             UpdateExperiments();
         }
         
-        private void SelectExperiment(string experimentName)
-        {
-            InvokeAsync(() =>
-            {
-                _currentExperiment = _experiments.SingleOrDefault(e => e.Name == experimentName);
-                
-                UpdateExperiments();
-                StateHasChanged();
-            });
-        }
+        // private void SelectExperiment(string experimentName)
+        // {
+        //     InvokeAsync(() =>
+        //     {
+        //         _currentExperiment = _experiments.SingleOrDefault(e => e.Name == experimentName);
+        //         
+        //         UpdateExperiments();
+        //         StateHasChanged();
+        //     });
+        // }
 
         private void UpdateExperiments()
         {

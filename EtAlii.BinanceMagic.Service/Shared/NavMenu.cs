@@ -3,6 +3,10 @@
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
+    using EtAlii.BinanceMagic.Service.Trading.Circular;
+    using EtAlii.BinanceMagic.Service.Trading.Experimental;
+    using EtAlii.BinanceMagic.Service.Trading.Simple;
+    using EtAlii.BinanceMagic.Service.Trading.Surfing;
     using Microsoft.AspNetCore.Components;
     using Microsoft.EntityFrameworkCore;
 

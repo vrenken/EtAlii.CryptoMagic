@@ -2,7 +2,7 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using EtAlii.BinanceMagic.Service.Data;
+    using EtAlii.BinanceMagic.Service.Trading;
 
     public partial class Index
     {
@@ -21,16 +21,16 @@
             UpdateExperiments();
         }
         
-        private void SelectExperiment(string experimentName)
-        {
-            InvokeAsync(() =>
-            {
-                _currentExperiment = _experiments.SingleOrDefault(e => e.Name == experimentName);
-                
-                UpdateExperiments();
-                StateHasChanged();
-            });
-        }
+        // private void SelectExperiment(string experimentName)
+        // {
+        //     InvokeAsync(() =>
+        //     {
+        //         _currentExperiment = _experiments.SingleOrDefault(e => e.Name == experimentName);
+        //         
+        //         UpdateExperiments();
+        //         StateHasChanged();
+        //     });
+        // }
 
         private void UpdateExperiments()
         {
@@ -48,7 +48,7 @@
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            _algorithmRunnerService.Tick += () =>
+            _algorithmManager.Tick += () =>
             {
                 InvokeAsync(StateHasChanged);
             };

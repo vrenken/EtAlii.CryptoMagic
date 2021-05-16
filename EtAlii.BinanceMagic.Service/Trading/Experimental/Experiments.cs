@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using EtAlii.BinanceMagic.Service.Data;
 
     public partial class Experiments
     {

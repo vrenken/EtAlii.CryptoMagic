@@ -6,7 +6,7 @@ namespace EtAlii.BinanceMagic.Service.Trading
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
-    public class AlgorithmRunnerService : IHostedService
+    public class AlgorithmManager : IHostedService
     {
         private CancellationTokenSource _cancellationTokenSource;
         private Task _task;
@@ -14,7 +14,7 @@ namespace EtAlii.BinanceMagic.Service.Trading
 
         public event Action Tick;
 
-        public ObservableCollection<LoopSettings> LoopSettings { get; } = new();
+        public ObservableCollection<IAlgorithmRunner> Runners { get; } = new();
         
         public Task StartAsync(CancellationToken cancellationToken)
         {

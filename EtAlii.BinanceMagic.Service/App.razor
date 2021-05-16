@@ -13,15 +13,14 @@
     </Router>
 </Blazorise.ThemeProvider>
 @code{
-    private readonly Theme _theme = new Theme
+    private readonly Theme _theme = new()
     {
         BarOptions = new ThemeBarOptions
         {
             HorizontalHeight = "64px"
         },
-        BreakpointOptions = new ThemeBreakpointOptions
-        {
-        },
+        BreakpointOptions = new ThemeBreakpointOptions()
+        ,
         ColorOptions = new ThemeColorOptions
         {
             Primary = "#165b16",
@@ -37,9 +36,7 @@
         {
             Primary = "#165b16",
         },
-        TextColorOptions = new ThemeTextColorOptions
-        {
-        },
+        TextColorOptions = new ThemeTextColorOptions(),
         //ButtonOptions = new ThemeButtonOptions { },
         //DropdownOptions = new ThemeDropdownOptions { },
         InputOptions = new ThemeInputOptions
