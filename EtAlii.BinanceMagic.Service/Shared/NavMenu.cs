@@ -1,8 +1,11 @@
 ﻿namespace EtAlii.BinanceMagic.Service.Shared
 {
+    using System;
     using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
     using System.Linq;
     using System.Threading.Tasks;
+    using EtAlii.BinanceMagic.Service.Trading;
     using EtAlii.BinanceMagic.Service.Trading.Circular;
     using EtAlii.BinanceMagic.Service.Trading.Experimental;
     using EtAlii.BinanceMagic.Service.Trading.Simple;
@@ -10,43 +13,102 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.EntityFrameworkCore;
 
-    public partial class NavMenu
+    public partial class NavMenu : IDisposable
     {
         private bool _uiElementsVisible = true;
 
-        private ObservableCollection<CircularTrading> CircularTradings { get; } = new();
-        private ObservableCollection<SimpleTrading> SimpleTradings { get; } = new();
-        private ObservableCollection<SurfingTrading> SurfingTradings { get; } = new();
-        private ObservableCollection<ExperimentalTrading> ExperimentalTradings { get; } = new();
+        private ObservableCollection<IAlgorithmRunner> CircularTradings { get; } = new();
+        private ObservableCollection<IAlgorithmRunner> SimpleTradings { get; } = new();
+        private ObservableCollection<IAlgorithmRunner> SurfingTradings { get; } = new();
+        private ObservableCollection<IAlgorithmRunner> ExperimentalTradings { get; } = new();
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            var data = new DataContext();
+            ReloadRunners();
 
-            var simpleTradings = await data.SimpleTradings.ToArrayAsync();
-            foreach (var simpleTrading in simpleTradings)
-            {
-                SimpleTradings.Add(simpleTrading);
-            }
+            _algorithmManager.Runners.CollectionChanged += OnRunnersChanged;
+        }
 
-            var circularTradings = await data.CircularTradings.ToArrayAsync();
-            foreach (var circularTrading in circularTradings)
+        private void OnRunnersChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            InvokeAsync(() =>
             {
-                CircularTradings.Add(circularTrading);
-            }
-            
-            var surfingTradings = await data.SurfingTradings.ToArrayAsync();
-            foreach (var surfingTrading in surfingTradings)
-            {
-                SurfingTradings.Add(surfingTrading);
-            }
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (IAlgorithmRunner newItem in e.NewItems!)
+                        {
+                            AddRunner(newItem);
+                        }
 
-            var experimentalTradings = await data.ExperimentalTradings.ToArrayAsync();
-            foreach (var experimentalTrading in experimentalTradings)
-            {
-                ExperimentalTradings.Add(experimentalTrading);
-            }
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (IAlgorithmRunner newItem in e.OldItems!)
+                        {
+                            RemoveRunner(newItem);
+                        }
 
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        CircularTradings.Clear();
+                        SimpleTradings.Clear();
+                        SurfingTradings.Clear();
+                        ExperimentalTradings.Clear();
+                        ReloadRunners();
+                        break;
+                }
+            });
+        }
+
+        private void ReloadRunners()
+        {
+            var runners = _algorithmManager.Runners
+                .ToArray();
+            foreach (var runner in runners)
+            {
+                AddRunner(runner);
+            }
+        }
+        private void RemoveRunner(IAlgorithmRunner runner)
+        {
+            switch (runner.Trading)
+            {
+                case CircularTrading:
+                    CircularTradings.Remove(runner);
+                    break;
+                case SimpleTrading:
+                    SimpleTradings.Remove(runner);
+                    break;
+                case SurfingTrading:
+                    SurfingTradings.Remove(runner);
+                    break;
+                case ExperimentalTrading:
+                    ExperimentalTradings.Remove(runner);
+                    break;
+            }
+        }
+
+        private void AddRunner(IAlgorithmRunner runner)
+        {
+            switch (runner.Trading)
+            {
+                case CircularTrading:
+                    CircularTradings.Add(runner);
+                    break;
+                case SimpleTrading:
+                    SimpleTradings.Add(runner);
+                    break;
+                case SurfingTrading:
+                    SurfingTradings.Add(runner);
+                    break;
+                case ExperimentalTrading:
+                    ExperimentalTradings.Add(runner);
+                    break;
+            }            
+        }
+        public void Dispose()
+        {
+            _algorithmManager.Runners.CollectionChanged -= OnRunnersChanged;
         }
     }
 }

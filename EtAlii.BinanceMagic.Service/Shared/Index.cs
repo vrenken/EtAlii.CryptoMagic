@@ -48,10 +48,10 @@
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            _algorithmManager.Tick += () =>
-            {
-                InvokeAsync(StateHasChanged);
-            };
+            // _algorithmManager.Tick += () =>
+            // {
+            //     InvokeAsync(StateHasChanged);
+            // };
         }
     }
 }

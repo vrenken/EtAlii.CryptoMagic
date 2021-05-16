@@ -1,4 +1,7 @@
-﻿<LayoutSiderContent>
+﻿@using EtAlii.BinanceMagic.Service.Trading
+@inject AlgorithmManager _algorithmManager
+
+<LayoutSiderContent>
     <Bar 
         Breakpoint="Breakpoint.Desktop" 
         NavigationBreakpoint="Breakpoint.Tablet" 
@@ -9,8 +12,8 @@
         <BarBrand>
             <BarItem>
                 <BarLink To="">
-                    <BarIcon IconName="@("fa-magic")" />
-                    Binance Magic
+                    @* <BarIcon IconName="@("fa-magic")" /> *@
+                    @* Binance Magic *@
                 </BarLink>
             </BarItem>
         </BarBrand>
@@ -24,18 +27,18 @@
                 </BarItem>
                 
                 <BarItem>
-                    <BarDropdown @bind-Visible="@_uiElementsVisible">
+                    <BarDropdown @bind-Visible="@_uiElementsVisible" ElementId="simple-tradings">
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-chart-line")" />
                             Simple trading
                         </BarDropdownToggle>
                         <BarDropdownMenu>
                             <Repeater Items="@SimpleTradings">
-                                <BarDropdownItem To="@($"/simple/view/{context.Id}")">
-                                    @context.Name
+                                <BarDropdownItem To="@($"/simple/view/{context.Trading.Id}")">
+                                    @context.Trading.Name
                                 </BarDropdownItem>
                             </Repeater>
-                            <BarDropdownItem To="/simple/edit">
+                            <BarDropdownItem To="/simple/edit" ElementId="simple-edit">
                                 <Icon Name="@("fa-plus")" />
                                 Add
                             </BarDropdownItem>
@@ -44,18 +47,18 @@
                 </BarItem>
                 
                 <BarItem>                    
-                    <BarDropdown @bind-Visible="@_uiElementsVisible">
+                    <BarDropdown @bind-Visible="@_uiElementsVisible" ElementId="circular-tradings">
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-infinity")"/>
                             Circular trading
                         </BarDropdownToggle>
                         <BarDropdownMenu>
                             <Repeater Items="@CircularTradings">
-                                <BarDropdownItem To="@($"/circular/view/{context.Id}")">
-                                    @context.Name
+                                <BarDropdownItem To="@($"/circular/view/{context.Trading.Id}")">
+                                    @context.Trading.Name
                                 </BarDropdownItem>
                             </Repeater>
-                            <BarDropdownItem To="/circular/edit">
+                            <BarDropdownItem To="/circular/edit" ElementId="circular-edit">
                                 <Icon Name="@("fa-plus")"/>
                                 Add
                             </BarDropdownItem>
@@ -64,18 +67,18 @@
                 </BarItem>
                 
                 <BarItem>                    
-                    <BarDropdown @bind-Visible="@_uiElementsVisible">
+                    <BarDropdown @bind-Visible="@_uiElementsVisible" ElementId="experimental-tradings">
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-flask")" />
                             Experimental trading 
                         </BarDropdownToggle>
                         <BarDropdownMenu>
                             <Repeater Items="@ExperimentalTradings">
-                                <BarDropdownItem To="@($"/experimental/view/{context.Id}")">
-                                    @context.Name
+                                <BarDropdownItem To="@($"/experimental/view/{context.Trading.Id}")">
+                                    @context.Trading.Name
                                 </BarDropdownItem>
                             </Repeater>
-                            <BarDropdownItem To="experimental/edit">
+                            <BarDropdownItem To="experimental/edit" ElementId="experimental-edit">
                                 <Icon Name="@("fa-plus")" />
                                 Add
                             </BarDropdownItem>

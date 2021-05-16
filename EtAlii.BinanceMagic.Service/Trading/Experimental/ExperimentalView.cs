@@ -3,12 +3,12 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public partial class Experiments
+    public partial class ExperimentalView
     {
         private readonly Experiment[] _experiments;
         private Experiment _currentExperiment;
 
-        public Experiments()
+        public ExperimentalView()
         {
             _experiments = new[]
             {

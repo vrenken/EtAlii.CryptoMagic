@@ -2,17 +2,16 @@ namespace EtAlii.BinanceMagic.Service.Trading
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
-    public class AlgorithmManager : IHostedService
+    public partial class AlgorithmManager : IHostedService
     {
         private CancellationTokenSource _cancellationTokenSource;
         private Task _task;
         private CancellationToken _cancellationToken;
-
-        public event Action Tick;
 
         public ObservableCollection<IAlgorithmRunner> Runners { get; } = new();
         
@@ -26,10 +25,20 @@ namespace EtAlii.BinanceMagic.Service.Trading
 
         private void Run()
         {
-            while (!_cancellationToken.IsCancellationRequested)
+            var data = new DataContext();
+
+            var allTradings = Array.Empty<TradingBase>();
+            allTradings = allTradings
+                .Concat(data.SimpleTradings.Cast<TradingBase>().ToArray())
+                .Concat(data.CircularTradings.Cast<TradingBase>().ToArray())
+                .Concat(data.SurfingTradings.Cast<TradingBase>().ToArray())
+                .Concat(data.ExperimentalTradings.Cast<TradingBase>().ToArray())
+                .ToArray();
+            
+            foreach (var trading in allTradings)
             {
-                Tick?.Invoke();
-                Task.Delay(TimeSpan.FromSeconds(10), _cancellationToken).Wait(_cancellationToken);
+                var runner = CreateRunner(trading);
+                Runners.Add(runner);
             }
         }
         
