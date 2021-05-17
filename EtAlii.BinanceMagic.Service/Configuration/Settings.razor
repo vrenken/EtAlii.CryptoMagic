@@ -13,11 +13,11 @@
 
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
-                            <FieldLabel>API key</FieldLabel>
+                            <FieldLabel>Binance API key</FieldLabel>
                             <TextEdit 
-                                Placeholder="Key" 
+                                Placeholder="API key" 
                                 Autofocus="true"
-                                @bind-Text="@_model.ApiKey">
+                                @bind-Text="@_model.BinanceApiKey">
                                 <Feedback>
                                     <ValidationError>Enter Binance API key.</ValidationError>
                                 </Feedback>                            
@@ -27,11 +27,11 @@
 
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
-                            <FieldLabel>Secret key</FieldLabel>
+                            <FieldLabel>Binance secret key</FieldLabel>
                             <TextEdit 
-                                Placeholder="Key" 
+                                Placeholder="Secret key" 
                                 Autofocus="true"
-                                @bind-Text="@_model.SecretKey">
+                                @bind-Text="@_model.BinanceSecretKey">
                                 <Feedback>
                                     <ValidationError>Enter Binance secret key.</ValidationError>
                                 </Feedback>                            
@@ -52,7 +52,7 @@
                             </TextEdit>
                         </Field>
                     </Validation>
-                    
+
                     <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
                         <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
                     </Field>

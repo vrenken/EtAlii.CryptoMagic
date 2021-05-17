@@ -3,59 +3,84 @@
 @using EtAlii.BinanceMagic.Service.Trading
 @inject AlgorithmManager _algorithmManager
 
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet.Is4.OnDesktop">
+        <Card Margin="Margin.Is4">
+            <CardHeader>
+                <Icon Name="@("fa-magic")" />
+                Accumulated 
+            </CardHeader>
+            <CardBody>
+                <CardTitle Size="5">Card title</CardTitle>
+                <CardText>
+                    Some quick example text to build on the card title and make up the bulk of the card's content.
+                </CardText>
+                <Button Color="Color.Primary">Button</Button>
+            </CardBody>
+        </Card>
+    </Column>
+    
+    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet.Is4.OnDesktop">
+        <Card Margin="Margin.Is4">
+            <CardHeader>
+                <Icon Name="@("fa-chart-line")" />
+                One-off trading 
+            </CardHeader>
+            <CardBody>
+                <CardTitle Size="5">Card title</CardTitle>
+                <CardText>
+                    Some quick example text to build on the card title and make up the bulk of the card's content.
+                </CardText>
+                <Button Color="Color.Primary">Button</Button>
+            </CardBody>
+        </Card>
+    </Column>
 
-<Card>
-    <CardHeader>
-        <Icon Name="@("fa-magic")" />
-        Accumulated 
-    </CardHeader>
-    <CardBody>
-        <CardTitle Size="5">Card title</CardTitle>
-        <CardText>
-            Some quick example text to build on the card title and make up the bulk of the card's content.
-        </CardText>
-        <Button Color="Color.Primary">Button</Button>
-    </CardBody>
-</Card>
+    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet.Is4.OnDesktop">
+        <Card Margin="Margin.Is4">
+            <CardHeader>
+                <Icon Name="@("fa-chart-bar")" />
+                Simple trading 
+            </CardHeader>
+            <CardBody>
+                <CardTitle Size="5">Card title</CardTitle>
+                <CardText>
+                    Some quick example text to build on the card title and make up the bulk of the card's content.
+                </CardText>
+                <Button Color="Color.Primary">Button</Button>
+            </CardBody>
+        </Card>
+    </Column>
 
-<Card>
-    <CardHeader>
-        <Icon Name="@("fa-chart-line")" />
-        Simple trading 
-    </CardHeader>
-    <CardBody>
-        <CardTitle Size="5">Card title</CardTitle>
-        <CardText>
-            Some quick example text to build on the card title and make up the bulk of the card's content.
-        </CardText>
-        <Button Color="Color.Primary">Button</Button>
-    </CardBody>
-</Card>
+    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet.Is4.OnDesktop">
+        <Card Margin="Margin.Is4">
+            <CardHeader>
+                <Icon Name="@("fa-infinity")" />
+                Cyclic trading 
+            </CardHeader>
+            <CardBody>
+                <CardTitle Size="5">Card title</CardTitle>
+                <CardText>
+                    Some quick example text to build on the card title and make up the bulk of the card's content.
+                </CardText>
+                <Button Color="Color.Primary">Button</Button>
+            </CardBody>
+        </Card>
+    </Column>
 
-<Card>
-    <CardHeader>
-        <Icon Name="@("fa-infinity")" />
-        Cyclic trading 
-    </CardHeader>
-    <CardBody>
-        <CardTitle Size="5">Card title</CardTitle>
-        <CardText>
-            Some quick example text to build on the card title and make up the bulk of the card's content.
-        </CardText>
-        <Button Color="Color.Primary">Button</Button>
-    </CardBody>
-</Card>
-
-<Card>
-    <CardHeader>
-        <Icon Name="@("fa-flask")" />
-        Experimental trading 
-    </CardHeader>
-    <CardBody>
-        <CardTitle Size="5">Card title</CardTitle>
-        <CardText>
-            Some quick example text to build on the card title and make up the bulk of the card's content.
-        </CardText>
-        <Button Color="Color.Primary">Button</Button>
-    </CardBody>
-</Card>
+    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet.Is4.OnDesktop">
+        <Card Margin="Margin.Is4">
+            <CardHeader>
+                <Icon Name="@("fa-flask")" />
+                Experimental trading 
+            </CardHeader>
+            <CardBody>
+                <CardTitle Size="5">Card title</CardTitle>
+                <CardText>
+                    Some quick example text to build on the card title and make up the bulk of the card's content.
+                </CardText>
+                <Button Color="Color.Primary">Button</Button>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>

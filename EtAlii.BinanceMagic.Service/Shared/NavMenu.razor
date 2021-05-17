@@ -30,7 +30,27 @@
                     <BarDropdown>
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-chart-line")" />
-                            Simple trading
+                            One-off trades
+                        </BarDropdownToggle>
+                        <BarDropdownMenu>
+                            <Repeater Items="@OneOffTradings">
+                                <BarDropdownItem To="@($"/one-off/view/{context.Trading.Id}")">
+                                    @context.Trading.Name
+                                </BarDropdownItem>
+                            </Repeater>
+                            <BarDropdownItem To="/one-off/edit">
+                                <Icon Name="@("fa-plus")" />
+                                Add
+                            </BarDropdownItem>
+                        </BarDropdownMenu>
+                    </BarDropdown>
+                </BarItem>
+                
+                <BarItem>
+                    <BarDropdown>
+                        <BarDropdownToggle>
+                            <BarIcon IconName="@("fa-chart-bar")" />
+                            Simple trades
                         </BarDropdownToggle>
                         <BarDropdownMenu>
                             <Repeater Items="@SimpleTradings">
@@ -50,7 +70,7 @@
                     <BarDropdown>
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-infinity")"/>
-                            Circular trading
+                            Circular trades
                         </BarDropdownToggle>
                         <BarDropdownMenu>
                             <Repeater Items="@CircularTradings">
@@ -70,7 +90,7 @@
                     <BarDropdown>
                         <BarDropdownToggle>
                             <BarIcon IconName="@("fa-flask")" />
-                            Experimental trading 
+                            Experimental trades 
                         </BarDropdownToggle>
                         <BarDropdownMenu>
                             <Repeater Items="@ExperimentalTradings">

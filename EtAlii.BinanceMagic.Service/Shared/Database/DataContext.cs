@@ -5,6 +5,7 @@ namespace EtAlii.BinanceMagic.Service
     using EtAlii.BinanceMagic.Service.Shared;
     using EtAlii.BinanceMagic.Service.Trading.Circular;
     using EtAlii.BinanceMagic.Service.Trading.Experimental;
+    using EtAlii.BinanceMagic.Service.Trading.OneOff;
     using EtAlii.BinanceMagic.Service.Trading.Simple;
     using EtAlii.BinanceMagic.Service.Trading.Surfing;
     using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace EtAlii.BinanceMagic.Service
         public DbSet<CircularTrading> CircularTradings { get; init; }
         public DbSet<SurfingTrading> SurfingTradings { get; init; }
         public DbSet<ExperimentalTrading> ExperimentalTradings { get; init; }
+        public DbSet<OneOffTrading> OneOffTradings { get; init; }
         
         private readonly ILogger _logger = Log.ForContext<DataContext>();
 

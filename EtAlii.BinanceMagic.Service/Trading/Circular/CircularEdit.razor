@@ -1,11 +1,8 @@
 ﻿@page "/circular/edit/{id?}"
 
-@inject AlgorithmManager _algorithmManager
-@inject NavigationManager _navigationManager
+@inherits EditBase<CircularTrading> 
 
-@inject IJSRuntime _jsRuntime;
-
-<Validations @ref="_validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@_editContext">
+<Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext">
 <Row>
     <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
         <Card Margin="Margin.Is4">
@@ -13,13 +10,14 @@
                 <CardTitle>@(Id == null ? "Add new circular trade" : "Edit circular trade")</CardTitle>
             </CardHeader>
                 <CardBody>
+
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
                             <FieldLabel>Name</FieldLabel>
                             <TextEdit 
                                 Placeholder="Enter name" 
                                 Autofocus="true"
-                                @bind-Text="@_model.Name">
+                                @bind-Text="@Model.Name">
                                 <Feedback>
                                     <ValidationError>Enter name for trade.</ValidationError>
                                 </Feedback>                            
@@ -27,26 +25,28 @@
                             @* <FieldHelp>A name that represents the circular trade.</FieldHelp> *@
                         </Field>
                     </Validation>
+                    
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field ColumnSize="ColumnSize.IsQuarter.OnTablet.IsHalf.OnMobile">
                             <FieldLabel>First symbol</FieldLabel>
                             <TextEdit 
                                 Placeholder="Symbol" 
                                 Autofocus="true"
-                                @bind-Text="@_model.FirstSymbol">
+                                @bind-Text="@Model.FirstSymbol">
                                 <Feedback>
                                     <ValidationError>Enter the first symbol to use for the trade.</ValidationError>
                                 </Feedback>                            
                             </TextEdit>
                         </Field>
                     </Validation>
+                    
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field ColumnSize="ColumnSize.IsQuarter.OnTablet.IsHalf.OnMobile">
                             <FieldLabel>Second symbol</FieldLabel>
                             <TextEdit 
                                 Placeholder="Symbol" 
                                 Autofocus="true"
-                                @bind-Text="@_model.SecondSymbol">
+                                @bind-Text="@Model.SecondSymbol">
                                 <Feedback>
                                     <ValidationError>Enter the second symbol to use for the trade.</ValidationError>
                                 </Feedback>                            
@@ -57,12 +57,13 @@
                     <Validation Validator="@ValidationRule.None">
                         <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
                             <FieldLabel>Connectivity</FieldLabel>
-                            <RadioGroup TValue="Connectivity" @bind-CheckedValue="@_model.Connectivity">
+                            <RadioGroup TValue="Connectivity" @bind-CheckedValue="@Model.Connectivity">
                                 <Radio TValue="Connectivity" Value="@(Connectivity.BackTest)">Backtest</Radio>
                                 <Radio TValue="Connectivity" Value="@(Connectivity.Binance)">Interact with Binance</Radio>
                             </RadioGroup>
                         </Field>
                     </Validation>
+                    
                     <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
                         <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
                     </Field>
