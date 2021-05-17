@@ -27,9 +27,6 @@
     <Compile Update="Trading\Circular\CircularView.cs">
       <DependentUpon>CircularView.razor</DependentUpon>
     </Compile>
-    <Compile Update="Shared\Index.cs">
-      <DependentUpon>Index.razor</DependentUpon>
-    </Compile>
     <Compile Update="Configuration\Settings.cs">
       <DependentUpon>Settings.razor</DependentUpon>
     </Compile>

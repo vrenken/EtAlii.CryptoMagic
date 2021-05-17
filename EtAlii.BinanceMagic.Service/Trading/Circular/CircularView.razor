@@ -1,19 +1,68 @@
 ﻿@page "/circular/view/{id?}"
 
-@inject AlgorithmRunnerService _algorithmRunnerService
+@inherits ViewBase<CircularTrading>
 
-@if (_currentExperiment == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <Transaction Title="Current experiment"/>
-
-    @foreach (var _ in _currentExperiment.Steps.Skip(1))
-    {
-        <Transaction Title="How is Blazor working for you?"/>
-    }
-}
+<Row Margin="Margin.Is4">
+    <Column ColumnSize="ColumnSize.Is1">
+        <Button Color="Color.Primary">
+            <Icon Name="IconName.Pause" />
+            Pause
+        </Button>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is1">
+        <Blazorise.Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"/circular/edit/{Id}")">
+            <Icon Name="@("fa-wrench")"/>
+            Change
+        </Blazorise.Button>
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
+        <Card>
+            <CardHeader>@Model.Name</CardHeader>
+            <Table Striped="false" Borderless="true" Narrow="true">
+                <TableBody>
+                    <TableRow>
+                        <TableRowCell>Last success: </TableRowCell><TableRowCell>@Current.LastSuccess</TableRowCell>
+                        <TableRowCell>Profit:</TableRowCell><TableRowCell>@Current.Profit</TableRowCell>
+                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Last check: </TableRowCell><TableRowCell>@Current.LastCheck</TableRowCell>
+                        <TableRowCell>Result:</TableRowCell><TableRowCell>@Current.Result</TableRowCell>
+                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Next check: </TableRowCell><TableRowCell>@Current.NextCheck</TableRowCell>
+                        <TableRowCell>Step:</TableRowCell><TableRowCell>@Current.Step</TableRowCell>
+                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </Card>        
+    </Column>
+    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+        <Card>
+            <CardHeader>Current cycle</CardHeader>
+            <Table Striped="false" Borderless="true" Narrow="true">
+                <TableBody>
+                    <TableRow>
+                        <TableRowCell>Sell: </TableRowCell><TableRowCell>@Current.Sell</TableRowCell>
+                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Current.SellQuantity</TableRowCell>
+                        <TableRowCell>Trend: </TableRowCell><TableRowCell>@Current.SellTrend</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Buy: </TableRowCell><TableRowCell>@Current.Buy</TableRowCell>
+                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Current.BuyQuantity</TableRowCell>
+                        <TableRowCell>Trend: </TableRowCell><TableRowCell>@Current.BuyTrend</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Diff: </TableRowCell><TableRowCell>@Current.Diff</TableRowCell>
+                        <TableRowCell>Target: </TableRowCell><TableRowCell>@Current.Target</TableRowCell>
+                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </Card>        
+    </Column>
+</Row>
