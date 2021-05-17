@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Trading
+namespace EtAlii.BinanceMagic.Service
 {
     using System.Threading;
     using System.Threading.Tasks;

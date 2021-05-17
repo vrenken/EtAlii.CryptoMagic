@@ -3,12 +3,12 @@ namespace EtAlii.BinanceMagic.Service
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class SimpleAlgorithmRunner : IAlgorithmRunner
+    public class SurfingAlgorithmRunner : IAlgorithmRunner
     {
         public TradingBase Trading => _trading;
-        private readonly SimpleTrading _trading;
+        private readonly SurfingTrading _trading;
 
-        public SimpleAlgorithmRunner(SimpleTrading trading)
+        public SurfingAlgorithmRunner(SurfingTrading trading)
         {
             _trading = trading;
         }

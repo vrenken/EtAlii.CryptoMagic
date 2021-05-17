@@ -39,6 +39,9 @@
     <Compile Update="Trading\Transaction.cs">
       <DependentUpon>Transaction.razor</DependentUpon>
     </Compile>
+    <Compile Update="Shared\Error.cs">
+      <DependentUpon>Error.cshtml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

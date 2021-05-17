@@ -1,6 +1,5 @@
-namespace EtAlii.BinanceMagic.Service.Shared
+namespace EtAlii.BinanceMagic.Service
 {
-    using EtAlii.BinanceMagic.Service.Trading.Circular;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

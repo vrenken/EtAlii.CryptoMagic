@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Trading.Circular
+namespace EtAlii.BinanceMagic.Service
 {
     public enum Connectivity
     {

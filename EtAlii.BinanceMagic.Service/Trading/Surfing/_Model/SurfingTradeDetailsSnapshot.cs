@@ -1,7 +1,5 @@
-namespace EtAlii.BinanceMagic.Service.Trading.Surfing
+namespace EtAlii.BinanceMagic.Service
 {
-    using EtAlii.BinanceMagic.Service.Shared;
-
     public class SurfingTradeDetailsSnapshot : Entity
     {
     }

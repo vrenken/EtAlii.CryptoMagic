@@ -3,12 +3,10 @@ namespace EtAlii.BinanceMagic.Service
     using Blazorise;
     using Blazorise.Bootstrap;
     using Blazorise.Icons.FontAwesome;
-    using EtAlii.BinanceMagic.Service.Shared;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using EtAlii.BinanceMagic.Service.Trading;
 
     public class Startup
     {
@@ -27,9 +25,6 @@ namespace EtAlii.BinanceMagic.Service
 
             services.AddSingleton<AlgorithmManager>();
             services.AddHostedService(sp => sp.GetService<AlgorithmManager>());
-
-            services.AddSingleton<AlgorithmRunnerService>();
-            services.AddHostedService(sp => sp.GetService<AlgorithmRunnerService>());
 
             services
                 .AddBlazorise(options =>

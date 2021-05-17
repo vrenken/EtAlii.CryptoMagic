@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Shared
+﻿namespace EtAlii.BinanceMagic.Service
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;

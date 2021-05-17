@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Trading.Experimental
+namespace EtAlii.BinanceMagic.Service
 {
     using System.Collections.Generic;
 

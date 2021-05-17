@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Trading.OneOff
+﻿namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Linq;
