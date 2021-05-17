@@ -8,8 +8,9 @@ namespace EtAlii.BinanceMagic.Service.Shared
     {
         public void Configure(EntityTypeBuilder<Setting> builder)
         {
-            builder.Property(settings => settings.Key).IsRequired();
-            builder.Property(settings => settings.Value).IsRequired();
+            builder.HasIndex(e => e.Key).IsUnique();
+            builder.Property(e => e.Key).IsRequired();
+            builder.Property(e => e.Value).IsRequired();
         }
     }
 }

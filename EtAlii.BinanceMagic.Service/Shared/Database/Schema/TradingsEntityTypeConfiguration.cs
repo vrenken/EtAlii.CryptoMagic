@@ -14,9 +14,7 @@ namespace EtAlii.BinanceMagic.Service.Shared
         {
             builder.ToTable("Tradings");
             
-            builder
-                .Property(e => e.Name)
-                .IsRequired();
+            builder.Property(e => e.Name).IsRequired();
             
             builder
                 .HasDiscriminator<string>("trading_type")
