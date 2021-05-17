@@ -8,6 +8,7 @@
     using EtAlii.BinanceMagic.Service.Trading;
     using EtAlii.BinanceMagic.Service.Trading.Circular;
     using EtAlii.BinanceMagic.Service.Trading.Experimental;
+    using EtAlii.BinanceMagic.Service.Trading.OneOff;
     using EtAlii.BinanceMagic.Service.Trading.Simple;
     using EtAlii.BinanceMagic.Service.Trading.Surfing;
     using Microsoft.AspNetCore.Components;
@@ -15,6 +16,7 @@
 
     public partial class NavMenu : IDisposable
     {
+        private ObservableCollection<IAlgorithmRunner> OneOffTradings { get; } = new();
         private ObservableCollection<IAlgorithmRunner> CircularTradings { get; } = new();
         private ObservableCollection<IAlgorithmRunner> SimpleTradings { get; } = new();
         private ObservableCollection<IAlgorithmRunner> SurfingTradings { get; } = new();
@@ -48,6 +50,7 @@
 
                         break;
                     case NotifyCollectionChangedAction.Reset:
+                        OneOffTradings.Clear();
                         CircularTradings.Clear();
                         SimpleTradings.Clear();
                         SurfingTradings.Clear();
@@ -71,6 +74,9 @@
         {
             switch (runner.Trading)
             {
+                case OneOffTrading:
+                    OneOffTradings.Remove(runner);
+                    break;
                 case CircularTrading:
                     CircularTradings.Remove(runner);
                     break;
@@ -90,6 +96,9 @@
         {
             switch (runner.Trading)
             {
+                case OneOffTrading:
+                    OneOffTradings.Add(runner);
+                    break;
                 case CircularTrading:
                     CircularTradings.Add(runner);
                     break;

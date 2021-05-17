@@ -10,7 +10,7 @@ namespace EtAlii.BinanceMagic.Service.Trading
         public void Update(TradingBase trading)
         {
             var isNewTrading = trading.Id == Guid.Empty;
-            var data = new DataContext();
+            using var data = new DataContext();
 
             data.Entry(trading).State = isNewTrading
                 ? EntityState.Added

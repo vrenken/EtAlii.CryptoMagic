@@ -19,7 +19,7 @@
       <DependentUpon>MainLayout.razor</DependentUpon>
     </Compile>
     <Compile Update="Trading\Experimental\ExperimentalView.cs">
-      <DependentUpon>Experiments.razor</DependentUpon>
+      <DependentUpon>ExperimentalView.razor</DependentUpon>
     </Compile>
     <Compile Update="Trading\Circular\CircularEdit.cs">
       <DependentUpon>CircularEdit.razor</DependentUpon>
@@ -38,6 +38,9 @@
     </Compile>
     <Compile Update="Trading\Simple\SimpleEdit.cs">
       <DependentUpon>SimpleEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Transaction.cs">
+      <DependentUpon>Transaction.razor</DependentUpon>
     </Compile>
   </ItemGroup>
 

@@ -3,6 +3,7 @@ namespace EtAlii.BinanceMagic.Service.Shared
     using EtAlii.BinanceMagic.Service.Trading;
     using EtAlii.BinanceMagic.Service.Trading.Circular;
     using EtAlii.BinanceMagic.Service.Trading.Experimental;
+    using EtAlii.BinanceMagic.Service.Trading.OneOff;
     using EtAlii.BinanceMagic.Service.Trading.Simple;
     using EtAlii.BinanceMagic.Service.Trading.Surfing;
     using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace EtAlii.BinanceMagic.Service.Shared
                 .HasValue<CircularTrading>("circular")
                 .HasValue<SurfingTrading>("surfing")
                 .HasValue<SimpleTrading>("simple")
+                .HasValue<OneOffTrading>("one-off")
                 .HasValue<ExperimentalTrading>("experimental");
         }
     }

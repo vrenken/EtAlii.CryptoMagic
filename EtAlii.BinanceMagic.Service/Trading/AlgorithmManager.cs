@@ -25,7 +25,7 @@ namespace EtAlii.BinanceMagic.Service.Trading
 
         private void Run()
         {
-            var data = new DataContext();
+            using var data = new DataContext();
 
             var allTradings = Array.Empty<TradingBase>();
             allTradings = allTradings
