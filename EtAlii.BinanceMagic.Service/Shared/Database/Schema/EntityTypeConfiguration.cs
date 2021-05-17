@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Shared
+namespace EtAlii.BinanceMagic.Service
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

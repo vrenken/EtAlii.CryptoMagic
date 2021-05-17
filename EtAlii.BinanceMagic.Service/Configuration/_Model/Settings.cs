@@ -1,7 +1,5 @@
-namespace EtAlii.BinanceMagic.Service.Configuration
+namespace EtAlii.BinanceMagic.Service
 {
-    using EtAlii.BinanceMagic.Service.Shared;
-
     public class Setting : Entity
     {
         public string Key { get; init; }

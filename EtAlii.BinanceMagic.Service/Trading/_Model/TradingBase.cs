@@ -1,7 +1,5 @@
-namespace EtAlii.BinanceMagic.Service.Trading
+namespace EtAlii.BinanceMagic.Service
 {
-    using EtAlii.BinanceMagic.Service.Shared;
-
     public class TradingBase : Entity
     {
         public string Name { get; set; }

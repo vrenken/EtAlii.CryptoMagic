@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Trading.Circular
+namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Collections.Generic;

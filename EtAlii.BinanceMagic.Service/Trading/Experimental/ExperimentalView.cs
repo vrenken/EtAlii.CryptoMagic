@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Trading.Experimental
+﻿namespace EtAlii.BinanceMagic.Service
 {
     using System.Linq;
     using System.Threading.Tasks;
@@ -44,13 +44,13 @@
             return Task.CompletedTask;
         }
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            _algorithmRunnerService.Tick += () =>
-            {
-                InvokeAsync(StateHasChanged);
-            };
-        }
+        // protected override void OnInitialized()
+        // {
+        //     base.OnInitialized();
+        //     _algorithmManager.Tick += () =>
+        //     {
+        //         InvokeAsync(StateHasChanged);
+        //     };
+        // }
     }
 }

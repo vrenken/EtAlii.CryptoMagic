@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Service.Shared
+﻿namespace EtAlii.BinanceMagic.Service
 {
     public partial class MainLayout
     {

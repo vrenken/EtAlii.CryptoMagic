@@ -1,7 +1,5 @@
-namespace EtAlii.BinanceMagic.Service.Trading.OneOff
+namespace EtAlii.BinanceMagic.Service
 {
-    using EtAlii.BinanceMagic.Service.Trading;
-
     public class OneOffTrading : TradingBase
     {
     }

@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Trading.Surfing
+namespace EtAlii.BinanceMagic.Service
 {
     using System.Collections.Generic;
 

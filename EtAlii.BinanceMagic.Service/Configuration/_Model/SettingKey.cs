@@ -1,4 +1,4 @@
-namespace EtAlii.BinanceMagic.Service.Configuration
+namespace EtAlii.BinanceMagic.Service
 {
     public static class SettingKey
     {

@@ -1,6 +1,8 @@
 ﻿@page "/experiments"
 
-@inject AlgorithmRunnerService _algorithmRunnerService
+@namespace EtAlii.BinanceMagic.Service
+
+@inject AlgorithmManager _algorithmManager
 
 <ul class="nav nav-tabs">
 @foreach (var experiment in _experiments)

@@ -1,8 +1,7 @@
-namespace EtAlii.BinanceMagic.Service.Trading
+namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Linq;
-    using EtAlii.BinanceMagic.Service.Trading.Simple;
     using Microsoft.EntityFrameworkCore;
 
     public partial class AlgorithmManager 
@@ -31,7 +30,15 @@ namespace EtAlii.BinanceMagic.Service.Trading
 
         private IAlgorithmRunner CreateRunner(TradingBase trading)
         {
-            return new SimpleAlgorithmRunner(trading);
+            return trading switch
+            {
+                CircularTrading circularTrading => new CircularAlgorithmRunner(circularTrading),
+                SimpleTrading simpleTrading => new SimpleAlgorithmRunner(simpleTrading),
+                ExperimentalTrading experimentalTrading => new ExperimentalAlgorithmRunner(experimentalTrading),
+                OneOffTrading oneOffTrading => new OneOffAlgorithmRunner(oneOffTrading),
+                SurfingTrading surfingTrading => new SurfingAlgorithmRunner(surfingTrading),
+                _ => throw new InvalidOperationException("Not supported trading"),
+            };
         }
     }
 }

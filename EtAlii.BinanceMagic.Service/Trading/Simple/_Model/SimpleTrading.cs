@@ -1,7 +1,6 @@
-namespace EtAlii.BinanceMagic.Service.Trading.Simple
+namespace EtAlii.BinanceMagic.Service
 {
     using System.Collections.Generic;
-    using EtAlii.BinanceMagic.Service.Trading;
 
     public class SimpleTrading : TradingBase
     {
