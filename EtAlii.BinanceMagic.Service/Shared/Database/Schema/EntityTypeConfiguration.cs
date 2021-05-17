@@ -8,16 +8,9 @@ namespace EtAlii.BinanceMagic.Service.Shared
     {
         public void Configure(EntityTypeBuilder<TEntity> builder)
         {
-            builder
-                .HasIndex(entity => entity.Id)
-                .IsUnique();
-
-            builder
-                .HasKey(entity => entity.Id);
-
-            builder
-                .Property(entity => entity.Id)
-                .ValueGeneratedOnAdd();
+            builder.HasIndex(entity => entity.Id).IsUnique();
+            builder.HasKey(entity => entity.Id);
+            builder.Property(entity => entity.Id).ValueGeneratedOnAdd();
         }
     }
 }
