@@ -45,13 +45,13 @@
             return Task.CompletedTask;
         }
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            // _algorithmManager.Tick += () =>
-            // {
-            //     InvokeAsync(StateHasChanged);
-            // };
-        }
+        // protected override void OnInitialized()
+        // {
+        //     base.OnInitialized();
+        //     // _algorithmManager.Tick += () =>
+        //     // {
+        //     //     InvokeAsync(StateHasChanged);
+        //     // };
+        // }
     }
 }

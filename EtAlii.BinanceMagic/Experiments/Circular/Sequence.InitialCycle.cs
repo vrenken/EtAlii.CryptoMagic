@@ -17,7 +17,7 @@
             _details.LastCheck = _timeManager.GetNow();
             _statusProvider.RaiseChanged();
 
-            if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
+            if (_client.TryConvert(initialSellAction, initialBuyAction, _settings.ReferenceCoin, cancellationToken, _timeManager.GetNow, out _, out var error))
             {
                 _details.Result = "Transaction done";
                 _details.LastCheck = _timeManager.GetNow();

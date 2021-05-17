@@ -19,12 +19,12 @@ namespace EtAlii.BinanceMagic
 
             output.WriteLine("Starting Binance magic...");
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator)
+            var client = new Client(program, actionValidator)
             {
                 PlaceTestOrders = true,
             };
             
-            client.Start();
+            client.Start(programSettings.ApiKey, programSettings.SecretKey);
 
             var allLoopSettings = new List<LoopSettings>();
 

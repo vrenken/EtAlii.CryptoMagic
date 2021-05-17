@@ -7,7 +7,7 @@ namespace EtAlii.BinanceMagic
 
     public interface IClient
     {
-        void Start();
+        void Start(string apiKey, string secretKey);
         void Stop();
         bool TryGetPrice(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal price, out string error);
 

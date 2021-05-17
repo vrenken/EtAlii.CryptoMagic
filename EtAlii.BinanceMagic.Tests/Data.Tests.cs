@@ -23,7 +23,7 @@ namespace EtAlii.BinanceMagic.Tests
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var persistence = new Persistence<TradeDetails>(programSettings, Guid.NewGuid().ToString());
-            var client = new Client(programSettings, program, actionValidator)
+            var client = new Client(program, actionValidator)
             {
                 PlaceTestOrders = true
             };
@@ -45,7 +45,7 @@ namespace EtAlii.BinanceMagic.Tests
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
             var persistence = new Persistence<TradeDetails>(programSettings, Guid.NewGuid().ToString());
-            var client = new Client(programSettings, program, actionValidator)
+            var client = new Client(program, actionValidator)
             {
                 PlaceTestOrders = true
             };

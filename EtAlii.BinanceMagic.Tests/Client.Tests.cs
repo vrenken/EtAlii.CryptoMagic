@@ -23,7 +23,7 @@ namespace EtAlii.BinanceMagic.Tests
             var actionValidator = new ActionValidator();
             
             // Act.
-            var client = new Client(settings, program, actionValidator)
+            var client = new Client(program, actionValidator)
             {
                 PlaceTestOrders = true
             };
@@ -40,13 +40,13 @@ namespace EtAlii.BinanceMagic.Tests
             var settings = _context.CreateProgramSettings();
             var program = new Program(settings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(settings, program, actionValidator)
+            var client = new Client(program, actionValidator)
             {
                 PlaceTestOrders = true
             };
             
             // Act.
-            client.Start();
+            client.Start(settings.ApiKey, settings.SecretKey);
             
             // Assert.
             Assert.NotNull(client);
@@ -61,11 +61,11 @@ namespace EtAlii.BinanceMagic.Tests
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
             var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var client = new Client(programSettings, program, actionValidator)
+            var client = new Client(program, actionValidator)
             {
                 PlaceTestOrders = true
             };
-            client.Start();
+            client.Start(programSettings.ApiKey, programSettings.SecretKey);
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();
             var sellAction = new SellAction

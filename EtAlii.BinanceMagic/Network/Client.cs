@@ -14,27 +14,25 @@
     {
         private readonly ILogger _logger = Log.ForContext<Client>();
         private BinanceClient _client;
-        private readonly ProgramSettings _settings;
         private readonly IProgram _program;
         private readonly IActionValidator _validator;
 
         public bool PlaceTestOrders { get; init; }
 
-        public Client(ProgramSettings settings, IProgram program, IActionValidator actionValidator)
+        public Client(IProgram program, IActionValidator actionValidator)
         {
-            _settings = settings;
             _program = program;
             _validator = actionValidator;
         }
 
-        public void Start()
+        public void Start(string apiKey, string secretKey)
         {
             _logger.Information("Starting client");
             
             var options = new BinanceClientOptions
             {
                 RateLimitingBehaviour = RateLimitingBehaviour.Wait,
-                ApiCredentials = new ApiCredentials(_settings.ApiKey, _settings.SecretKey),
+                ApiCredentials = new ApiCredentials(apiKey, secretKey),
                 TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
             };
             _client = new BinanceClient(options);

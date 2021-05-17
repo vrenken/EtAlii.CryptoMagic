@@ -42,7 +42,7 @@ namespace EtAlii.BinanceMagic
             _output = output;
         }
 
-        public void Start()
+        public void Start(string apiKey, string secretKey)
         {
             _output.WriteLine("Starting back-testing client...");
 
