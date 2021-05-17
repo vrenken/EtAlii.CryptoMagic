@@ -12,9 +12,11 @@ namespace EtAlii.BinanceMagic.Service.Shared
     {
         public void Configure(EntityTypeBuilder<TradingBase> builder)
         {
-            builder.ToTable("Trading");
+            builder.ToTable("Tradings");
             
-            builder.Property(settings => settings.Name).IsRequired();
+            builder
+                .Property(e => e.Name)
+                .IsRequired();
             
             builder
                 .HasDiscriminator<string>("trading_type")
