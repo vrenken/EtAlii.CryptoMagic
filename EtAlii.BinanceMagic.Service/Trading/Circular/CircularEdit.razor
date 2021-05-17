@@ -5,47 +5,72 @@
 
 @inject IJSRuntime _jsRuntime;
 
+<Validations @ref="_validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@_editContext">
 <Row>
     <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-        <Card Margin="Margin.Is4.OnY">
+        <Card Margin="Margin.Is4">
             <CardHeader>
                 <CardTitle>@(Id == null ? "Add new circular trade" : "Edit circular trade")</CardTitle>
             </CardHeader>
-                <Validations @ref="_validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@_editContext">
-                    <CardBody>
-                        <Validation Validator="@ValidationRule.IsNotEmpty">
-                            <Field>
-                                <FieldLabel>Name</FieldLabel>
-                                <FieldBody>
-                                    <TextEdit 
-                                        Placeholder="Enter name" 
-                                        Autofocus="true"
-                                        @bind-Text="@_model.Name">
-                                        <Feedback>
-                                            <ValidationError>Enter name for trade.</ValidationError>
-                                        </Feedback>                            
-                                    </TextEdit>
-                                </FieldBody>
-                                @* <FieldHelp>A name that represents the circular trade.</FieldHelp> *@
-                            </Field>
-                        </Validation>
-                        <Validation Validator="@ValidationRule.IsNotEmpty">
-                            <Field>
-                                <FieldLabel>Connectivity</FieldLabel>
-                                <FieldBody>
-                                    <RadioGroup TValue="string" @bind-CheckedValue="@_model.Connectivity">
-                                        <Radio TValue="string" Value="@("BackTest")">Backtest</Radio>
-                                        <Radio TValue="string" Value="@("Binance")">Interact with Binance</Radio>
-                                    </RadioGroup>
-                                </FieldBody>
-                            </Field>
-                        </Validation>
+                <CardBody>
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit 
+                                Placeholder="Enter name" 
+                                Autofocus="true"
+                                @bind-Text="@_model.Name">
+                                <Feedback>
+                                    <ValidationError>Enter name for trade.</ValidationError>
+                                </Feedback>                            
+                            </TextEdit>
+                            @* <FieldHelp>A name that represents the circular trade.</FieldHelp> *@
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field ColumnSize="ColumnSize.IsQuarter.OnTablet.IsHalf.OnMobile">
+                            <FieldLabel>First symbol</FieldLabel>
+                            <TextEdit 
+                                Placeholder="Symbol" 
+                                Autofocus="true"
+                                @bind-Text="@_model.FirstSymbol">
+                                <Feedback>
+                                    <ValidationError>Enter the first symbol to use for the trade.</ValidationError>
+                                </Feedback>                            
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field ColumnSize="ColumnSize.IsQuarter.OnTablet.IsHalf.OnMobile">
+                            <FieldLabel>Second symbol</FieldLabel>
+                            <TextEdit 
+                                Placeholder="Symbol" 
+                                Autofocus="true"
+                                @bind-Text="@_model.SecondSymbol">
+                                <Feedback>
+                                    <ValidationError>Enter the second symbol to use for the trade.</ValidationError>
+                                </Feedback>                            
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@ValidationRule.None">
+                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
+                            <FieldLabel>Connectivity</FieldLabel>
+                            <RadioGroup TValue="Connectivity" @bind-CheckedValue="@_model.Connectivity">
+                                <Radio TValue="Connectivity" Value="@(Connectivity.BackTest)">Backtest</Radio>
+                                <Radio TValue="Connectivity" Value="@(Connectivity.Binance)">Interact with Binance</Radio>
+                            </RadioGroup>
+                        </Field>
+                    </Validation>
+                    <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
                         <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
-                    </CardBody>
-            </Validations>
-        </Card>
-    </Column>
-</Row>
+                    </Field>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+</Validations>
 @* <div class="card m-2"> *@
 @*     <h4 class="card-header">General settings</h4> *@
 @*     <div class="card-body"> *@

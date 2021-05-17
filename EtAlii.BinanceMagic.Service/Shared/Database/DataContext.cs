@@ -41,6 +41,7 @@ namespace EtAlii.BinanceMagic.Service
             
             modelBuilder.ApplyConfiguration(new SettingEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TradingsEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CircularTradingsEntityTypeConfiguration());
         }
     }
 }

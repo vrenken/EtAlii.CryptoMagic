@@ -4,5 +4,6 @@ namespace EtAlii.BinanceMagic.Service.Configuration
     {
         public const string ApiKey = "ApiKey";
         public const string SecretKey = "SecretKey";
+        public const string ReferenceSymbol = "ReferenceSymbol";
     }
 }

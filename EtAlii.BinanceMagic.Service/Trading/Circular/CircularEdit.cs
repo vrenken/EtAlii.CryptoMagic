@@ -24,6 +24,10 @@
                 var data = new DataContext();
                 var circularTrading = data.CircularTradings.Single(t => t.Id == id);
                 _model.Name = circularTrading?.Name;
+                _model.FirstSymbol = circularTrading?.FirstSymbol;
+                _model.SecondSymbol = circularTrading?.SecondSymbol;
+                _model.Connectivity = circularTrading?.Connectivity ?? Connectivity.BackTest;
+
                 _model.Id = circularTrading?.Id ?? Guid.Empty;
             }
 
@@ -41,6 +45,9 @@
                     : data.CircularTradings.Single(t => t.Id == _model.Id);
 
                 trading.Name = _model.Name;
+                trading.FirstSymbol = _model.FirstSymbol;
+                trading.SecondSymbol = _model.SecondSymbol;
+                trading.Connectivity = _model.Connectivity;
             
                 _algorithmManager.Update(trading);
             
@@ -54,8 +61,11 @@
 
             [Required, Display(Name = "Name")] public string Name { get; set; }
 
-            [Required, Display(Name = "Connectivity")]
-            public string Connectivity { get; set; } = "BackTest";
+            [Required, Display(Name = "Connectivity")] public Connectivity Connectivity { get; set; } = Connectivity.BackTest;
+
+            [Required, Display(Name = "Second symbol")] public string SecondSymbol { get; set; }
+
+            [Required, Display(Name = "First symbol")] public string FirstSymbol { get; set; }
         }
     }
 }
