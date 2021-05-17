@@ -7,17 +7,17 @@ namespace EtAlii.BinanceMagic.Service.Trading.Circular
     {
         public string FirstSymbol { get; set; }
         public string SecondSymbol { get; set; }
-        
-        public Connectivity Connectivity { get; set; }
-        
-        public decimal TargetIncrease  { get; init; } = 0.05m; // in %
-        public decimal InitialSellFactor { get; init; } = 1.1m; // in %
 
-        public decimal QuantityFactor { get; init; } = 1m;
-        public decimal InitialTarget  { get; init; } = 11m; // in BUSD.
-        public decimal MaxQuantityToTrade  { get; init; } = 1.0m; // in %.
-        public decimal NotionalMinCorrection  { get; init; } = 1.05m; // in %.
-        public TimeSpan SampleInterval  { get; init; } = TimeSpan.FromMinutes(1);
+        public Connectivity Connectivity { get; set; } = Connectivity.Test;
+        
+        public decimal TargetIncrease { get; set; } = 0.05m; // in %
+        public decimal InitialSellFactor { get; set; } = 1.1m; // in %
+
+        public decimal QuantityFactor { get; set; } = 1m;
+        public decimal InitialTarget  { get; set; } = 11m; // in BUSD.
+        public decimal MaxQuantityToTrade  { get; set; } = 1.0m; // in %.
+        public decimal NotionalMinCorrection  { get; set; } = 1.05m; // in %.
+        public TimeSpan SampleInterval  { get; set; } = TimeSpan.FromMinutes(1);
 
         public IList<CircularTradeDetailsSnapshot> Snapshots { get; private set; } = new List<CircularTradeDetailsSnapshot>();
     }

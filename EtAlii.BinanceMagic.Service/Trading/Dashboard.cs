@@ -1,15 +1,14 @@
-﻿namespace EtAlii.BinanceMagic.Service.Shared
+﻿namespace EtAlii.BinanceMagic.Service.Trading
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using EtAlii.BinanceMagic.Service.Trading;
 
-    public partial class Index
+    public partial class Dashboard
     {
         private readonly Experiment[] _experiments;
         private Experiment _currentExperiment;
 
-        public Index()
+        public Dashboard()
         {
             _experiments = new[]
             {
