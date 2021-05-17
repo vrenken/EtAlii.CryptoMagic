@@ -35,7 +35,7 @@
             var client = loopSettings.Client;
             if (client is not Client)
             {
-                client.Start();
+                client.Start(programSettings.ApiKey, programSettings.SecretKey);
             }
 
             ISequence sequence;
