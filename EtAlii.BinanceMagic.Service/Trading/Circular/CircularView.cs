@@ -6,6 +6,18 @@
 
     public partial class CircularView
     {
+        private string SellTrendStyle => CurrentRunner.Status.SellTrend > 0
+            ? "background-color:green;color:white"
+            : "background-color:red;color:white";
+
+        private string BuyTrendStyle => CurrentRunner.Status.BuyTrend < 0
+            ? "background-color:green;color:white"
+            : "background-color:red;color:white";
+
+        private string DifferenceStyle => CurrentRunner.Status.Difference >= CurrentRunner.Status.Target
+            ? "background-color:green;color:white"
+            : "background-color:red;color:white";
+
         private string LastSuccess => CurrentRunner.Status.LastSuccess != DateTime.MinValue
             ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.InvariantCulture)
             : "None";
@@ -26,9 +38,14 @@
             InvokeAsync(StateHasChanged);
         }
 
+        private string DecimalShort(decimal d)
+        {
+            var prefix = d >= 0 ? "+" : "";
+            return $"{prefix}{d:000.000}";
+        }
         private string Decimal(decimal d, string prefix = null)
         {
-            prefix ??= (d > 0 ? "+" : "");
+            prefix ??= d >= 0 ? "+" : "";
             return $"{prefix}{d:000.000000000}";
         }
     }

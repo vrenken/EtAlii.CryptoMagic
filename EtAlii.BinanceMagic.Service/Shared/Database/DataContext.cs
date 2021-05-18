@@ -13,7 +13,7 @@ namespace EtAlii.BinanceMagic.Service
         public DbSet<SurfingTrading> SurfingTradings { get; init; }
         public DbSet<ExperimentalTrading> ExperimentalTradings { get; init; }
         public DbSet<OneOffTrading> OneOffTradings { get; init; }
-        public DbSet<CircularTradeSnapshot> CircularTradeDetailsSnapshots { get; init; }
+        public DbSet<CircularTradeSnapshot> CircularTradeSnapshots { get; init; }
         
         private readonly ILogger _logger = Log.ForContext<DataContext>();
 
