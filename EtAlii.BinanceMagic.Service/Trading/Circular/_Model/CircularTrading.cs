@@ -8,6 +8,7 @@ namespace EtAlii.BinanceMagic.Service
         public string FirstSymbol { get; set; }
         public string SecondSymbol { get; set; }
 
+        public string ReferenceSymbol { get; init; }
         public Connectivity Connectivity { get; set; } = Connectivity.Test;
         
         public decimal TargetIncrease { get; set; } = 0.05m; // in %
@@ -19,6 +20,7 @@ namespace EtAlii.BinanceMagic.Service
         public decimal NotionalMinCorrection  { get; set; } = 1.05m; // in %.
         public TimeSpan SampleInterval  { get; set; } = TimeSpan.FromMinutes(1);
 
-        public IList<CircularTradeDetailsSnapshot> Snapshots { get; private set; } = new List<CircularTradeDetailsSnapshot>();
+        public IList<CircularTradeSnapshot> Snapshots { get; private set; } = new List<CircularTradeSnapshot>();
+        public IList<CircularTradeSnapshot> Transactions { get; private set; } = new List<CircularTradeSnapshot>();
     }
 }

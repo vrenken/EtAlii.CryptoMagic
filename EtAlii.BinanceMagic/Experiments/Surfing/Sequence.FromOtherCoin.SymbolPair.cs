@@ -10,7 +10,7 @@ namespace EtAlii.BinanceMagic.Surfing
         /// </summary>
         protected override void OnSellAsSymbolPairEntered()
         {
-            _details.Status = $"Selling {_details.CurrentCoin}/{_details.PayoutCoin}...";
+            _details.Status = $"Selling {_details.CurrentSymbol}/{_details.PayoutSymbol}...";
             _status.RaiseChanged();
 
             Continue();
@@ -22,7 +22,7 @@ namespace EtAlii.BinanceMagic.Surfing
         /// </summary>
         protected override void OnWaitUntilCoinSoldAsSymbolPairEntered()
         {
-            _details.Status = $"Selling {_details.CurrentCoin}/{_details.PayoutCoin}: Waiting for confirmation...";
+            _details.Status = $"Selling {_details.CurrentSymbol}/{_details.PayoutSymbol}: Waiting for confirmation...";
             _status.RaiseChanged();
 
             Continue();

@@ -11,13 +11,13 @@
     public partial class Client 
     {
         
-        public bool TryGetTrend(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal trend, out string error)
+        public bool TryGetTrend(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal trend, out string error)
         {
-            var coinComparedToReference = $"{coin}{referenceCoin}"; 
-            var result = _client.Spot.Market.GetKlines(coinComparedToReference, KlineInterval.FiveMinutes, limit:1 , ct: cancellationToken);
+            var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
+            var result = _client.Spot.Market.GetKlines(symbolComparedToReference, KlineInterval.FiveMinutes, limit:1 , ct: cancellationToken);
             if (result.Error != null)
             {
-                error = $"Failure fetching candlestick data for {coin}: {result.Error}";
+                error = $"Failure fetching candlestick data for {symbol}: {result.Error}";
                 trend = 0m;
                 return false;
             }
@@ -28,24 +28,24 @@
             return true;
         }
         
-        public bool TryGetTrends(string[] coins, string referenceCoin, int period, CancellationToken cancellationToken, out Trend[] trends, out string error)
+        public bool TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend[] trends, out string error)
         {
             var result = new List<Trend>();
-            foreach (var coin in coins)
+            foreach (var symbol in symbols)
             {
-                var coinComparedToReference = $"{coin}{referenceCoin}"; 
-                var response = _client.Spot.Market.GetKlines(coinComparedToReference, KlineInterval.OneMinute, limit:period * 2, ct: cancellationToken);
+                var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
+                var response = _client.Spot.Market.GetKlines(symbolComparedToReference, KlineInterval.OneMinute, limit:period * 2, ct: cancellationToken);
                 if (response.Error != null)
                 {
-                    error = $"Failure fetching candlestick data for {coin}: {response.Error}";
+                    error = $"Failure fetching candlestick data for {symbol}: {response.Error}";
                     trends = null;
                     return false;
                 }
 
-                var priceResponse = _client.Spot.Market.GetPrice(coinComparedToReference, cancellationToken);
+                var priceResponse = _client.Spot.Market.GetPrice(symbolComparedToReference, cancellationToken);
                 if (response.Error != null)
                 {
-                    error = $"Failure fetching price data for {coin}: {response.Error}";
+                    error = $"Failure fetching price data for {symbol}: {response.Error}";
                     trends = null;
                     return false;
                 }
@@ -65,7 +65,7 @@
                 var data = response.Data.Last();
                 result.Add(new Trend
                 {
-                    Coin = coin,
+                    Symbol = symbol,
                     Open = data.Open,
                     High = data.High,
                     Low = data.Low,

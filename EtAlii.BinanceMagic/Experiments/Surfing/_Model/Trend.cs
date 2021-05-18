@@ -2,7 +2,7 @@
 {
     public record Trend
     {
-        public string Coin { get; init; }
+        public string Symbol { get; init; }
         public decimal Open { get; init; }
         public decimal Close { get; init; }
         public decimal High { get; init; }

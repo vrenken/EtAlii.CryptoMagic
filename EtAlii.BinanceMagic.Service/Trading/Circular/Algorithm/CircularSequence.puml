@@ -1,5 +1,5 @@
 @startuml
-'stateless namespace EtAlii.BinanceMagic.Circular
+'stateless namespace EtAlii.BinanceMagic.Service
 'stateless class CircularSequenceBase
 
 title Automatic trading mechanism A: Circular.

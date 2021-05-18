@@ -4,9 +4,9 @@
 
     public class TradeDetails
     {
-        public string CurrentCoin { get; set; }
+        public string CurrentSymbol { get; set; }
         public decimal CurrentVolume { get; set; }
-        public string PayoutCoin { get; set; }
+        public string PayoutSymbol { get; set; }
         public decimal[] Owned { get; set; }
         public Trend[] Trends { get; set; } = Array.Empty<Trend>();
         

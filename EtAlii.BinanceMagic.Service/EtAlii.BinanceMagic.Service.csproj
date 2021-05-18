@@ -42,9 +42,20 @@
     <Compile Update="Shared\Error.cs">
       <DependentUpon>Error.cshtml</DependentUpon>
     </Compile>
+    <Compile Update="Trading\Circular\Algorithm\CircularSequence.cs">
+      <DependentUpon>CircularSequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\Algorithm\ICircularAlgorithm.cs">
+      <DependentUpon>CircularAlgorithm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\Algorithm\ITradeDetailsUpdater.cs">
+      <DependentUpon>TradeDetailsUpdater.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.18" />
+    
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
     <PackageReference Include="Blazorise.Charts" Version="0.9.3.6" />
     <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.3.6" />
@@ -72,10 +83,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Trading\Circular\Algorithm" />
     <Folder Include="Trading\Experimental\Algorithm" />
     <Folder Include="Trading\OneOff\Algorithm" />
     <Folder Include="Trading\Simple\Algorithm" />
     <Folder Include="Trading\Surfing\Algorithm" />
+    <Folder Include="wwwroot\fonts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <StatelessFile Include="Trading\Circular\Algorithm\CircularSequence.puml" />
   </ItemGroup>
 </Project>

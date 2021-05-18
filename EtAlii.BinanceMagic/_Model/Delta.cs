@@ -2,7 +2,7 @@
 {
     public record Delta
     {
-        public string Coin { get; init; }
+        public string Symbol { get; init; }
         public decimal PastPrice { get; init; }
         public decimal PastQuantity { get; init; }
         

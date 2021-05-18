@@ -9,7 +9,7 @@
 
     public partial class Client 
     {
-        public bool TrySell(SellAction sellAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Coin coinsSold, out string error)
+        public bool TrySell(SellAction sellAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsSold, out string error)
         {
             // var exchangeResult = _client.Spot.System.GetExchangeInfo();
             // if (!exchangeResult.Success)
@@ -30,7 +30,7 @@
             //     return false;
             // }
             
-            var sellCoin = $"{sellAction.Coin}{referenceCoin}";
+            var sellSymbol = $"{sellAction.Symbol}{referenceSymbol}";
             // var symbolData = exchangeInfo.Symbols.SingleOrDefault(s => string.Equals(s.Name, sellCoin, StringComparison.CurrentCultureIgnoreCase));
             // var sellPrice = symbolData!.PriceFilter!.TickSize != 0
             //     ? BinanceHelpers.FloorPrice(symbolData.PriceFilter.TickSize, sellAction.Price)
@@ -38,14 +38,14 @@
 
             // ReSharper disable ExpressionIsAlwaysNull
             var sellOrder = PlaceTestOrders
-                ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? _client.Spot.Order.PlaceTestOrder(sellSymbol, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(sellSymbol, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (sellOrder.Error != null)
             {
-                error = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
-                coinsSold = null;
+                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
+                symbolsSold = null;
                 return false;
             }
 
@@ -54,14 +54,14 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                error = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
-                coinsSold = null;
+                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
+                symbolsSold = null;
                 return false;
             }
 
-            coinsSold = new Coin
+            symbolsSold = new Symbol
             {
-                Symbol = sellAction.Coin,
+                SymbolName = sellAction.Symbol,
                 Price = sellOrder.Data.Price,
                 QuoteQuantity = sellOrder.Data.QuoteQuantityFilled,
                 Quantity = sellOrder.Data.QuantityFilled
@@ -70,13 +70,13 @@
             return true;
         }
 
-        public bool TryBuy(BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Coin coinsBought, out string error)
+        public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsBought, out string error)
         {
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
             {
                 error = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                coinsBought = null;
+                symbolsBought = null;
                 return false;
             }
             var exchangeInfo = exchangeResult.Data;
@@ -84,9 +84,9 @@
             decimal testPrice = 0;
             if (PlaceTestOrders)
             {
-                if (!TryGetPrice(buyAction.Coin, referenceCoin, cancellationToken, out testPrice, out error))
+                if (!TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken, out testPrice, out error))
                 {
-                    coinsBought = null;
+                    symbolsBought = null;
                     return false;
                 }
             }
@@ -101,22 +101,22 @@
             //     return false;
             // }
             
-            var buyCoin = $"{buyAction.Coin}{referenceCoin}";
-            var symbolData = exchangeInfo.Symbols.SingleOrDefault(s => string.Equals(s.Name, buyCoin, StringComparison.CurrentCultureIgnoreCase));
+            var buySymbol = $"{buyAction.Symbol}{referenceSymbol}";
+            var symbolData = exchangeInfo.Symbols.SingleOrDefault(s => string.Equals(s.Name, buySymbol, StringComparison.CurrentCultureIgnoreCase));
             var buyPrice = symbolData!.PriceFilter!.TickSize != 0
-                ? BinanceHelpers.FloorPrice(symbolData.PriceFilter.TickSize, buyAction.Price)
-                : buyAction.Price;
+                ? BinanceHelpers.FloorPrice(symbolData.PriceFilter.TickSize, buyAction.QuotedQuantity)
+                : buyAction.QuotedQuantity;
 
             // ReSharper disable ExpressionIsAlwaysNull
             var buyOrder = PlaceTestOrders
-                ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? _client.Spot.Order.PlaceTestOrder(buySymbol, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(buySymbol, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (buyOrder.Error != null)
             {
-                error = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
-                coinsBought = null;
+                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}";
+                symbolsBought = null;
                 return false;
             }
 
@@ -125,22 +125,22 @@
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
             {
-                error = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
-                coinsBought = null;
+                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}";
+                symbolsBought = null;
                 return false;
             }
 
-            coinsBought = PlaceTestOrders
-                ? new Coin
+            symbolsBought = PlaceTestOrders
+                ? new Symbol
                 {
-                    Symbol = buyAction.Coin,
+                    SymbolName = buyAction.Symbol,
                     Price  = testPrice,
-                    QuoteQuantity = buyAction.Price,
-                    Quantity = buyAction.Price / testPrice,
+                    QuoteQuantity = buyAction.QuotedQuantity,
+                    Quantity = buyAction.QuotedQuantity / testPrice,
                 }
-                : new Coin
+                : new Symbol
                 {
-                    Symbol = buyAction.Coin,
+                    SymbolName = buyAction.Symbol,
                     Price  = buyOrder.Data.Price,
                     QuoteQuantity = buyOrder.Data.QuoteQuantityFilled,
                     Quantity = buyOrder.Data.QuantityFilled
@@ -149,7 +149,7 @@
             return true;
         }
 
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error)
         {
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
@@ -160,32 +160,47 @@
             }
             var exchangeInfo = exchangeResult.Data;
 
+            decimal buyPrice = 0m, sellPrice = 0m;
+            if (PlaceTestOrders)
+            {
+                if (!TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken, out buyPrice, out error))
+                {
+                    transaction = null;
+                    return false;
+                }
+                if (!TryGetPrice(sellAction.Symbol, referenceSymbol, cancellationToken, out sellPrice, out error))
+                {
+                    transaction = null;
+                    return false;
+                }
+            }
+            
             var orderResponseType = OrderResponseType.Full;
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
             var orderType = OrderType.Market;
 
-            if (!_validator.TryValidate(_client, sellAction, "Sell", referenceCoin, exchangeInfo, cancellationToken, out sellAction, out error))
+            if (!_validator.TryValidate(_client, sellAction, "Sell", referenceSymbol, exchangeInfo, cancellationToken, out sellAction, out error))
             {
                 transaction = null;
                 return false;
             }
-            if(!_validator.TryValidate(_client, buyAction, "Buy", referenceCoin, exchangeInfo, cancellationToken, out buyAction, out error))
+            if(!_validator.TryValidate(_client, buyAction, "Buy", referenceSymbol, exchangeInfo, cancellationToken, out buyAction, out error))
             {
                 transaction = null;
                 return false;
             }
             
-            var sellCoin = $"{sellAction.Coin}{referenceCoin}";
+            var sellCoin = $"{sellAction.Symbol}{referenceSymbol}";
 
             // ReSharper disable ExpressionIsAlwaysNull
             var sellOrder = PlaceTestOrders
-                ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.Price, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.Price, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? _client.Spot.Order.PlaceTestOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.QuotedQuantity, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(sellCoin, OrderSide.Sell, orderType, null, sellAction.QuotedQuantity, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (sellOrder.Error != null)
             {
-                error = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Error}";
+                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
                 transaction = null;
                 return false;
             }
@@ -195,22 +210,22 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                error = $"Failure placing sell order for {sellAction.Coin}: {sellOrder.Data.Status}";
+                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
                 transaction = null;
                 return false;
             }
             
-            var buyCoin = $"{buyAction.Coin}{referenceCoin}";
+            var buyCoin = $"{buyAction.Symbol}{referenceSymbol}";
 
             // ReSharper disable ExpressionIsAlwaysNull
             var buyOrder = PlaceTestOrders
-                ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.Price, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.Price, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? _client.Spot.Order.PlaceTestOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.QuotedQuantity, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
+                : _client.Spot.Order.PlaceOrder(buyCoin, OrderSide.Buy, orderType, null, buyAction.QuotedQuantity, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (buyOrder.Error != null)
             {
-                error = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Error}";
+                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}";
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
@@ -221,28 +236,46 @@
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
             {
-                error = $"Failure placing buy order for {buyAction.Coin}: {buyOrder.Data.Status}";
+                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}";
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
             }
 
-            transaction = new Transaction
-            {
-                From = new Coin
+            var coinsSold = PlaceTestOrders
+                ? new Symbol
                 {
-                    Symbol = sellAction.Coin,
+                    SymbolName = sellAction.Symbol,
+                    Price = sellPrice,
+                    QuoteQuantity = sellAction.QuotedQuantity,
+                    Quantity = sellAction.QuotedQuantity / sellPrice
+                }
+                : new Symbol
+                {
+                    SymbolName = sellAction.Symbol,
                     Price = sellOrder.Data.Price,
                     QuoteQuantity = sellOrder.Data.QuoteQuantityFilled,
                     Quantity = sellOrder.Data.QuantityFilled
-                },
-                To = new Coin
+                };
+            var coinsBought = PlaceTestOrders
+                ? new Symbol
                 {
-                    Symbol = buyAction.Coin,
-                    Price = buyOrder.Data.Price,
+                    SymbolName = buyAction.Symbol,
+                    Price  = buyPrice,
+                    QuoteQuantity = buyAction.QuotedQuantity,
+                    Quantity = buyAction.QuotedQuantity / buyPrice,
+                }
+                :  new Symbol
+                {
+                    SymbolName = buyAction.Symbol,
+                    Price  = buyOrder.Data.Price,
                     QuoteQuantity = buyOrder.Data.QuoteQuantityFilled,
                     Quantity = buyOrder.Data.QuantityFilled
-                },
+                }; 
+            transaction = new Transaction
+            {
+                Sell = coinsSold,
+                Buy = coinsBought,
                 Moment = getNow(),
                 Profit = sellOrder.Data.QuoteQuantityFilled - buyOrder.Data.QuoteQuantityFilled 
             };

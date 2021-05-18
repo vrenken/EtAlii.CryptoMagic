@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />
+    <ProjectReference Include="..\EtAlii.BinanceMagic.Service\EtAlii.BinanceMagic.Service.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,21 +10,21 @@ namespace EtAlii.BinanceMagic
         public bool TryValidate<TAction>(BinanceClient client, TAction action, string type, string referenceCoin, BinanceExchangeInfo exchangeInfo, CancellationToken cancellationToken, out TAction outAction, out string error)
             where TAction : Action
         {
-            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == action.Coin && s.QuoteAsset == referenceCoin);
+            var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == action.Symbol && s.QuoteAsset == referenceCoin);
 
             var priceResult = client.Spot.Market.GetPrice(symbol.Name, cancellationToken);
             var price = priceResult.Data.Price;
             if (symbol.PriceFilter is var priceFilter)
             {
-                if (action.UnitPrice <= priceFilter!.MinPrice)
+                if (action.Price <= priceFilter!.MinPrice)
                 {
-                    error = $"{type} action target price {action.UnitPrice} is below price filter minimum of {priceFilter.MinPrice}";
+                    error = $"{type} action target price {action.Price} is below price filter minimum of {priceFilter.MinPrice}";
                     outAction = null;
                     return false;
                 }
-                if (action.UnitPrice >= priceFilter.MaxPrice)
+                if (action.Price >= priceFilter.MaxPrice)
                 {
-                    error = $"{type} action target price {action.UnitPrice} is above price filter maximum of {priceFilter.MaxPrice}";
+                    error = $"{type} action target price {action.Price} is above price filter maximum of {priceFilter.MaxPrice}";
                     outAction = null;
                     return false;
                 }
@@ -34,15 +34,15 @@ namespace EtAlii.BinanceMagic
             {
                 var min = percentPriceFilter!.MultiplierDown * price;
                 var max = percentPriceFilter.MultiplierUp * price;
-                if (action.UnitPrice <= min)
+                if (action.Price <= min)
                 {
-                    error = $"{type} action target price {action.UnitPrice} is below price percent filter minimum of {min}";
+                    error = $"{type} action target price {action.Price} is below price percent filter minimum of {min}";
                     outAction = null;
                     return false;
                 }
-                if (action.UnitPrice >= max)
+                if (action.Price >= max)
                 {
-                    error = $"{type} action target price {action.UnitPrice} is above price percent filter maximum of {max}";
+                    error = $"{type} action target price {action.Price} is above price percent filter maximum of {max}";
                     outAction = null;
                     return false;
                 }
@@ -50,7 +50,7 @@ namespace EtAlii.BinanceMagic
             
             if (symbol.MinNotionalFilter is var minNotionalFilter)
             {
-                var notionalPrice = action.Quantity * action.UnitPrice;
+                var notionalPrice = action.Quantity * action.Price;
                 if (notionalPrice <= minNotionalFilter!.MinNotional)
                 {
                     error = $"{type} action notional price {notionalPrice} is below notional price filter of {minNotionalFilter.MinNotional}";
@@ -76,7 +76,7 @@ namespace EtAlii.BinanceMagic
                 }
             }
             
-            action = action with { Price = decimal.Round(action.Price, symbol.QuoteAssetPrecision) };
+            action = action with { QuotedQuantity = decimal.Round(action.QuotedQuantity, symbol.QuoteAssetPrecision) };
             action = action with { Quantity = decimal.Round(action.Quantity, symbol.BaseAssetPrecision) };
 
             outAction = action;

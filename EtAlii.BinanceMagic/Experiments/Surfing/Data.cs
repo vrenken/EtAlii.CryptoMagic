@@ -30,7 +30,7 @@
 
             situation = new Situation
             {
-                CurrentCoin = details.CurrentCoin,
+                CurrentCoin = details.CurrentSymbol,
                 Trends = trends
             };
             return true;

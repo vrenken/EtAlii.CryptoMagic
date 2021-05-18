@@ -5,10 +5,10 @@ namespace EtAlii.BinanceMagic
 
     public abstract record Action
     {
-        public string Coin { get; init; }
+        public string Symbol { get; init; }
         public decimal Quantity { get; init; }
+        public decimal QuotedQuantity { get; init; }
         public decimal Price { get; init; }
-        public decimal UnitPrice { get; init; }
         public string TransactionId { get; init; }
     }
 }

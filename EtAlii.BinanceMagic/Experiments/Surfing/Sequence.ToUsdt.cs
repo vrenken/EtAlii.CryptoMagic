@@ -12,17 +12,17 @@ namespace EtAlii.BinanceMagic.Surfing
 
         protected override void OnSellCurrentCoinInUsdtTransferEntered()
         {
-            _details!.Status = $"Selling {_details.CurrentCoin}/{_details.PayoutCoin}...";
+            _details!.Status = $"Selling {_details.CurrentSymbol}/{_details.PayoutSymbol}...";
             _status!.RaiseChanged();
             
             var sellAction = new SellAction
             {
-                Coin = _currentCoinTrend!.Coin,
+                Symbol = _currentCoinTrend!.Symbol,
                 Quantity = _details.CurrentVolume * _settings!.TransferFactor,
                 TransactionId = "Surfing" 
             };
             
-            if (!_client!.TrySell(sellAction, _settings.PayoutCoin, _cancellationToken, _timeManager!.GetNow, out _coinsSold, out var error))
+            if (!_client!.TrySell(sellAction, _settings.PayoutCoin, _cancellationToken, _timeManager!.GetNow, out _symbolsSold, out var error))
             {
                 _details.Status = error;
                 _status.RaiseChanged();
@@ -34,7 +34,7 @@ namespace EtAlii.BinanceMagic.Surfing
 
         protected override void OnWaitUntilCoinSoldInUsdtTransferEntered()
         {
-            _details!.Status = $"Selling {_details.CurrentCoin}/{_details.PayoutCoin}: Waiting for confirmation...";
+            _details!.Status = $"Selling {_details.CurrentSymbol}/{_details.PayoutSymbol}: Waiting for confirmation...";
             _status!.RaiseChanged();
 
             Continue();
@@ -49,10 +49,10 @@ namespace EtAlii.BinanceMagic.Surfing
             var transaction = new Transaction
             {
                 Moment = now,
-                From = _coinsSold,
-                To = new Coin
+                Sell = _symbolsSold,
+                Buy = new Symbol
                 {
-                    Symbol = _details.PayoutCoin,
+                    SymbolName = _details.PayoutSymbol,
                     QuoteQuantity = 0,
                     Quantity = 0,
                 },
@@ -64,9 +64,9 @@ namespace EtAlii.BinanceMagic.Surfing
             _details.Status = null;
             _details.Step += 1;
             _details.LastSuccess = now;
-            _details.TotalProfit = _coinsSold!.QuoteQuantity - _settings.InitialPurchase;
-            _details.CurrentCoin = _settings.PayoutCoin;
-            _details.CurrentVolume =  _coinsSold!.QuoteQuantity;
+            _details.TotalProfit = _symbolsSold!.QuoteQuantity - _settings.InitialPurchase;
+            _details.CurrentSymbol = _settings.PayoutCoin;
+            _details.CurrentVolume =  _symbolsSold!.QuoteQuantity;
             _status.RaiseChanged();
         }
     }

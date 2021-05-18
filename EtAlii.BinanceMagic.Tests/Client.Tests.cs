@@ -52,7 +52,7 @@ namespace EtAlii.BinanceMagic.Tests
         {
             // Arrange.
             var programSettings = _context.CreateProgramSettings();
-            var algorithmSettings = _context.CreateCircularAlgorithmSettings();
+            var referenceSymbol = "USDT";
             var actionValidator = new ActionValidator();
             var client = new Client(actionValidator)
             {
@@ -63,23 +63,23 @@ namespace EtAlii.BinanceMagic.Tests
             var transactionId = _context.Random.Next();
             var sellAction = new SellAction
             {
-                Coin = "ETH",
+                Symbol = "ETH",
                 Quantity = 0.0048m, // = ~11,143248 USD
-                UnitPrice = 2321.51m,
-                Price = 2321.51m * 0.0048m,
+                Price = 2321.51m,
+                QuotedQuantity = 2321.51m * 0.0048m,
                 TransactionId = $"{transactionId:000000}_0_ETH_BNB",
             };
             var buyAction = new BuyAction
             {
-                Coin = "BNB",
+                Symbol = "BNB",
                 Quantity = 0.03m, // = ~15,29325 BUSD
-                UnitPrice = 509.7750m,
-                Price = 509.7750m * 0.03m, 
+                Price = 509.7750m,
+                QuotedQuantity = 509.7750m * 0.03m, 
                 TransactionId = $"{transactionId:000000}_1_BNB_ETH",
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, algorithmSettings.ReferenceCoin, cancellationToken, () => DateTime.Now, out var transaction, out var error);
+            client.TryConvert(sellAction, buyAction, referenceSymbol, cancellationToken, () => DateTime.Now, out var transaction, out var error);
             
             // Assert.
             Assert.NotNull(transaction);
