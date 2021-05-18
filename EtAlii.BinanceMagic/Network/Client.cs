@@ -1,5 +1,6 @@
 ﻿namespace EtAlii.BinanceMagic
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using Binance.Net;
@@ -14,14 +15,12 @@
     {
         private readonly ILogger _logger = Log.ForContext<Client>();
         private BinanceClient _client;
-        private readonly IProgram _program;
         private readonly IActionValidator _validator;
 
         public bool PlaceTestOrders { get; init; }
 
-        public Client(IProgram program, IActionValidator actionValidator)
+        public Client(IActionValidator actionValidator)
         {
-            _program = program;
             _validator = actionValidator;
         }
 
@@ -49,7 +48,7 @@
             if (!startResult.Success)
             {
                 var message = $"Failed to start user stream: {startResult.Error}";
-                _program.HandleFail(message);
+                throw new InvalidOperationException(message);
             }
             
             _logger.Information("Starting client: Done");

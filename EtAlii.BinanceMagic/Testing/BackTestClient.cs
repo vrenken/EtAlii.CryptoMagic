@@ -11,6 +11,7 @@ namespace EtAlii.BinanceMagic
     public partial class BackTestClient : IClient
     {
         private readonly IOutput _output;
+        private readonly string _folder;
         private readonly string[] _coins;
         private readonly string _referenceCoin;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
@@ -35,11 +36,12 @@ namespace EtAlii.BinanceMagic
         }
         private DateTime _moment;
 
-        public BackTestClient(string[] coins, string referenceCoin, IOutput output)
+        public BackTestClient(string[] coins, string referenceCoin, IOutput output, string folder)
         {
             _coins = coins;
             _referenceCoin = referenceCoin;
             _output = output;
+            _folder = folder;
         }
 
         public void Start(string apiKey, string secretKey)
@@ -49,7 +51,7 @@ namespace EtAlii.BinanceMagic
             foreach (var coin in _coins)
             {
                 var fileName = $"Binance_{coin}{_referenceCoin}_minute.csv";
-                fileName = Path.Combine("Testing", "History", fileName);
+                fileName = Path.Combine(_folder, "Testing", "History", fileName);
                 
                 _output.WriteLine($"Loading {fileName}");
 

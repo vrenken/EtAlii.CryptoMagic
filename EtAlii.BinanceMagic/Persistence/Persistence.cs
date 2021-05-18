@@ -15,9 +15,9 @@ namespace EtAlii.BinanceMagic
         private readonly List<TItem> _items;
         private readonly string _folder;
 
-        public Persistence(ProgramSettings settings, string identifier)
+        public Persistence(string storageFolder, string identifier)
         {
-            _folder = Path.Combine(settings.StorageFolder, identifier);
+            _folder = Path.Combine(storageFolder, identifier);
             
             _items = new List<TItem>();
             Items = _items.AsReadOnly();
@@ -46,11 +46,13 @@ namespace EtAlii.BinanceMagic
         
         public void Add(TItem item)
         {
-            _items.Add(item);
             var fileName = Path.Combine(_folder, $"{DateTime.Now.Ticks}.txt");
             using var sw = File.CreateText(fileName);
             var json = JsonSerializer.Serialize(item);
             sw.Write(json);
+
+            item = JsonSerializer.Deserialize<TItem>(json);
+            _items.Add(item);
         }
     }
 }

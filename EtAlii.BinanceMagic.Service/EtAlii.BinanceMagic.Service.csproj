@@ -70,4 +70,12 @@
       <DependentUpon>NavMenu.razor</DependentUpon>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Trading\Circular\Algorithm" />
+    <Folder Include="Trading\Experimental\Algorithm" />
+    <Folder Include="Trading\OneOff\Algorithm" />
+    <Folder Include="Trading\Simple\Algorithm" />
+    <Folder Include="Trading\Surfing\Algorithm" />
+  </ItemGroup>
 </Project>

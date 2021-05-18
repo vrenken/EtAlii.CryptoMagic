@@ -20,12 +20,11 @@ namespace EtAlii.BinanceMagic.Service
             if (!isNewTrading)
             {
                 var runnerToReplace = Runners.Single(r => r.Trading.Id == trading.Id);
-                runnerToReplace.StopAsync(_cancellationToken);
-                Runners.Remove(runnerToReplace);
+                _runners.Remove(runnerToReplace);
             }
             
             var runner = CreateRunner(trading);
-            Runners.Add(runner);
+            _runners.Add(runner);
         }
 
         private IAlgorithmRunner CreateRunner(TradingBase trading)

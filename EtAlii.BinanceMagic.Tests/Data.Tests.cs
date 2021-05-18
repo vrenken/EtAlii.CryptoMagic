@@ -17,13 +17,11 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Create()
         {
             // Arrange.
-            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
-            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var persistence = new Persistence<TradeDetails>(programSettings, Guid.NewGuid().ToString());
-            var client = new Client(program, actionValidator)
+            var persistence = new Persistence<TradeDetails>(programSettings.StorageFolder, Guid.NewGuid().ToString());
+            var client = new Client(actionValidator)
             {
                 PlaceTestOrders = true
             };
@@ -39,13 +37,11 @@ namespace EtAlii.BinanceMagic.Tests
         public void Data_Load_Empty()
         {
             // Arrange.
-            var output = new ConsoleOutput();
             var programSettings = _context.CreateProgramSettings();
             var algorithmSettings = _context.CreateCircularAlgorithmSettings();
-            var program = new Program(programSettings, output);
             var actionValidator = new ActionValidator();
-            var persistence = new Persistence<TradeDetails>(programSettings, Guid.NewGuid().ToString());
-            var client = new Client(program, actionValidator)
+            var persistence = new Persistence<TradeDetails>(programSettings.StorageFolder, Guid.NewGuid().ToString());
+            var client = new Client(actionValidator)
             {
                 PlaceTestOrders = true
             };

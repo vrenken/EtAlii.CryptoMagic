@@ -1,12 +1,12 @@
 ﻿namespace EtAlii.BinanceMagic.Circular
 {
+    using System;
     using System.Linq;
 
     public class Algorithm : ICircularAlgorithm
     {
         private readonly AlgorithmSettings _settings;
         private readonly IData _data;
-        private readonly IProgram _program;
         private readonly IClient _client;
         private readonly TradeDetails _details;
         private readonly StatusProvider _statusProvider;
@@ -14,13 +14,12 @@
         public Algorithm(
             AlgorithmSettings settings, 
             IData data, 
-            IProgram program,
             IClient client,
-            TradeDetails details, StatusProvider statusProvider)
+            TradeDetails details, 
+            StatusProvider statusProvider)
         {
             _settings = settings;
             _data = data;
-            _program = program;
             _client = client;
             _details = details;
             _statusProvider = statusProvider;
@@ -106,7 +105,8 @@
             {
                 if (previousTransaction.BuyCoin != _details.SellCoin)
                 {
-                    _program.HandleFail($"Previous initial transaction did not purchase {_details.SellCoin}");
+                    var message = $"Previous initial transaction did not purchase {_details.SellCoin}";
+                    throw new InvalidOperationException(message);
                 }
                 
                 var sourceQuantityToSell = previousTransaction.BuyQuantity;

@@ -1,13 +1,11 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public interface IAlgorithmRunner
     {
+        string Log { get; }
         TradingBase Trading { get; }
-        void Run();
+        void Start();
 
-        Task StopAsync(CancellationToken cancellationToken);
+        void Stop();
     }
 }
