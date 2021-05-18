@@ -11,7 +11,7 @@ namespace EtAlii.BinanceMagic.Service
         public string ReferenceSymbol { get; init; }
         public Connectivity Connectivity { get; set; } = Connectivity.Test;
         
-        public decimal TargetIncrease { get; set; } = 0.05m; // in %
+        public decimal TargetIncrease { get; set; } = 1.05m; // in %
         public decimal InitialSellFactor { get; set; } = 1.1m; // in %
 
         public decimal QuantityFactor { get; set; } = 1m;

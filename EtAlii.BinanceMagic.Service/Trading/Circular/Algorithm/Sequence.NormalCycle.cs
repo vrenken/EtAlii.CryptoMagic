@@ -24,11 +24,11 @@
                 if (_client.TryConvert(sellAction, buyAction, _trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
                 {
                     snapshot.SellSymbol = transaction.Sell.SymbolName;
-                    snapshot.SellPrice = transaction.Sell.Price;
+                    snapshot.SellPrice = transaction.Sell.QuoteQuantity;
                     snapshot.SellQuantity = transaction.Sell.Quantity;
 
                     snapshot.BuySymbol = transaction.Buy.SymbolName;
-                    snapshot.BuyPrice = transaction.Buy.Price;
+                    snapshot.BuyPrice = transaction.Buy.QuoteQuantity;
                     snapshot.BuyQuantity = transaction.Buy.Quantity;
 
                     snapshot.Result = $"Transaction done!";
