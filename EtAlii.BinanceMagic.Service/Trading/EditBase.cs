@@ -19,6 +19,7 @@
 
         protected abstract TTrading GetTrading(Guid id);
 
+        protected virtual TTrading CreateTrading() => new ();
         protected abstract string GetNavigationUrl(Guid id);
 
         protected override void OnInitialized()
@@ -30,7 +31,7 @@
             }
             else
             {
-                Model = new TTrading();
+                Model = CreateTrading();
             }
 
             EditContext = new EditContext(Model);

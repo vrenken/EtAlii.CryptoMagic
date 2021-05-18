@@ -9,15 +9,15 @@
 
     public partial class BackTestClient 
     {
-        public bool TryGetTrends(string[] coin, string referenceCoin, int period, CancellationToken cancellationToken, out Trend[] trends, out string error)
+        public bool TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend[] trends, out string error)
         {
             throw new NotSupportedException();
         }
         
-        public bool TryGetTrend(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal trend, out string error)
+        public bool TryGetTrend(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal trend, out string error)
         {
             var period = 6;
-            var historyKvp = _history.Single(h => h.Key == coin);
+            var historyKvp = _history.Single(h => h.Key == symbol);
 
             var history = historyKvp.Value.SingleOrDefault(entry => entry.From < Moment && Moment <= entry.To);
             if (history == null)

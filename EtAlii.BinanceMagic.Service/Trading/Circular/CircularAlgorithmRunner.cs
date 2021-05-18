@@ -8,9 +8,15 @@ namespace EtAlii.BinanceMagic.Service
         public TradingBase Trading => _trading;
         private readonly CircularTrading _trading;
         private readonly WebOutput _output;
+
+        public CircularTradeSnapshot Status => _statuProvider.Snapshot;
+        private StatusProvider _statuProvider; 
         private Loop _loop;
         private IClient _client;
+        private Sequence _sequence;
 
+        public event System.Action Changed;
+        
         public CircularAlgorithmRunner(CircularTrading trading)
         {
             _trading = trading;
@@ -51,26 +57,26 @@ namespace EtAlii.BinanceMagic.Service
 
             _client.Start(binanceApiKey, binanceSecretKey);
             
-            var algorithmSettings = new Circular.AlgorithmSettings
+            _statuProvider = new StatusProvider(_output)
             {
-                AllowedCoins = coins,
-                ReferenceCoin = referenceSymbol,
-                TargetIncrease = _trading.TargetIncrease,
-                QuantityFactor = _trading.QuantityFactor,
-                InitialTarget = _trading.InitialTarget,
-                SampleInterval = _trading.SampleInterval,
+                Snapshot = new CircularTradeSnapshot
+                {
+                    Trading = _trading,
+                }
             };
-            
-            var tradeDetailsPersistence = new Persistence<Circular.TradeDetails>("TradeDetailsStorage", _trading.Name);
-            var sequence = new Circular.Sequence(algorithmSettings, _client, _output, time, tradeDetailsPersistence);
-            _loop = new Loop(sequence);
+            _sequence = new Sequence(_client, time, _trading, _statuProvider);
+            _sequence.Status.Changed += OnSequenceChanged;
+            _loop = new Loop(_sequence);
             _loop.Start();
         }
+
+        private void OnSequenceChanged(StatusInfo obj) => Changed?.Invoke();
 
         public void Stop()
         {
             _loop.Stop();
             _client.Stop();
+            _sequence.Status.Changed -= OnSequenceChanged;
         }
     }
 }

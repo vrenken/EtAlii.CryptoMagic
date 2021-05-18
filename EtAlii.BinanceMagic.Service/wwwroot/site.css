@@ -1,5 +1,10 @@
-﻿html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+﻿@font-face {
+    font-family: "FiraCode";
+    src: url("fonts/FiraCode-Regular.ttf") format("truetype");
+}
+
+html, body {
+    font-family: 'FiraCode', Helvetica, Arial, sans-serif;
 }
 
 .sk-cube-grid {

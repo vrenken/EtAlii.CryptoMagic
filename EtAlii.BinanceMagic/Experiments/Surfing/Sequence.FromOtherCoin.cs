@@ -10,7 +10,7 @@
         /// </summary>
         protected override void OnTransferToOtherCoinEntered()
         {
-            _details.Status = $"{_bestCoinTrend!.Coin} has a better future - switching...";
+            _details.Status = $"{_bestCoinTrend!.Symbol} has a better future - switching...";
             _status.RaiseChanged();
         }
 
@@ -33,9 +33,9 @@
             var transaction = new Transaction
             {
                 Moment = now,
-                From = _coinsSold,
-                To = _coinsBought,
-                Profit = _coinsSold!.QuoteQuantity - _coinsBought!.QuoteQuantity,
+                Sell = _symbolsSold,
+                Buy = _symbolsBought,
+                Profit = _symbolsSold!.QuoteQuantity - _symbolsBought!.QuoteQuantity,
                 Target = 0,
             };
             _data.AddTransaction(transaction);
@@ -44,9 +44,9 @@
             _details.Step += 1;
             _details.LastSuccess = now;
             _details.LastProfit = transaction.Profit;
-            _details.TotalProfit = _coinsBought!.Quantity * _coinsBought.Price - _settings.InitialPurchase;
-            _details.CurrentCoin = _bestCoinTrend!.Coin;
-            _details.CurrentVolume = _coinsBought!.Quantity;
+            _details.TotalProfit = _symbolsBought!.Quantity * _symbolsBought.Price - _settings.InitialPurchase;
+            _details.CurrentSymbol = _bestCoinTrend!.Symbol;
+            _details.CurrentVolume = _symbolsBought!.Quantity;
             _status.RaiseChanged();
         }
     }

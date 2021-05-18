@@ -6,23 +6,23 @@
     {
         protected override void OnTransferFromUsdtEntered()
         {
-            _details.Status = $"Initial purchase {_bestCoinTrend!.Coin}...";
+            _details.Status = $"Initial purchase {_bestCoinTrend!.Symbol}...";
             _status.RaiseChanged();
         }
 
         protected override void OnBuyCurrentCoinInUsdtTransferEntered()
         {
-            _details.Status = $"Buying {_bestCoinTrend!.Coin}/{_details.PayoutCoin}...";
+            _details.Status = $"Buying {_bestCoinTrend!.Symbol}/{_details.PayoutSymbol}...";
             _status.RaiseChanged();
 
             var buyAction = new BuyAction
             {
-                Coin = _bestCoinTrend.Coin,
-                Price = _details.CurrentVolume * _settings.TransferFactor,
+                Symbol = _bestCoinTrend.Symbol,
+                QuotedQuantity = _details.CurrentVolume * _settings.TransferFactor,
                 TransactionId = "Surfing" 
             };
             
-            if (!_client.TryBuy(buyAction, _settings.PayoutCoin, _cancellationToken, _timeManager.GetNow, out _coinsBought, out var error))
+            if (!_client.TryBuy(buyAction, _settings.PayoutCoin, _cancellationToken, _timeManager.GetNow, out _symbolsBought, out var error))
             {
                 _details.Status = error;
                 _status.RaiseChanged();
@@ -34,7 +34,7 @@
 
         protected override void OnWaitUntilCoinBoughtInUsdtTransferEntered()
         {
-            _details.Status = $"Buying {_bestCoinTrend!.Coin}/{_details.PayoutCoin}: Waiting for confirmation...";
+            _details.Status = $"Buying {_bestCoinTrend!.Symbol}/{_details.PayoutSymbol}: Waiting for confirmation...";
             _status.RaiseChanged();
             
             Continue();
@@ -47,13 +47,13 @@
             var transaction = new Transaction
             {
                 Moment = now,
-                From = new Coin
+                Sell = new Symbol
                 {
-                    Symbol = _details.PayoutCoin,
+                    SymbolName = _details.PayoutSymbol,
                     QuoteQuantity = 0,
                     Quantity = 0,
                 },
-                To = _coinsBought,
+                Buy = _symbolsBought,
                 Profit = 0,
                 Target = 0,
             };
@@ -62,9 +62,9 @@
             _details.Status = null;
             _details.Step += 1;
             _details.LastSuccess = now;
-            _details.TotalProfit = _coinsBought!.Quantity * _coinsBought.Price - _settings.InitialPurchase;
-            _details.CurrentCoin = _bestCoinTrend!.Coin;
-            _details.CurrentVolume = _coinsBought!.Quantity;
+            _details.TotalProfit = _symbolsBought!.Quantity * _symbolsBought.Price - _settings.InitialPurchase;
+            _details.CurrentSymbol = _bestCoinTrend!.Symbol;
+            _details.CurrentVolume = _symbolsBought!.Quantity;
             _status.RaiseChanged();
         }
     }

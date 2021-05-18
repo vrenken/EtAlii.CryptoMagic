@@ -1,4 +1,4 @@
-﻿namespace EtAlii.BinanceMagic.Circular
+﻿namespace EtAlii.BinanceMagic.Service
 {
     using Binance.Net.Objects.Spot.MarketData;
 

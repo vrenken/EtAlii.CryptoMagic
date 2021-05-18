@@ -23,8 +23,8 @@ namespace EtAlii.BinanceMagic.Surfing
         private Situation? _situation;
         private Trend? _currentCoinTrend;
         private Trend? _bestCoinTrend;
-        private Coin? _coinsSold;
-        private Coin? _coinsBought;
+        private Symbol? _symbolsSold;
+        private Symbol? _symbolsBought;
 
         public Sequence(AlgorithmSettings settings, IClient client, IOutput output, ITimeManager timeManager, IPersistence<Transaction> persistence)
         {
@@ -34,8 +34,8 @@ namespace EtAlii.BinanceMagic.Surfing
             
             _details = new TradeDetails
             {
-                PayoutCoin = _settings.PayoutCoin, 
-                CurrentCoin = _settings.PayoutCoin,
+                PayoutSymbol = _settings.PayoutCoin, 
+                CurrentSymbol = _settings.PayoutCoin,
                 CurrentVolume = _settings.InitialPurchase,
             };
             _status = new StatusProvider(output, _details, settings);
@@ -59,11 +59,11 @@ namespace EtAlii.BinanceMagic.Surfing
             var lastTransaction = _data.Transactions.LastOrDefault();
             if (lastTransaction != null)
             {
-                _details.CurrentVolume = lastTransaction.To.Quantity;
-                _details.CurrentCoin = lastTransaction.To.Symbol;
+                _details.CurrentVolume = lastTransaction.Buy.Quantity;
+                _details.CurrentSymbol = lastTransaction.Buy.SymbolName;
                 _details.LastSuccess = lastTransaction.Moment;
                 _details.LastProfit = lastTransaction.Profit;
-                _details.TotalProfit = lastTransaction.To.Quantity * lastTransaction.To.Price - _settings.InitialPurchase;
+                _details.TotalProfit = lastTransaction.Buy.Quantity * lastTransaction.Buy.Price - _settings.InitialPurchase;
             }
             
             Continue();
@@ -99,7 +99,7 @@ namespace EtAlii.BinanceMagic.Surfing
             _details.Status = "Determining best trend...";
             _status.RaiseChanged();
 
-            _currentCoinTrend = _situation!.Trends.SingleOrDefault(t => t.Coin == _situation.CurrentCoin);
+            _currentCoinTrend = _situation!.Trends.SingleOrDefault(t => t.Symbol == _situation.CurrentCoin);
             _bestCoinTrend = _situation.Trends.OrderByDescending(t => t.Rsi).First();
 
             if (_currentCoinTrend == null)
@@ -120,7 +120,7 @@ namespace EtAlii.BinanceMagic.Surfing
             }
             else
             {
-                if (_currentCoinTrend.Coin == _bestCoinTrend.Coin && _bestCoinTrend.Rsi >= _settings.RsiOverSold)
+                if (_currentCoinTrend.Symbol == _bestCoinTrend.Symbol && _bestCoinTrend.Rsi >= _settings.RsiOverSold)
                 {
                     _details.Status = "Determining best trend: Current coin has best trend";
                     _status.RaiseChanged();

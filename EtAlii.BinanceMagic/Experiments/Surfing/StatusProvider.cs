@@ -9,7 +9,7 @@
         private readonly TradeDetails _details;
         private readonly AlgorithmSettings _settings;
 
-        private const int CoinColumnWidth = 17;
+        private const int SymbolColumnWidth = 17;
         public event Action<StatusInfo> Changed;
         
         public StatusProvider(IOutput output, TradeDetails details, AlgorithmSettings settings)
@@ -37,8 +37,8 @@
             WritePrices();
             WriteValues();
             WriteTrends();
-            WriteColumns($"Last success    : {lastSuccess}", $"Last profit    : +{_details.LastProfit:000.000000000} {_details.PayoutCoin}");
-            WriteColumns($"Next check      : {nextCheck}",   $"Total profit   : {totalProfitPrefix}{totalProfit:000.000000000} {_details.PayoutCoin}");
+            WriteColumns($"Last success    : {lastSuccess}", $"Last profit    : +{_details.LastProfit:000.000000000} {_details.PayoutSymbol}");
+            WriteColumns($"Next check      : {nextCheck}",   $"Total profit   : {totalProfitPrefix}{totalProfit:000.000000000} {_details.PayoutSymbol}");
             _output.WriteLine($"Step            : {_details.Step}");
             
             _output.WriteLine("");
@@ -56,9 +56,9 @@
             
             foreach (var trend in _details.Trends)
             {
-                line = CenteredString(trend.Coin, CoinColumnWidth);
+                line = CenteredString(trend.Symbol, SymbolColumnWidth);
                 color = Console.ForegroundColor;
-                Console.ForegroundColor = _details.CurrentCoin == trend.Coin
+                Console.ForegroundColor = _details.CurrentSymbol == trend.Symbol
                     ? ConsoleColor.Yellow
                     : color;
                 
@@ -67,9 +67,9 @@
                 _output.Write("|");
             }
             
-            line = CenteredString(_details.PayoutCoin, CoinColumnWidth);
+            line = CenteredString(_details.PayoutSymbol, SymbolColumnWidth);
             color = Console.ForegroundColor;
-            Console.ForegroundColor = _details.CurrentCoin == _details.PayoutCoin
+            Console.ForegroundColor = _details.CurrentSymbol == _details.PayoutSymbol
                 ? ConsoleColor.Yellow
                 : color;
 
@@ -85,10 +85,10 @@
             
             foreach (var trend in _details.Trends)
             {
-                volumeAsText = trend.Coin == _details.CurrentCoin
+                volumeAsText = trend.Symbol == _details.CurrentSymbol
                     ? $"{_details.CurrentVolume:000.000000000}"
                     : "";
-                line = CenteredString(volumeAsText, CoinColumnWidth);
+                line = CenteredString(volumeAsText, SymbolColumnWidth);
                 _output.Write(line);
                 _output.Write("|");
             }
@@ -110,10 +110,10 @@
             
             foreach (var trend in _details.Trends)
             {
-                valueAsText = trend.Coin == _details.CurrentCoin
+                valueAsText = trend.Symbol == _details.CurrentSymbol
                     ? $"{_details.CurrentVolume * trend.Price:000.000000000}"
                     : "";
-                line = CenteredString(valueAsText, CoinColumnWidth);
+                line = CenteredString(valueAsText, SymbolColumnWidth);
                 _output.Write(line);
                 _output.Write("|");
             }
@@ -124,10 +124,10 @@
             // line = CenteredString(valueAsText, CoinColumnWidth);
             // _output.WriteLine(line);
             
-            valueAsText = _details.CurrentCoin == _details.PayoutCoin
+            valueAsText = _details.CurrentSymbol == _details.PayoutSymbol
                 ? $"{_details.CurrentVolume:000.000000000}"
                 : "";
-            line = CenteredString(valueAsText, CoinColumnWidth);
+            line = CenteredString(valueAsText, SymbolColumnWidth);
             _output.WriteLine(line);
         }
 
@@ -142,9 +142,9 @@
                 // var trendAsText = $"{trendPrefix}{trend.Change}";
                 var trendAsText = $"{trend.Rsi * 100:0.00}";
                 
-                var line = CenteredString(trendAsText, CoinColumnWidth);
+                var line = CenteredString(trendAsText, SymbolColumnWidth);
                 var color = Console.ForegroundColor;
-                if (trend.Coin == _details.CurrentCoin)
+                if (trend.Symbol == _details.CurrentSymbol)
                 {
                     Console.ForegroundColor = trend.Rsi > _settings.RsiOverSold 
                         ? ConsoleColor.Green
@@ -173,7 +173,7 @@
             foreach (var trend in _details.Trends)
             {
                 var valueAsText = $"{trend.Price:000.000000000}";
-                var line = CenteredString(valueAsText, CoinColumnWidth);
+                var line = CenteredString(valueAsText, SymbolColumnWidth);
                 _output.Write(line);
                 _output.Write("|");
             }

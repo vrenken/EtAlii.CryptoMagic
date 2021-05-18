@@ -12,8 +12,8 @@ namespace EtAlii.BinanceMagic
     {
         private readonly IOutput _output;
         private readonly string _folder;
-        private readonly string[] _coins;
-        private readonly string _referenceCoin;
+        private readonly string[] _symbols;
+        private readonly string _referenceSymbol;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
 
         private readonly Dictionary<string, HistoryEntry> _currentHistory = new();
@@ -36,10 +36,10 @@ namespace EtAlii.BinanceMagic
         }
         private DateTime _moment;
 
-        public BackTestClient(string[] coins, string referenceCoin, IOutput output, string folder)
+        public BackTestClient(string[] symbols, string referenceSymbol, IOutput output, string folder)
         {
-            _coins = coins;
-            _referenceCoin = referenceCoin;
+            _symbols = symbols;
+            _referenceSymbol = referenceSymbol;
             _output = output;
             _folder = folder;
         }
@@ -48,14 +48,14 @@ namespace EtAlii.BinanceMagic
         {
             _output.WriteLine("Starting back-testing client...");
 
-            foreach (var coin in _coins)
+            foreach (var symbol in _symbols)
             {
-                var fileName = $"Binance_{coin}{_referenceCoin}_minute.csv";
+                var fileName = $"Binance_{symbol}{_referenceSymbol}_minute.csv";
                 fileName = Path.Combine(_folder, "Testing", "History", fileName);
                 
                 _output.WriteLine($"Loading {fileName}");
 
-                _history[coin] = File
+                _history[symbol] = File
                     .ReadLines(fileName)
                     .Skip(2)
                     .Select(ToHistoryEntry)
@@ -122,9 +122,9 @@ namespace EtAlii.BinanceMagic
             }
         }
         
-        public bool TryGetPrice(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal price, out string error)
+        public bool TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal price, out string error)
         {
-            var history = _currentHistory[coin];
+            var history = _currentHistory[symbol];
 
             if (history == null)
             {
@@ -139,38 +139,38 @@ namespace EtAlii.BinanceMagic
         }
 
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error)
+        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Transaction transaction, out string error)
         {
             transaction = new Transaction
             {
-                From = new Coin
+                Sell = new Symbol
                 {
-                    Symbol = sellAction.Coin,
-                    QuoteQuantity = sellAction.Price,
+                    SymbolName = sellAction.Symbol,
+                    QuoteQuantity = sellAction.QuotedQuantity,
                     Quantity = sellAction.Quantity
 
                 },
-                To = new Coin
+                Buy = new Symbol
                 {
-                    Symbol = buyAction.Coin,
-                    QuoteQuantity = buyAction.Price,
+                    SymbolName = buyAction.Symbol,
+                    QuoteQuantity = buyAction.QuotedQuantity,
                     Quantity = buyAction.Quantity
                 },
                 Moment = getNow(),
-                Profit = sellAction.Price - buyAction.Price 
+                Profit = sellAction.QuotedQuantity - buyAction.QuotedQuantity 
             };
             error = null;
             return true;
         }
 
-        public bool TrySell(SellAction sellAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow,
-            out Coin coinsSold, out string error)
+        public bool TrySell(SellAction sellAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow,
+            out Symbol symbolsSold, out string error)
         {
             throw new NotImplementedException();
         }
 
-        public bool TryBuy(BuyAction buyAction, string referenceCoin, CancellationToken cancellationToken, Func<DateTime> getNow,
-            out Coin coinsBought, out string error)
+        public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow,
+            out Symbol symbolsBought, out string error)
         {
             throw new NotImplementedException();
         }
@@ -180,7 +180,7 @@ namespace EtAlii.BinanceMagic
             return 10m;
         }
 
-        public bool TryGetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
+        public bool TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
         {
             makerFee = 0.1m;
             takerFee = 0.1m;

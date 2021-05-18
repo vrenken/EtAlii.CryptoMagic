@@ -61,13 +61,13 @@
             _logger.Information("Stopping client: Done");
         }
 
-        public bool TryGetPrice(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal price, out string error)
+        public bool TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal price, out string error)
         {
-            var coinComparedToReference = $"{coin}{referenceCoin}"; 
-            var result = _client.Spot.Market.GetPrice(coinComparedToReference, cancellationToken);
+            var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
+            var result = _client.Spot.Market.GetPrice(symbolComparedToReference, cancellationToken);
             if (result.Error != null)
             {
-                error = $"Failure fetching price for {coin}: {result.Error}";
+                error = $"Failure fetching price for {symbol}: {result.Error}";
                 price = decimal.Zero;
                 return false;
             }
@@ -77,13 +77,13 @@
             return true;
         }
         
-        public bool TryGetTradeFees(string coin, string referenceCoin, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
+        public bool TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
         {
-            var coinComparedToReference = $"{coin}{referenceCoin}"; 
+            var coinComparedToReference = $"{symbol}{referenceSymbol}"; 
             var result = _client.Spot.Market.GetTradeFee(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
-                error = $"Failure fetching trade fees for {coin}: {result.Error}";
+                error = $"Failure fetching trade fees for {symbol}: {result.Error}";
                 makerFee = 0m;
                 takerFee = 0m;
                 return false;

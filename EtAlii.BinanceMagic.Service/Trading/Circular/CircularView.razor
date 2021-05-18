@@ -2,14 +2,14 @@
 
 @namespace EtAlii.BinanceMagic.Service
 
-@inherits ViewBase<CircularTrading>
+@inherits ViewBase<CircularTrading, CircularAlgorithmRunner>
 
 <Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is1">
-        <Button Color="Color.Primary">
+        <Blazorise.Button Color="Color.Primary">
             <Icon Name="IconName.Pause" />
             Pause
-        </Button>
+        </Blazorise.Button>
     </Column>
     <Column ColumnSize="ColumnSize.Is1">
         <Blazorise.Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"/circular/edit/{Id}")">
@@ -25,19 +25,15 @@
             <Table Striped="false" Borderless="true" Narrow="true">
                 <TableBody>
                     <TableRow>
-                        <TableRowCell>Last success: </TableRowCell><TableRowCell>@Current.LastSuccess</TableRowCell>
+                        <TableRowCell>Last success: </TableRowCell><TableRowCell>@LastSuccess</TableRowCell>
                         <TableRowCell>Profit:</TableRowCell><TableRowCell>@Current.Profit</TableRowCell>
-                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Last check: </TableRowCell><TableRowCell>@Current.LastCheck</TableRowCell>
-                        <TableRowCell>Result:</TableRowCell><TableRowCell>@Current.Result</TableRowCell>
-                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableRowCell>Next check: </TableRowCell><TableRowCell>@Current.NextCheck</TableRowCell>
+                        <TableRowCell>Next check: </TableRowCell><TableRowCell>@NextCheck</TableRowCell>
                         <TableRowCell>Step:</TableRowCell><TableRowCell>@Current.Step</TableRowCell>
-                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Result:</TableRowCell><TableRowCell ColumnSpan="3">@Current.Result</TableRowCell>
                     </TableRow>
                 </TableBody>
             </Table>
@@ -49,18 +45,18 @@
             <Table Striped="false" Borderless="true" Narrow="true">
                 <TableBody>
                     <TableRow>
-                        <TableRowCell>Sell: </TableRowCell><TableRowCell>@Current.Sell</TableRowCell>
-                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Current.SellQuantity</TableRowCell>
+                        <TableRowCell>Sell: </TableRowCell><TableRowCell>@Decimal(Current.SellPrice, "+") @Current.ReferenceSymbol</TableRowCell>
+                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Current.SellQuantity, "+") @Current.SellSymbol</TableRowCell>
                         <TableRowCell>Trend: </TableRowCell><TableRowCell>@Current.SellTrend</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Buy: </TableRowCell><TableRowCell>@Current.Buy</TableRowCell>
-                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Current.BuyQuantity</TableRowCell>
+                        <TableRowCell>Buy: </TableRowCell><TableRowCell>@Decimal(Current.BuyPrice, "-") @Current.ReferenceSymbol</TableRowCell>
+                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Current.BuyQuantity, "-") @Current.BuySymbol</TableRowCell>
                         <TableRowCell>Trend: </TableRowCell><TableRowCell>@Current.BuyTrend</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Diff: </TableRowCell><TableRowCell>@Current.Diff</TableRowCell>
-                        <TableRowCell>Target: </TableRowCell><TableRowCell>@Current.Target</TableRowCell>
+                        <TableRowCell>Diff: </TableRowCell><TableRowCell>@Decimal(Current.Difference) @Current.ReferenceSymbol</TableRowCell>
+                        <TableRowCell>Target: </TableRowCell><TableRowCell>@Decimal(Current.Target, "+") @Current.ReferenceSymbol</TableRowCell>
                         <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
                     </TableRow>
                 </TableBody>

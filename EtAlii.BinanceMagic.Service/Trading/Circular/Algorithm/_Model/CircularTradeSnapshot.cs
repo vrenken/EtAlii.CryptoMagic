@@ -1,22 +1,26 @@
-﻿namespace EtAlii.BinanceMagic.Circular
+﻿namespace EtAlii.BinanceMagic.Service
 {
     using System;
 
-    public class TradeDetails
+    public class CircularTradeSnapshot : Entity
     {
-        public string ReferenceCoin { get; set; }
+        public CircularTrading Trading { get; init; }
         
-        public string SellCoin { get; set; }
+        public string ReferenceSymbol { get; set; }
+        
+        public string SellSymbol { get; set; }
         public decimal SellPrice { get; set; }
         public decimal SellQuantity { get; set; }
+        public decimal SellQuotedQuantity { get; set; }
         public decimal SellQuantityMinimum { get; set; }
         public decimal SellTrend { get; set; }
 
         public bool SellPriceIsAboveNotionalMinimum { get; set; }
 
-        public string BuyCoin { get; set; }
+        public string BuySymbol { get; set; }
         public decimal BuyPrice { get; set; }
         public decimal BuyQuantity { get; set; }
+        public decimal BuyQuotedQuantity { get; set; }
         public decimal BuyQuantityMinimum { get; set; }
         public decimal BuyTrend { get; set; }
         public bool BuyPriceIsAboveNotionalMinimum { get; set; }
@@ -39,5 +43,12 @@
         public bool Error { get; set; }
 
         public bool IsWorthIt { get; set; }
+
+        public CircularTradeSnapshot ShallowClone()
+        {
+            var other = (CircularTradeSnapshot) MemberwiseClone();
+            other.Id = Guid.Empty;
+            return other;
+        }
     }
 }
