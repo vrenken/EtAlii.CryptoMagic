@@ -18,7 +18,7 @@
             using var data = new DataContext();
             var lastTransaction = data.FindPreviousSnapshot(_trading);
 
-            var snapshotCount = data.CircularTradeDetailsSnapshots
+            var snapshotCount = data.CircularTradeSnapshots
                 .Include(s => s.Trading)
                 .Count(s => s.Trading.Id == _trading.Id);
 

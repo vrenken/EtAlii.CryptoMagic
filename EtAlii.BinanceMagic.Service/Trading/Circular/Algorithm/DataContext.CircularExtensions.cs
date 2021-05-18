@@ -7,7 +7,7 @@
     {        
         public static CircularTradeSnapshot FindLastPurchase(this DataContext data, string symbol, CircularTrading trading)
         {
-            return data.CircularTradeDetailsSnapshots
+            return data.CircularTradeSnapshots
                 .Include(s => s.Trading)
                 .Where(s => s.Trading.Id == trading.Id)
                 .Where(s => s.BuyQuantity > 0.0m)
@@ -17,7 +17,7 @@
 
         public static CircularTradeSnapshot FindLastSell(this DataContext data, string symbol, CircularTrading trading)
         {
-            return data.CircularTradeDetailsSnapshots
+            return data.CircularTradeSnapshots
                 .Include(s => s.Trading)
                 .Where(s => s.Trading.Id == trading.Id)
                 .Where(s => s.SellQuantity > 0.0m)
@@ -27,7 +27,7 @@
 
         public static CircularTradeSnapshot FindPreviousSnapshot(this DataContext data, CircularTrading trading)
         {
-            return data.CircularTradeDetailsSnapshots
+            return data.CircularTradeSnapshots
                 .Include(s => s.Trading)
                 .OrderBy(s => s.Step)
                 .LastOrDefault(s => s.Trading.Id == trading.Id);
@@ -35,7 +35,7 @@
         
         public static decimal GetTotalProfits(this DataContext data, CircularTrading trading)
         {
-            return data.CircularTradeDetailsSnapshots
+            return data.CircularTradeSnapshots
                 .Include(s => s.Trading)
                 .Where(s => s.Trading.Id == trading.Id)
                 .ToArray()
