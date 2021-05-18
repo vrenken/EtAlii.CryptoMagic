@@ -7,15 +7,12 @@
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private Task _task;
-        private static readonly object LockObject = new();
         
         private readonly ISequence _sequence;
-        public IStatusProvider Status { get; }
-        
+
         public Loop(ISequence sequence)
         {
             _sequence = sequence;
-            Status = _sequence.Status;
         }
         
         public void Stop()
@@ -33,17 +30,11 @@
         {
             var cancellationToken = _cancellationTokenSource.Token;
 
-            lock (LockObject)
-            {
-                _sequence.Initialize(cancellationToken);
-            }
+            _sequence.Initialize(cancellationToken);
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                lock (LockObject)
-                {
-                    _sequence.Run(cancellationToken);
-                }
+                _sequence.Run(cancellationToken);
             }
         }
     }

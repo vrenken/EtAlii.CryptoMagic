@@ -40,30 +40,17 @@
         </Card>        
     </Column>
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-        <Card>
-            <CardHeader>Current cycle</CardHeader>
-            <Table Striped="false" Borderless="true" Narrow="true">
-                <TableBody>
-                    <TableRow>
-                        <TableRowCell>Sell: </TableRowCell><TableRowCell>@Decimal(Current.SellPrice, "+") @Current.ReferenceSymbol</TableRowCell>
-                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Current.SellQuantity, "+") @Current.SellSymbol</TableRowCell>
-                        <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@SellTrendStyle">@DecimalShort(Current.SellTrend)</span></TableRowCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableRowCell>Buy: </TableRowCell><TableRowCell>@Decimal(Current.BuyPrice, "-") @Current.ReferenceSymbol</TableRowCell>
-                        <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Current.BuyQuantity, "-") @Current.BuySymbol</TableRowCell>
-                        <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@BuyTrendStyle">@DecimalShort(Current.BuyTrend)</span></TableRowCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableRowCell>Diff: </TableRowCell><TableRowCell><span style="@DifferenceStyle">@Decimal(Current.Difference) @Current.ReferenceSymbol</span></TableRowCell>
-                        <TableRowCell>Target: </TableRowCell><TableRowCell>@Decimal(Current.Target, "+") @Current.ReferenceSymbol</TableRowCell>
-                        <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </Card>        
+        <CircularTradeSnapshotCard Title="Current cycle" Snapshot="@CurrentRunner.Status" />
     </Column>
 </Row>
+
+<Repeater Items="@History">
+    <Row Margin="Margin.Is4">
+        <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+                <CircularTradeSnapshotCard Title="@($"Cycle {context.LastSuccess}")" Snapshot="@context" />
+        </Column>
+    </Row>
+</Repeater>
 
 <Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
