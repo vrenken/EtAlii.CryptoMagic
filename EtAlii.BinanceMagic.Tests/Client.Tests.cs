@@ -33,7 +33,6 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_Start()
         {
             // Arrange.
-            var settings = _context.CreateProgramSettings();
             var actionValidator = new ActionValidator();
             var client = new Client(actionValidator)
             {
@@ -41,7 +40,7 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.Start(settings.ApiKey, settings.SecretKey);
+            client.Start("ApiKey", "SecretKey");
             
             // Assert.
             Assert.NotNull(client);
@@ -51,14 +50,13 @@ namespace EtAlii.BinanceMagic.Tests
         public void Client_TryConvert()
         {
             // Arrange.
-            var programSettings = _context.CreateProgramSettings();
             var referenceSymbol = "USDT";
             var actionValidator = new ActionValidator();
             var client = new Client(actionValidator)
             {
                 PlaceTestOrders = true
             };
-            client.Start(programSettings.ApiKey, programSettings.SecretKey);
+            client.Start("ApiKey", "SecretKey");
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();
             var sellAction = new SellAction
