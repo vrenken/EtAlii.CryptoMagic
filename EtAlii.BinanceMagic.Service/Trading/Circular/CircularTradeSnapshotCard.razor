@@ -1,0 +1,24 @@
+﻿@namespace EtAlii.BinanceMagic.Service
+
+<Card>
+    <CardHeader>@Title</CardHeader>
+    <Table Striped="false" Borderless="true" Narrow="true">
+        <TableBody>
+            <TableRow>
+                <TableRowCell>Sell: </TableRowCell><TableRowCell>@Decimal(Snapshot.SellPrice, "+") @Snapshot.ReferenceSymbol</TableRowCell>
+                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Snapshot.SellQuantity, "+") @Snapshot.SellSymbol</TableRowCell>
+                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@SellTrendStyle">@DecimalShort(Snapshot.SellTrend)</span></TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Buy: </TableRowCell><TableRowCell>@Decimal(Snapshot.BuyPrice, "-") @Snapshot.ReferenceSymbol</TableRowCell>
+                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Snapshot.BuyQuantity, "-") @Snapshot.BuySymbol</TableRowCell>
+                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@BuyTrendStyle">@DecimalShort(Snapshot.BuyTrend)</span></TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Diff: </TableRowCell><TableRowCell><span style="@DifferenceStyle">@Decimal(Snapshot.Difference) @Snapshot.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Target: </TableRowCell><TableRowCell>@Decimal(Snapshot.Target, "+") @Snapshot.ReferenceSymbol</TableRowCell>
+                <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+            </TableRow>
+        </TableBody>
+    </Table>
+</Card>        

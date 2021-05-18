@@ -24,37 +24,41 @@
 
         protected override void OnInitialized()
         {
+            OnLocationChangedInternal();
+            NavigationManager.LocationChanged += (_, _) => OnLocationChangedInternal();
+        }
+
+        private void OnLocationChangedInternal()
+        {
             var id = Guid.Parse(Id);
             Model = GetTrading(id);
+            if (CurrentRunner != null)
+            {
+                CurrentRunner.Changed -= OnRunnerChangedInternal;
+            }
             CurrentRunner = AlgorithmManager.Runners
                 .OfType<TRunner>()
                 .Single(r => r.Trading.Id == id);
-            CurrentRunner.Changed += OnRunnerChanged;
-            
-            NavigationManager.LocationChanged += (_, _) =>
-            {
-                id = Guid.Parse(Id);
-                Model = GetTrading(id);
-                if (CurrentRunner != null)
-                {
-                    CurrentRunner.Changed -= OnRunnerChanged;
-                }
-                CurrentRunner = AlgorithmManager.Runners
-                    .OfType<TRunner>()
-                    .Single(r => r.Trading.Id == id);
-                CurrentRunner.Changed += OnRunnerChanged;
-                StateHasChanged();
-            };
-        }
+            CurrentRunner.Changed += OnRunnerChangedInternal;
 
+            OnLocationChanged();
+            StateHasChanged();
+        }
+        protected virtual void OnLocationChanged() { }
+        
         public void Dispose()
         {
             if (CurrentRunner != null)
             {
-                CurrentRunner.Changed -= OnRunnerChanged;
+                CurrentRunner.Changed -= OnRunnerChangedInternal;
             }
         }
 
-        protected virtual void OnRunnerChanged() => InvokeAsync(StateHasChanged);
+        protected virtual void OnRunnerChangedInternal()
+        {
+            OnRunnerChanged();
+            InvokeAsync(StateHasChanged);
+        }
+        protected virtual void OnRunnerChanged() { }
     }
 }

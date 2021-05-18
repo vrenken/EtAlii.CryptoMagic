@@ -9,8 +9,8 @@ namespace EtAlii.BinanceMagic.Service
         private readonly CircularTrading _trading;
         private readonly WebOutput _output;
 
-        public CircularTradeSnapshot Status => _statuProvider.Snapshot;
-        private StatusProvider _statuProvider; 
+        public CircularTradeSnapshot Status => _statusProvider.Snapshot;
+        private StatusProvider _statusProvider; 
         private Loop _loop;
         private IClient _client;
         private Sequence _sequence;
@@ -57,14 +57,14 @@ namespace EtAlii.BinanceMagic.Service
 
             _client.Start(binanceApiKey, binanceSecretKey);
             
-            _statuProvider = new StatusProvider(_output)
+            _statusProvider = new StatusProvider(_output)
             {
                 Snapshot = new CircularTradeSnapshot
                 {
                     Trading = _trading,
                 }
             };
-            _sequence = new Sequence(_client, time, _trading, _statuProvider);
+            _sequence = new Sequence(_client, time, _trading, _statusProvider);
             _sequence.Status.Changed += OnSequenceChanged;
             _loop = new Loop(_sequence);
             _loop.Start();
