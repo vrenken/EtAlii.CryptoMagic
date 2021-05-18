@@ -1,23 +1,15 @@
 ﻿namespace EtAlii.BinanceMagic.Service
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
+    using Microsoft.EntityFrameworkCore;
 
     public partial class CircularView
     {
-        private string SellTrendStyle => CurrentRunner.Status.SellTrend > 0
-            ? "background-color:green;color:white"
-            : "background-color:red;color:white";
-
-        private string BuyTrendStyle => CurrentRunner.Status.BuyTrend < 0
-            ? "background-color:green;color:white"
-            : "background-color:red;color:white";
-
-        private string DifferenceStyle => CurrentRunner.Status.Difference >= CurrentRunner.Status.Target
-            ? "background-color:green;color:white"
-            : "background-color:red;color:white";
-
+        private ObservableCollection<CircularTradeSnapshot> History { get; } = new();
+        
         private string LastSuccess => CurrentRunner.Status.LastSuccess != DateTime.MinValue
             ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.InvariantCulture)
             : "None";
@@ -33,20 +25,25 @@
             return data.CircularTradings.Single(t => t.Id == id);
         }
 
-        protected override void OnRunnerChanged()
-        {
-            InvokeAsync(StateHasChanged);
-        }
+        protected override void OnRunnerChanged() => UpdateHistory();
 
-        private string DecimalShort(decimal d)
+        protected override void OnLocationChanged() => UpdateHistory();
+
+        private void UpdateHistory()
         {
-            var prefix = d >= 0 ? "+" : "";
-            return $"{prefix}{d:000.000}";
-        }
-        private string Decimal(decimal d, string prefix = null)
-        {
-            prefix ??= d >= 0 ? "+" : "";
-            return $"{prefix}{d:000.000000000}";
+            using var data = new DataContext();
+            var snapshots = data.CircularTradeSnapshots
+                .Include(s => s.Trading)
+                .Where(s => s.Trading.Id == CurrentRunner.Trading.Id)
+                .Where(s => s.IsWorthIt)
+                .OrderByDescending(s => s.Step)
+                .ToArray();
+
+            History.Clear();
+            foreach (var snapshot in snapshots)
+            {
+                History.Add(snapshot);
+            }
         }
     }
 }
