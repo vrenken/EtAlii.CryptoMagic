@@ -255,7 +255,7 @@
             if (cancelOrder.Error != null)
             {
                 var message = $"Failure cancelling order for {order.ClientOrderId}: {cancelOrder.Error}";
-                _program.HandleFail(message);
+                throw new InvalidOperationException(message);
             }
         }
     }

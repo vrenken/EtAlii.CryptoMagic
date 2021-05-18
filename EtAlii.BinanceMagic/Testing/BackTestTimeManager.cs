@@ -6,8 +6,10 @@ namespace EtAlii.BinanceMagic
     public class BackTestTimeManager : ITimeManager
     {
         public BackTestClient Client { get; init; }
-        public IProgram Program { get; init; }
-
+        public IOutput Output { get; init; }
+        
+        public bool TerminateProcessWhenCompleted { get; init; }
+        
         public DateTime GetNow() => Client.Moment;
 
         public void Wait(TimeSpan timeSpan, CancellationToken cancellationToken)
@@ -17,7 +19,12 @@ namespace EtAlii.BinanceMagic
             //Task.Delay(TimeSpan.FromSeconds(10), cancellationToken).Wait(cancellationToken);
             if (Client.Moment > Client.LastRecordedHistory)
             {
-                Program.HandleFinish("Back-test completed");
+                Output.WriteLine("Back-test completed");
+                if (TerminateProcessWhenCompleted)
+                {
+                    Console.ReadLine();
+                    Environment.Exit(-1);
+                }
             }
         }
     }

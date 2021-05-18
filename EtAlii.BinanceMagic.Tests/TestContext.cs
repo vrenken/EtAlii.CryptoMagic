@@ -8,13 +8,7 @@ namespace EtAlii.BinanceMagic.Tests
         public Random Random => _random;
         private readonly Random _random = new(Environment.TickCount);
         
-        public ProgramSettings CreateProgramSettings()
-        {
-            return new()
-            {
-                IsTest = true,
-            };
-        }
+        public ProgramSettings CreateProgramSettings() => new();
 
         public AlgorithmSettings CreateCircularAlgorithmSettings()
         {

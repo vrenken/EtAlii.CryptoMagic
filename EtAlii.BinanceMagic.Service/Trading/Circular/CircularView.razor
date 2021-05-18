@@ -18,7 +18,7 @@
         </Blazorise.Button>
     </Column>
 </Row>
-<Row>
+<Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
         <Card>
             <CardHeader>@Model.Name</CardHeader>
@@ -65,6 +65,15 @@
                     </TableRow>
                 </TableBody>
             </Table>
+        </Card>        
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is4">
+    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+        <Card>
+            <CardHeader>Log</CardHeader>
+            <CardBody>@CurrentRunnerLog</CardBody>
         </Card>        
     </Column>
 </Row>

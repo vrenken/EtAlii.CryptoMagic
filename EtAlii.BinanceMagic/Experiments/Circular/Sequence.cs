@@ -17,7 +17,7 @@ namespace EtAlii.BinanceMagic.Circular
         private readonly StatusProvider _statusProvider;
 
         public Sequence(
-            AlgorithmSettings settings, IProgram program, 
+            AlgorithmSettings settings, 
             IClient client, IOutput output,
             ITimeManager timeManager, IPersistence<TradeDetails> persistence)
         {
@@ -28,7 +28,7 @@ namespace EtAlii.BinanceMagic.Circular
             _details = new TradeDetails();
             _statusProvider = new StatusProvider(output, _details);
             _detailsBuilder = new TradeDetailsUpdater(_data, settings);
-            _circularAlgorithm = new Algorithm(settings, _data, program, client, _details, _statusProvider);
+            _circularAlgorithm = new Algorithm(settings, _data, client, _details, _statusProvider);
         }
 
         public void Initialize(CancellationToken cancellationToken)

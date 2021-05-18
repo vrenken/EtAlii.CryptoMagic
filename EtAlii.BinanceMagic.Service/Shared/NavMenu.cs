@@ -20,7 +20,7 @@
         {
             ReloadRunners();
 
-            _algorithmManager.Runners.CollectionChanged += OnRunnersChanged;
+            ((INotifyCollectionChanged)_algorithmManager.Runners).CollectionChanged += OnRunnersChanged;
         }
 
         private void OnRunnersChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -37,9 +37,9 @@
 
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        foreach (IAlgorithmRunner newItem in e.OldItems!)
+                        foreach (IAlgorithmRunner oldItem in e.OldItems!)
                         {
-                            RemoveRunner(newItem);
+                            RemoveRunner(oldItem);
                         }
 
                         break;
@@ -109,7 +109,7 @@
         }
         public void Dispose()
         {
-            _algorithmManager.Runners.CollectionChanged -= OnRunnersChanged;
+            ((INotifyCollectionChanged)_algorithmManager.Runners).CollectionChanged -= OnRunnersChanged;
         }
     }
 }

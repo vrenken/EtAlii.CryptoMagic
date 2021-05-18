@@ -1,10 +1,8 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public class SurfingAlgorithmRunner : IAlgorithmRunner
     {
+        public string Log { get; } = string.Empty;
         public TradingBase Trading => _trading;
         private readonly SurfingTrading _trading;
 
@@ -12,14 +10,13 @@ namespace EtAlii.BinanceMagic.Service
         {
             _trading = trading;
         }
-        public void Run()
+        public void Start()
         {
             
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public void Stop()
         {
-            return Task.CompletedTask;
         }
     }
 }

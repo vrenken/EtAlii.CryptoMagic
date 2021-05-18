@@ -15,11 +15,11 @@ namespace EtAlii.BinanceMagic
 
             var output = new ConsoleOutput();
             var programSettings = new ProgramSettings();
-            var program = new Program(programSettings, output);
+            var program = new Program();
 
             output.WriteLine("Starting Binance magic...");
             var actionValidator = new ActionValidator();
-            var client = new Client(program, actionValidator)
+            var client = new Client(actionValidator)
             {
                 PlaceTestOrders = true,
             };
@@ -31,7 +31,7 @@ namespace EtAlii.BinanceMagic
             // // Back-test 1.
             var allowedCoins = new[] {"BTC", "BNB"};
             var referenceCoin = "USDT";
-            var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            var backTestClient = new BackTestClient(allowedCoins, referenceCoin, output, "");
             allLoopSettings.Add(new LoopSettings
             {
                 Identifier = "BTC-BNB",
@@ -39,7 +39,6 @@ namespace EtAlii.BinanceMagic
                 Time = new BackTestTimeManager
                 {
                     Client = backTestClient,
-                    Program = program,
                 },
                 Algorithm = new Circular.AlgorithmSettings
                 {
@@ -54,7 +53,7 @@ namespace EtAlii.BinanceMagic
             // // Back-test 1.
             allowedCoins = new[] {"BTC", "XMR"};
             referenceCoin = "USDT";
-            backTestClient = new BackTestClient(allowedCoins, referenceCoin, output);
+            backTestClient = new BackTestClient(allowedCoins, referenceCoin, output, "");
             allLoopSettings.Add(new LoopSettings
             {
                 Identifier = "BTC-XMR",
@@ -62,7 +61,6 @@ namespace EtAlii.BinanceMagic
                 Time = new BackTestTimeManager
                 {
                     Client = backTestClient,
-                    Program = program,
                 },
                 Algorithm = new Circular.AlgorithmSettings
                 {
@@ -168,7 +166,7 @@ namespace EtAlii.BinanceMagic
             });
 
             var loops = allLoopSettings
-                .Select(ls => program.CreateLoop(ls, programSettings, program, output))
+                .Select(ls => program.CreateLoop(ls, programSettings, output))
                 .ToArray();
 
             void OnStatusChanged(StatusInfo statusInfo)
