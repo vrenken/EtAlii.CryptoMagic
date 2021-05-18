@@ -6,7 +6,5 @@ namespace EtAlii.BinanceMagic.Tests
     {
         public Random Random => _random;
         private readonly Random _random = new(Environment.TickCount);
-        
-        public ProgramSettings CreateProgramSettings() => new();
     }
 }

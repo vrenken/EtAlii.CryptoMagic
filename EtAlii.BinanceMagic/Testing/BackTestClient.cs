@@ -5,13 +5,13 @@ namespace EtAlii.BinanceMagic
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using Binance.Net.Objects.Spot.MarketData;
 
     public partial class BackTestClient : IClient
     {
         private readonly IOutput _output;
-        private readonly string _folder;
         private readonly string[] _symbols;
         private readonly string _referenceSymbol;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
@@ -36,12 +36,11 @@ namespace EtAlii.BinanceMagic
         }
         private DateTime _moment;
 
-        public BackTestClient(string[] symbols, string referenceSymbol, IOutput output, string folder)
+        public BackTestClient(string[] symbols, string referenceSymbol, IOutput output)
         {
             _symbols = symbols;
             _referenceSymbol = referenceSymbol;
             _output = output;
-            _folder = folder;
         }
 
         public void Start(string apiKey, string secretKey)
@@ -50,13 +49,26 @@ namespace EtAlii.BinanceMagic
 
             foreach (var symbol in _symbols)
             {
-                var fileName = $"Binance_{symbol}{_referenceSymbol}_minute.csv";
-                fileName = Path.Combine(_folder, "Testing", "History", fileName);
-                
-                _output.WriteLine($"Loading {fileName}");
+                var url = $"https://www.cryptodatadownload.com/cdd/Binance_{symbol}{_referenceSymbol}_minute.csv";
+                _output.WriteLine($"Downloading {url}");
 
-                _history[symbol] = File
-                    .ReadLines(fileName)
+                using var client = new WebClient();
+                var data = client.DownloadData(url);
+                
+                _output.WriteLine($"Splitting in lines");
+
+                using var stream = new MemoryStream(data);
+                using var reader = new StreamReader(stream);
+
+                var lines = new List<string>();
+                while(!reader.EndOfStream)
+                {
+                    lines.Add(reader.ReadLine());
+                }
+                
+                _output.WriteLine($"Converting to objects");
+
+                _history[symbol] = lines
                     .Skip(2)
                     .Select(ToHistoryEntry)
                     .Reverse()
