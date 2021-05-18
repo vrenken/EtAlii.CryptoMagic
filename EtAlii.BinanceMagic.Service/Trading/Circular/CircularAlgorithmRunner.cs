@@ -36,7 +36,7 @@ namespace EtAlii.BinanceMagic.Service
             
             if (_trading.Connectivity == Connectivity.BackTest)
             {
-                var backTestClient = new BackTestClient(coins, referenceSymbol, _output, "bin\\Debug\\net5.0");
+                var backTestClient = new BackTestClient(coins, referenceSymbol, _output);
                 _client = backTestClient;
                 time = new BackTestTimeManager
                 {
