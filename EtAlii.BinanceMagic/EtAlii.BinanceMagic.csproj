@@ -19,30 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Testing\History\Binance_ADAUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Testing\History\Binance_BNBUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Testing\History\Binance_BTCUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Testing\History\Binance_ETHUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Testing\History\Binance_LTCUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Testing\History\Binance_DASHUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Testing\History\Binance_XMRUSDT_minute.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Update="Algorithms\Surfing\Sequence.cs">
         <DependentUpon>Sequence.puml</DependentUpon>
       </Compile>
