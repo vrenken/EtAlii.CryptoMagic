@@ -16,6 +16,7 @@
       <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
       <PackageReference Include="stateless" Version="5.11.0" />
       <PackageReference Include="Trady.Analysis" Version="3.2.8" />
+      <PackageReference Include="System.Reactive" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

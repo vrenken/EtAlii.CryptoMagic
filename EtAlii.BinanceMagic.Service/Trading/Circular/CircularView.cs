@@ -25,12 +25,17 @@
             return data.CircularTradings.Single(t => t.Id == id);
         }
 
-        protected override void OnRunnerChanged() => UpdateHistory();
+        protected override void OnRunnerChanged() => UpdateHistory(false);
 
-        protected override void OnLocationChanged() => UpdateHistory();
+        protected override void OnLocationChanged() => UpdateHistory(true);
 
-        private void UpdateHistory()
+        private void UpdateHistory(bool reset)
         {
+            if (reset)
+            {
+                History.Clear();
+            }
+            
             using var data = new DataContext();
             var snapshots = data.CircularTradeSnapshots
                 .Include(s => s.Trading)
@@ -39,10 +44,13 @@
                 .OrderByDescending(s => s.Step)
                 .ToArray();
 
-            History.Clear();
-            foreach (var snapshot in snapshots)
+            var missingSnapshots = snapshots
+                .Where(s => History.All(h => h.Step != s.Step))
+                .Reverse()
+                .ToArray(); 
+            foreach (var snapshot in missingSnapshots)
             {
-                History.Add(snapshot);
+                History.Insert(0, snapshot);
             }
         }
     }

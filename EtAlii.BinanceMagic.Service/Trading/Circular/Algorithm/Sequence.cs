@@ -11,22 +11,22 @@ namespace EtAlii.BinanceMagic.Service
         private readonly ITimeManager _timeManager;
         private readonly CircularTrading _trading;
 
-        public IStatusProvider Status => _statusProvider;
-        private readonly StatusProvider _statusProvider;
+        public IAlgorithmContext<CircularTradeSnapshot> Status => _context;
+        private readonly IAlgorithmContext<CircularTradeSnapshot> _context;
 
         public Sequence(
             IClient client,
             ITimeManager timeManager, 
             CircularTrading trading, 
-            StatusProvider statusProvider)
+            IAlgorithmContext<CircularTradeSnapshot> context)
         {
             _client = client;
             _timeManager = timeManager;
             _trading = trading;
-            _statusProvider = statusProvider;
+            _context = context;
             
             _detailsUpdater = new TradeDetailsUpdater(trading);
-            _circularAlgorithm = new CircularAlgorithm(client, trading, _statusProvider);
+            _circularAlgorithm = new CircularAlgorithm(client, trading, _context);
         }
 
         public void Initialize(CancellationToken cancellationToken)
@@ -35,11 +35,11 @@ namespace EtAlii.BinanceMagic.Service
         
         public void Run(CancellationToken cancellationToken)
         {
-            var snapshot = _statusProvider.Snapshot;
+            var snapshot = _context.Snapshot;
 
             _detailsUpdater.UpdateTargetDetails(snapshot);
             snapshot.LastCheck = _timeManager.GetNow();
-            _statusProvider.RaiseChanged();
+            _context.RaiseChanged();
             
             var targetAchieved = false;
             var shouldDelay = false;
@@ -51,32 +51,32 @@ namespace EtAlii.BinanceMagic.Service
                     snapshot.NextCheck = _timeManager.GetNow() + _trading.SampleInterval;
 
                     var isTransition = snapshot.NextCheck.Hour != snapshot.LastCheck.Hour;
-                    _statusProvider.RaiseChanged(isTransition ? StatusInfo.Important : StatusInfo.Normal);
+                    _context.RaiseChanged(isTransition ? StatusInfo.Important : StatusInfo.Normal);
 
                     _timeManager.Wait(_trading.SampleInterval, cancellationToken);
                 }
                 snapshot.NextCheck = DateTime.MinValue;
                 snapshot.Result = "Fetching current situation...";
                 snapshot.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged();
+                _context.RaiseChanged();
 
                 if (!TryGetSituation(snapshot, cancellationToken, out var situation, out var error))
                 {
                     snapshot.Result = error;
-                    _statusProvider.RaiseChanged();
+                    _context.RaiseChanged();
                     shouldDelay = true;
                     continue;
                 }
                 
                 snapshot.Result = "Fetching exchange info...";
                 snapshot.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged();
+                _context.RaiseChanged();
 
                 if (!_client.TryGetExchangeInfo(cancellationToken, out var exchangeInfo, out error))
                 {
                     shouldDelay = true;
                     snapshot.Result = error;
-                    _statusProvider.RaiseChanged();
+                    _context.RaiseChanged();
                     continue;
                 }
                 situation = situation with { ExchangeInfo = exchangeInfo };
@@ -95,7 +95,7 @@ namespace EtAlii.BinanceMagic.Service
 
                 snapshot.Result = "No feasible transaction";
                 snapshot.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged();
+                _context.RaiseChanged();
                 shouldDelay = true;
             }
         }

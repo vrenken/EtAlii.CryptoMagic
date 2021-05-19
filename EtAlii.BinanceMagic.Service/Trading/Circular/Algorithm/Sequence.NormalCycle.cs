@@ -7,7 +7,7 @@
     {
         private bool TryHandleNormalCycle(CancellationToken cancellationToken, Situation situation, out bool targetSucceeded)
         {
-            var snapshot = _statusProvider.Snapshot;
+            var snapshot = _context.Snapshot;
 
             targetSucceeded = false;
 
@@ -15,11 +15,11 @@
             {
                 snapshot.Result = $"Preparing to sell {sellAction.Quantity} {sellAction.Symbol} and buy {buyAction.Quantity} {buyAction.Symbol}";
                 snapshot.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged();
+                _context.RaiseChanged();
 
                 snapshot.Result = "Feasible transaction found - Converting...";
                 snapshot.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged();
+                _context.RaiseChanged();
 
                 if (_client.TryConvert(sellAction, buyAction, _trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
                 {
@@ -34,9 +34,9 @@
                     snapshot.Result = $"Transaction done!";
                     snapshot.LastCheck = _timeManager.GetNow();
                     snapshot.LastSuccess = _timeManager.GetNow(); 
-                    _statusProvider.RaiseChanged(StatusInfo.Important);
+                    _context.RaiseChanged(StatusInfo.Important);
 
-                    _statusProvider.Snapshot = snapshot = snapshot.ShallowClone();
+                    _context.Snapshot = snapshot = snapshot.ShallowClone();
                     using var data = new DataContext();
                     data.Entry(snapshot).State = EntityState.Added;
                     data.SaveChanges();

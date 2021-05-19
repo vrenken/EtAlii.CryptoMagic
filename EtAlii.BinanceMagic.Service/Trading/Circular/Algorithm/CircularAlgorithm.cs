@@ -6,21 +6,21 @@
     {
         private readonly IClient _client;
         private readonly CircularTrading _trading;
-        private readonly StatusProvider _statusProvider;
+        private readonly IAlgorithmContext<CircularTradeSnapshot> _context;
 
         public CircularAlgorithm(
             IClient client,
             CircularTrading trading,
-            StatusProvider statusProvider)
+            IAlgorithmContext<CircularTradeSnapshot> context)
         {
             _client = client;
             _trading = trading;
-            _statusProvider = statusProvider;
+            _context = context;
         }
 
         public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            var snapshot = _statusProvider.Snapshot;
+            var snapshot = _context.Snapshot;
             snapshot.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
             snapshot.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
 
@@ -39,7 +39,7 @@
             snapshot.TrendsAreNegative = snapshot.SellTrend < 0 || snapshot.BuyTrend > 0;
             snapshot.IsWorthIt = snapshot.SufficientProfit && snapshot.SellPriceIsAboveNotionalMinimum && snapshot.BuyPriceIsAboveNotionalMinimum && snapshot.TrendsAreNegative;
 
-            _statusProvider.RaiseChanged();
+            _context.RaiseChanged();
 
             if (snapshot.IsWorthIt)
             {
@@ -71,7 +71,7 @@
 
         public void ToInitialConversionActions(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            var snapshot = _statusProvider.Snapshot;
+            var snapshot = _context.Snapshot;
 
             using var data = new DataContext();
 

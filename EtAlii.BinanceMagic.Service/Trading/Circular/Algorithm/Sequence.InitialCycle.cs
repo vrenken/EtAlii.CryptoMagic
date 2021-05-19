@@ -7,18 +7,18 @@
     {
         private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation)
         {
-            var snapshot = _statusProvider.Snapshot;
+            var snapshot = _context.Snapshot;
             
             var targetSucceeded = false;
             
             snapshot.Result = "Initial cycle";
             snapshot.LastCheck = _timeManager.GetNow();
-            _statusProvider.RaiseChanged();
+            _context.RaiseChanged();
 
             _circularAlgorithm.ToInitialConversionActions(situation, out var initialSellAction, out var initialBuyAction);
             snapshot.Result = $"Preparing to sell {initialSellAction.Quantity} {initialSellAction.Symbol} and buy {initialBuyAction.Quantity} {initialBuyAction.Symbol}";
             snapshot.LastCheck = _timeManager.GetNow();
-            _statusProvider.RaiseChanged();
+            _context.RaiseChanged();
 
             if (_client.TryConvert(initialSellAction, initialBuyAction, _trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
             {
@@ -32,8 +32,8 @@
 
                 snapshot.Result = "Transaction done";
                 snapshot.LastCheck = _timeManager.GetNow();
-                _statusProvider.RaiseChanged(StatusInfo.Important);
-                _statusProvider.Snapshot = snapshot = snapshot.ShallowClone();
+                _context.RaiseChanged(StatusInfo.Important);
+                _context.Snapshot = snapshot = snapshot.ShallowClone();
                 using var data = new DataContext();
                 data.Entry(snapshot).State = EntityState.Added;
                 data.SaveChanges();

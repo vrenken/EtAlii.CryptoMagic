@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using System;
     using System.Linq;
 
     public class CircularAlgorithmRunner : IAlgorithmRunner
@@ -9,13 +10,13 @@ namespace EtAlii.BinanceMagic.Service
         private readonly CircularTrading _trading;
         private readonly WebOutput _output;
 
-        public CircularTradeSnapshot Status => _statusProvider.Snapshot;
-        private StatusProvider _statusProvider; 
+        public CircularTradeSnapshot Status => _context.Snapshot;
+        private IAlgorithmContext<CircularTradeSnapshot> _context; 
         private Loop _loop;
         private IClient _client;
         private Sequence _sequence;
 
-        public event System.Action Changed;
+        public event Action Changed;
         
         public CircularAlgorithmRunner(CircularTrading trading)
         {
@@ -56,15 +57,19 @@ namespace EtAlii.BinanceMagic.Service
             }
 
             _client.Start(binanceApiKey, binanceSecretKey);
+
+            var sampleInterval = _trading.Connectivity == Connectivity.BackTest
+                ? TimeSpan.FromSeconds(10)
+                : (TimeSpan?)null;
             
-            _statusProvider = new StatusProvider(_output)
+            _context = new AlgorithmContext<CircularTradeSnapshot>(sampleInterval)
             {
                 Snapshot = new CircularTradeSnapshot
                 {
                     Trading = _trading,
                 }
             };
-            _sequence = new Sequence(_client, time, _trading, _statusProvider);
+            _sequence = new Sequence(_client, time, _trading, _context);
             _sequence.Status.Changed += OnSequenceChanged;
             _loop = new Loop(_sequence);
             _loop.Start();

@@ -17,7 +17,7 @@ namespace EtAlii.BinanceMagic
         {
             Client.Moment += Client.Interval;
 
-            Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken).Wait(cancellationToken);
+            Task.Delay(TimeSpan.FromMilliseconds(2), cancellationToken).Wait(cancellationToken);
             
             if (Client.Moment > Client.LastRecordedHistory)
             {

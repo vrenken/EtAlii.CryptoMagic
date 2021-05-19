@@ -3,23 +3,20 @@
     using System;
     using System.Threading.Tasks;
 
-    public class StatusProvider : IStatusProvider
+    public class AlgorithmContext : AlgorithmContext<object>
     {
         private readonly IOutput _output;
         private readonly TradeDetails _details;
         private readonly AlgorithmSettings _settings;
 
         private const int SymbolColumnWidth = 17;
-        public event Action<StatusInfo> Changed;
         
-        public StatusProvider(IOutput output, TradeDetails details, AlgorithmSettings settings)
+        public AlgorithmContext(IOutput output, TradeDetails details, AlgorithmSettings settings)
         {
             _output = output;
             _details = details;
             _settings = settings;
         }
-
-        public void RaiseChanged(StatusInfo statusInfo = StatusInfo.Normal) => Changed?.Invoke(statusInfo);
         
         public void Write()
         {

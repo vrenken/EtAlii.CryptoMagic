@@ -16,8 +16,8 @@ namespace EtAlii.BinanceMagic.Surfing
         private readonly ITimeManager _timeManager;
         private readonly TradeDetails _details;
         
-        public IStatusProvider Status => _status;
-        private readonly StatusProvider _status;
+        public IAlgorithmContext<object> Status => _status;
+        private readonly IAlgorithmContext<object> _status;
 
         private CancellationToken _cancellationToken;
         private Situation? _situation;
@@ -26,7 +26,12 @@ namespace EtAlii.BinanceMagic.Surfing
         private Symbol? _symbolsSold;
         private Symbol? _symbolsBought;
 
-        public Sequence(AlgorithmSettings settings, IClient client, IOutput output, ITimeManager timeManager, IPersistence<Transaction> persistence)
+        public Sequence(
+            AlgorithmSettings settings, 
+            IClient client, 
+            IOutput output, 
+            ITimeManager timeManager, 
+            IPersistence<Transaction> persistence)
         {
             _settings = settings;
             _client = client;
@@ -38,7 +43,7 @@ namespace EtAlii.BinanceMagic.Surfing
                 CurrentSymbol = _settings.PayoutCoin,
                 CurrentVolume = _settings.InitialPurchase,
             };
-            _status = new StatusProvider(output, _details, settings);
+            _status = new AlgorithmContext(output, _details, settings);
             _data = new Data(client, settings, persistence);
         }
 

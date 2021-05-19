@@ -4,7 +4,6 @@ namespace EtAlii.BinanceMagic
 
     public interface ISequence
     {
-        public IStatusProvider Status { get; }
         void Run(CancellationToken cancellationToken);
 
         void Initialize(CancellationToken cancellationToken);
