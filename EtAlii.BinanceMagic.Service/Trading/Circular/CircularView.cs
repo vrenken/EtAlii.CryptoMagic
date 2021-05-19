@@ -11,11 +11,11 @@
         private ObservableCollection<CircularTradeSnapshot> History { get; } = new();
         
         private string LastSuccess => CurrentRunner.Status.LastSuccess != DateTime.MinValue
-            ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.InvariantCulture)
+            ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.CurrentCulture)
             : "None";
         
         private string NextCheck => CurrentRunner.Status.NextCheck != DateTime.MinValue
-            ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.InvariantCulture)
+            ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.CurrentCulture)
             : "Now";
         
         private CircularTradeSnapshot Current => CurrentRunner.Status; 
