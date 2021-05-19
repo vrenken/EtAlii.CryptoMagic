@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public class BackTestTimeManager : ITimeManager
     {
@@ -16,7 +17,8 @@ namespace EtAlii.BinanceMagic
         {
             Client.Moment += Client.Interval;
 
-            //Task.Delay(TimeSpan.FromSeconds(10), cancellationToken).Wait(cancellationToken);
+            Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken).Wait(cancellationToken);
+            
             if (Client.Moment > Client.LastRecordedHistory)
             {
                 Output.WriteLine("Back-test completed");

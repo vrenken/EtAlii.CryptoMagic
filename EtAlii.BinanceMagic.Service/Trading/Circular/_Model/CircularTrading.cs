@@ -15,7 +15,7 @@ namespace EtAlii.BinanceMagic.Service
         public decimal InitialSellFactor { get; set; } = 1.1m; // in %
 
         public decimal QuantityFactor { get; set; } = 1m;
-        public decimal InitialTarget  { get; set; } = 11m; // in BUSD.
+        public decimal InitialTarget  { get; set; } = 0.5m; // in reference symbol (USDT).
         public decimal MaxQuantityToTrade  { get; set; } = 1.0m; // in %.
         public decimal NotionalMinCorrection  { get; set; } = 1.05m; // in %.
         public TimeSpan SampleInterval  { get; set; } = TimeSpan.FromMinutes(1);
