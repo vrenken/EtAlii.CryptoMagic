@@ -47,8 +47,9 @@ namespace EtAlii.BinanceMagic.Surfing
             _data = new Data(client, settings, persistence);
         }
 
-        public void Run(CancellationToken cancellationToken)
+        public void Run(CancellationToken cancellationToken, out bool keepRunning)
         {
+            keepRunning = true;
             Task.Delay(TimeSpan.FromSeconds(30), cancellationToken).Wait(cancellationToken);
         }
         public void Initialize(CancellationToken cancellationToken)

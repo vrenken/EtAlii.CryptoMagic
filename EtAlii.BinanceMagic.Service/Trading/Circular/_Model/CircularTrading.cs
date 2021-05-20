@@ -19,6 +19,8 @@ namespace EtAlii.BinanceMagic.Service
         public decimal MaxQuantityToTrade  { get; set; } = 1.0m; // in %.
         public decimal NotionalMinCorrection  { get; set; } = 1.05m; // in %.
         public TimeSpan SampleInterval  { get; set; } = TimeSpan.FromMinutes(1);
+        
+        public int RsiPeriod { get; init; } = 6;
 
         public IList<CircularTradeSnapshot> Snapshots { get; private set; } = new List<CircularTradeSnapshot>();
         public IList<CircularTradeSnapshot> Transactions { get; private set; } = new List<CircularTradeSnapshot>();

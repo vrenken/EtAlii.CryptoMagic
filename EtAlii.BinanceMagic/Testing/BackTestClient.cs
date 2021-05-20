@@ -128,7 +128,7 @@ namespace EtAlii.BinanceMagic
                 High = decimal.Parse(items[4], CultureInfo.InvariantCulture),
                 Low = decimal.Parse(items[5], CultureInfo.InvariantCulture),
                 Close = decimal.Parse(items[6], CultureInfo.InvariantCulture),
-                Volume = decimal.Parse(items[8], CultureInfo.InvariantCulture),
+                Volume = decimal.Parse(items[7], CultureInfo.InvariantCulture),
             };
         }
         

@@ -14,8 +14,9 @@
         public decimal SellQuotedQuantity { get; set; }
         public decimal SellQuantityMinimum { get; set; }
         public decimal SellTrend { get; set; }
+        public bool SellTrendIsPositive { get; set; }
 
-        public bool SellPriceIsAboveNotionalMinimum { get; set; }
+        public bool SellPriceIsPositive { get; set; }
 
         public string BuySymbol { get; set; }
         public decimal BuyPrice { get; set; }
@@ -23,15 +24,16 @@
         public decimal BuyQuotedQuantity { get; set; }
         public decimal BuyQuantityMinimum { get; set; }
         public decimal BuyTrend { get; set; }
-        public bool BuyPriceIsAboveNotionalMinimum { get; set; }
+        public bool BuyTrendIsPositive { get; set; }
+
+        public bool BuyPriceIsPositive { get; set; }
         
-        public bool TrendsAreNegative { get; set; }
         public decimal Difference { get; set; }
         public decimal Target { get; set; }
 
         public int Step { get; set; }
         
-        public bool SufficientProfit { get; set; }
+        public bool DifferenceIsPositive { get; set; }
         public DateTime LastSuccess { get; set; } = DateTime.MinValue;
         public DateTime LastCheck { get; set; }
         public DateTime NextCheck { get; set; }

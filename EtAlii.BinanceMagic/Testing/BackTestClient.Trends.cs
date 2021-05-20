@@ -14,9 +14,8 @@
             throw new NotSupportedException();
         }
         
-        public bool TryGetTrend(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal trend, out string error)
+        public bool TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken, out decimal trend, out string error)
         {
-            var period = 6;
             var historyKvp = _history.Single(h => h.Key == symbol);
 
             var history = historyKvp.Value.SingleOrDefault(entry => entry.From < Moment && Moment <= entry.To);
@@ -29,11 +28,10 @@
 
             var index = Array.IndexOf(historyKvp.Value, history);
 
+            var candlesToPick = period * 2;
             var candles = historyKvp.Value
-                .Skip(index)
-                .Reverse()
-                .Take(period)
-                .Reverse()
+                .Skip(index - candlesToPick)
+                .Take(candlesToPick)
                 .Select(k => new Candle
             (
                 dateTime: k.To,
@@ -43,8 +41,9 @@
                 close: k.Close,
                 volume: k.Volume
             )).ToArray();
-            var rsiSequence = candles.StochRsi(period).ToArray();
-            trend = (decimal)rsiSequence.Last().Tick!;
+            
+            var rsiSequence = candles.Rsi(period).ToArray();
+            trend = rsiSequence.Last().Tick ?? 0m;
             error = null;
             return true;
         }

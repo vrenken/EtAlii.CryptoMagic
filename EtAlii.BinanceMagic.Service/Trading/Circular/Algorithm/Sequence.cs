@@ -13,24 +13,27 @@ namespace EtAlii.BinanceMagic.Service
 
         public IAlgorithmContext<CircularTradeSnapshot> Status => _context;
         private readonly IAlgorithmContext<CircularTradeSnapshot> _context;
+        private readonly Action _initialize;
 
         public Sequence(
             IClient client,
             ITimeManager timeManager, 
             CircularTrading trading, 
-            IAlgorithmContext<CircularTradeSnapshot> context)
+            IAlgorithmContext<CircularTradeSnapshot> context, Action initialize = null)
         {
             _client = client;
             _timeManager = timeManager;
             _trading = trading;
             _context = context;
-            
+            _initialize = initialize;
+
             _detailsUpdater = new TradeDetailsUpdater(trading);
             _circularAlgorithm = new CircularAlgorithm(client, trading, _context);
         }
 
         public void Initialize(CancellationToken cancellationToken)
         {
+            _initialize?.Invoke();
         }
         
         public void Run(CancellationToken cancellationToken, out bool keepRunning)

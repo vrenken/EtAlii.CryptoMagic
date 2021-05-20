@@ -36,7 +36,8 @@ namespace EtAlii.BinanceMagic.Service
             var binanceSecretKey = data.Settings.Single(s => s.Key == SettingKey.BinanceSecretKey).Value;
             var referenceSymbol = data.Settings.Single(s => s.Key == SettingKey.ReferenceSymbol).Value;
 
-            if (_trading.Connectivity == Connectivity.BackTest)
+            var isBackTest = _trading.Connectivity == Connectivity.BackTest; 
+            if (isBackTest)
             {
                 var folder = GetType().Assembly.Location;
                 folder = Path.GetDirectoryName(folder);
@@ -58,9 +59,9 @@ namespace EtAlii.BinanceMagic.Service
                 time = new RealtimeTimeManager();
             }
 
-            _client.Start(binanceApiKey, binanceSecretKey);
-
-            var sampleInterval = _trading.Connectivity == Connectivity.BackTest
+            var initialize = new Action(() => _client.Start(binanceApiKey, binanceSecretKey));
+            
+            var sampleInterval = isBackTest
                 ? TimeSpan.FromSeconds(10)
                 : (TimeSpan?)null;
             
@@ -71,7 +72,7 @@ namespace EtAlii.BinanceMagic.Service
                     Trading = _trading,
                 }
             };
-            _sequence = new Sequence(_client, time, _trading, _context);
+            _sequence = new Sequence(_client, time, _trading, _context, initialize);
             
             _sequence.Status.Changed += OnSequenceChanged;
             _loop = new Loop(_sequence);
