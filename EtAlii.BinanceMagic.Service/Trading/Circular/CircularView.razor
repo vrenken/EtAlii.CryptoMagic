@@ -52,10 +52,10 @@
     </Row>
 </Repeater>
 
-<Row Margin="Margin.Is4">
+<Row Margin="Margin.Is4" @Visible="@(Current.Trading.Connectivity == Connectivity.BackTest)">
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
         <Card>
-            <CardHeader>Log</CardHeader>
+            <CardHeader>Backtest startup log</CardHeader>
             <CardBody>@CurrentRunnerLog</CardBody>
         </Card>        
     </Column>

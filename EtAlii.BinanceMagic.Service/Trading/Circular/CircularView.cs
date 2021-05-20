@@ -9,7 +9,7 @@
     public partial class CircularView
     {
         private ObservableCollection<CircularTradeSnapshot> History { get; } = new();
-        
+
         private string LastSuccess => CurrentRunner.Status.LastSuccess != DateTime.MinValue
             ? CurrentRunner.Status.NextCheck.ToString(CultureInfo.CurrentCulture)
             : "None";
