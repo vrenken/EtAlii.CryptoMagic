@@ -25,23 +25,30 @@
             <Table Striped="false" Borderless="true" Narrow="true">
                 <TableBody>
                     <TableRow>
-                        <TableRowCell>Last success: </TableRowCell><TableRowCell>@LastSuccess</TableRowCell>
-                        <TableRowCell>Profit:</TableRowCell><TableRowCell>@Current.Profit</TableRowCell>
+                        <TableRowCell>Last success:</TableRowCell><TableRowCell>@LastSuccess</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Next check: </TableRowCell><TableRowCell>@NextCheck</TableRowCell>
+                        <TableRowCell>Next check:</TableRowCell><TableRowCell>@NextCheck</TableRowCell>
+                    </TableRow>
+                    <TableRow>
                         <TableRowCell>Step:</TableRowCell><TableRowCell>@Current.Step</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Result:</TableRowCell><TableRowCell ColumnSpan="3">@Current.Result</TableRowCell>
+                        <TableRowCell>Profit:</TableRowCell><TableRowCell>@($"{Current.TotalProfit:0.00} {Current.ReferenceSymbol}")</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Result:</TableRowCell><TableRowCell>@Current.Result</TableRowCell>
                     </TableRow>
                 </TableBody>
             </Table>
         </Card>        
     </Column>
+</Row>
+
+<Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
         <CircularTradeSnapshotCard Title="Current cycle" Snapshot="@CurrentRunner.Status" />
-    </Column>
+    </Column>    
 </Row>
 
 <Repeater Items="@History">
@@ -52,10 +59,10 @@
     </Row>
 </Repeater>
 
-<Row Margin="Margin.Is4" @Visible="@(Current.Trading.Connectivity == Connectivity.BackTest)">
+<Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
         <Card>
-            <CardHeader>Backtest startup log</CardHeader>
+            <CardHeader>Backtest startup</CardHeader>
             <CardBody>@CurrentRunnerLog</CardBody>
         </Card>        
     </Column>
