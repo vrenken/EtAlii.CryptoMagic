@@ -1,6 +1,5 @@
 ﻿namespace EtAlii.BinanceMagic.Service
 {
-    using System;
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +32,6 @@
                 ? lastTransaction.Target * _trading.TargetIncrease
                 : _trading.InitialTarget;
             
-            snapshot.LastSuccess = lastTransaction?.NextCheck ?? DateTime.MinValue;
             snapshot.SellSymbol = source;
             snapshot.BuySymbol = destination;
             snapshot.ReferenceSymbol = _trading.ReferenceSymbol;
