@@ -8,8 +8,10 @@
     public abstract class EditBase<TTrading> : ComponentBase
         where TTrading : TradingBase, new()
     {
-        [Inject] AlgorithmManager AlgorithmManager { get; set; }
-        [Inject] NavigationManager NavigationManager { get; set; }
+        [Inject] AlgorithmManager AlgorithmManager { get; init; }
+        [Inject] NavigationManager NavigationManager { get; init; }
+        
+        [Inject] protected ApplicationContext ApplicationContext { get; init; }
 
         [Parameter] public string Id { get; set; }
 
@@ -19,7 +21,14 @@
 
         protected abstract TTrading GetTrading(Guid id);
 
-        protected virtual TTrading CreateTrading() => new ();
+        protected virtual TTrading CreateTrading()
+        {
+            return new ()
+            {
+                ReferenceSymbol = ApplicationContext.ReferenceSymbol
+            };        
+        }
+
         protected abstract string GetNavigationUrl(Guid id);
 
         protected override void OnInitialized()

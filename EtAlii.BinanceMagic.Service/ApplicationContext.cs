@@ -7,6 +7,8 @@ namespace EtAlii.BinanceMagic.Service
         public IClient LiveClient => _liveClient;
         private static IClient _liveClient;
         
+        public string ReferenceSymbol { get; private set; }
+
         public void Initialize()
         {
             using var data = new DataContext();
@@ -22,6 +24,8 @@ namespace EtAlii.BinanceMagic.Service
             {
                 _liveClient = null;
             }
+            
+            ReferenceSymbol = data.Settings.SingleOrDefault(s => s.Key == SettingKey.ReferenceSymbol)?.Value;
         }
     }
 }

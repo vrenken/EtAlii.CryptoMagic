@@ -7,16 +7,10 @@ namespace EtAlii.BinanceMagic.Service
     {
         public void Configure(EntityTypeBuilder<CircularTrading> builder)
         {
-            builder
-                .Property(e => e.Connectivity)
-                .IsRequired();
+            builder.Property(e => e.Connectivity).IsRequired();
 
-            builder
-                .Property(e => e.FirstSymbol)
-                .IsRequired();
-            builder
-                .Property(e => e.SecondSymbol)
-                .IsRequired();
+            builder.Property(e => e.FirstSymbol).IsRequired();
+            builder.Property(e => e.SecondSymbol).IsRequired();
             
             builder.HasMany(e => e.Snapshots)
                 .WithOne(s => s.Trading)

@@ -10,11 +10,13 @@ namespace EtAlii.BinanceMagic.Service
 
     public partial class AlgorithmManager : IHostedService
     {
+        private readonly ApplicationContext _applicationContext;
         public ReadOnlyObservableCollection<IAlgorithmRunner> Runners { get; }
         private readonly ObservableCollection<IAlgorithmRunner> _runners;
 
-        public AlgorithmManager()
+        public AlgorithmManager(ApplicationContext applicationContext)
         {
+            _applicationContext = applicationContext;
             _runners = new ObservableCollection<IAlgorithmRunner>();
             Runners = new ReadOnlyObservableCollection<IAlgorithmRunner>(_runners);
 

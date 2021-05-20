@@ -10,6 +10,7 @@ namespace EtAlii.BinanceMagic.Service
             builder.ToTable("Tradings");
             
             builder.Property(e => e.Name).IsRequired();
+            builder.Property(e => e.ReferenceSymbol).IsRequired();
             
             builder
                 .HasDiscriminator<string>("trading_type")

@@ -8,7 +8,7 @@
 
     public partial class Settings
     {
-        private Model _model = new();
+        private readonly Model _model = new();
         private EditContext _editContext;
         private Validations _validations;
 
@@ -33,6 +33,8 @@
                 UpdateSetting(data, SettingKey.ReferenceSymbol, _model.ReferenceSymbol);
 
                 data.SaveChanges();
+                
+                _applicationContext.Initialize();
             }
         }
 

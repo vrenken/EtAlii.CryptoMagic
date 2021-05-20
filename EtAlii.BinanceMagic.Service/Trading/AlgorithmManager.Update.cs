@@ -31,7 +31,7 @@ namespace EtAlii.BinanceMagic.Service
         {
             return trading switch
             {
-                CircularTrading circularTrading => new CircularAlgorithmRunner(circularTrading),
+                CircularTrading circularTrading => new CircularAlgorithmRunner(circularTrading, _applicationContext),
                 SimpleTrading simpleTrading => new SimpleAlgorithmRunner(simpleTrading),
                 ExperimentalTrading experimentalTrading => new ExperimentalAlgorithmRunner(experimentalTrading),
                 OneOffTrading oneOffTrading => new OneOffAlgorithmRunner(oneOffTrading),
