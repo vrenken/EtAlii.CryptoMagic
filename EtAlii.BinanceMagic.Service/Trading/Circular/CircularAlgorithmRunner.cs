@@ -1,6 +1,7 @@
 namespace EtAlii.BinanceMagic.Service
 {
     using System;
+    using System.IO;
     using System.Linq;
 
     public class CircularAlgorithmRunner : IAlgorithmRunner
@@ -34,16 +35,17 @@ namespace EtAlii.BinanceMagic.Service
             var binanceApiKey = data.Settings.Single(s => s.Key == SettingKey.BinanceApiKey).Value;
             var binanceSecretKey = data.Settings.Single(s => s.Key == SettingKey.BinanceSecretKey).Value;
             var referenceSymbol = data.Settings.Single(s => s.Key == SettingKey.ReferenceSymbol).Value;
-            
+
             if (_trading.Connectivity == Connectivity.BackTest)
             {
-                var backTestClient = new BackTestClient(coins, referenceSymbol, _output);
+                var folder = GetType().Assembly.Location;
+                folder = Path.GetDirectoryName(folder);
+                
+                var backTestClient = new BackTestClient(coins, referenceSymbol, _output, _trading.Id, folder);
                 _client = backTestClient;
                 time = new BackTestTimeManager
                 {
                     Client = backTestClient,
-                    Output = _output,
-                    TerminateProcessWhenCompleted = false,
                 };
             }
             else
@@ -70,6 +72,7 @@ namespace EtAlii.BinanceMagic.Service
                 }
             };
             _sequence = new Sequence(_client, time, _trading, _context);
+            
             _sequence.Status.Changed += OnSequenceChanged;
             _loop = new Loop(_sequence);
             _loop.Start();

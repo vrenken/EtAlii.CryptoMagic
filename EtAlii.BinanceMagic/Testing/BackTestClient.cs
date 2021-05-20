@@ -12,6 +12,8 @@ namespace EtAlii.BinanceMagic
     public partial class BackTestClient : IClient
     {
         private readonly IOutput _output;
+        private readonly Guid _tradingId;
+        private readonly string _folder;
         private readonly string[] _symbols;
         private readonly string _referenceSymbol;
         private readonly Dictionary<string, HistoryEntry[]> _history = new();
@@ -36,35 +38,41 @@ namespace EtAlii.BinanceMagic
         }
         private DateTime _moment;
 
-        public BackTestClient(string[] symbols, string referenceSymbol, IOutput output)
+        public BackTestClient(string[] symbols, string referenceSymbol, IOutput output, Guid tradingId, string folder)
         {
             _symbols = symbols;
             _referenceSymbol = referenceSymbol;
             _output = output;
+            _tradingId = tradingId;
+            _folder = folder;
         }
 
         public void Start(string apiKey, string secretKey)
         {
             _output.WriteLine("Starting back-testing client...");
 
+            var folder = Path.Combine(_folder, "Cache", _tradingId.ToString());
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            
             foreach (var symbol in _symbols)
             {
-                var url = $"https://www.cryptodatadownload.com/cdd/Binance_{symbol}{_referenceSymbol}_minute.csv";
-                _output.WriteLine($"Downloading {url}");
-
-                using var client = new WebClient();
-                var data = client.DownloadData(url);
+                var fileName = $"Binance_{symbol}{_referenceSymbol}_minute.csv";
+                var fullFileName = Path.Combine(folder, fileName);
+                if (!File.Exists(fullFileName))
+                {
+                    var url = $"https://www.cryptodatadownload.com/cdd/{fileName}";
+                    _output.WriteLine($"Downloading {url}");
+                    using var client = new WebClient();
+                    client.DownloadFile(url, fullFileName);
+                }
                 
                 _output.WriteLine($"Splitting in lines");
 
-                using var stream = new MemoryStream(data);
-                using var reader = new StreamReader(stream);
-
-                var lines = new List<string>();
-                while(!reader.EndOfStream)
-                {
-                    lines.Add(reader.ReadLine());
-                }
+                var lines = File.ReadAllLines(fullFileName);
                 
                 _output.WriteLine($"Converting to objects");
 
@@ -116,11 +124,11 @@ namespace EtAlii.BinanceMagic
                 To = moment,
                 From = moment - Interval,
 
-                Open = decimal.Parse(items[3]),
-                High = decimal.Parse(items[4]),
-                Low = decimal.Parse(items[5]),
-                Close = decimal.Parse(items[6]),
-                Volume = decimal.Parse(items[7]),
+                Open = decimal.Parse(items[3], CultureInfo.InvariantCulture),
+                High = decimal.Parse(items[4], CultureInfo.InvariantCulture),
+                Low = decimal.Parse(items[5], CultureInfo.InvariantCulture),
+                Close = decimal.Parse(items[6], CultureInfo.InvariantCulture),
+                Volume = decimal.Parse(items[8], CultureInfo.InvariantCulture),
             };
         }
         

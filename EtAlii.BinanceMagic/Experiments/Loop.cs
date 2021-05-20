@@ -34,7 +34,11 @@
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                _sequence.Run(cancellationToken);
+                _sequence.Run(cancellationToken, out var keepRunning);
+                if (!keepRunning)
+                {
+                    break;
+                }
             }
         }
     }

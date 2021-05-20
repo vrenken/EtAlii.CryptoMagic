@@ -4,7 +4,7 @@ namespace EtAlii.BinanceMagic
 
     public interface ISequence
     {
-        void Run(CancellationToken cancellationToken);
+        void Run(CancellationToken cancellationToken, out bool keepRunning);
 
         void Initialize(CancellationToken cancellationToken);
     }

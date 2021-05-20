@@ -51,6 +51,9 @@
     <Compile Update="Trading\Circular\Algorithm\ITradeDetailsUpdater.cs">
       <DependentUpon>TradeDetailsUpdater.cs</DependentUpon>
     </Compile>
+    <Compile Update="Trading\Circular\CircularTradeSnapshotCard.cs">
+      <DependentUpon>CircularTradeSnapshotCard.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

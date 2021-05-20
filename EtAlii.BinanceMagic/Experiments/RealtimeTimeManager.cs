@@ -8,6 +8,8 @@ namespace EtAlii.BinanceMagic
     {
         public DateTime GetNow() => DateTime.Now;
 
+        public bool ShouldStop() => false;
+
         public void Wait(TimeSpan timeSpan, CancellationToken cancellationToken)
         {
             Task

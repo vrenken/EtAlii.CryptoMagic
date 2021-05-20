@@ -6,24 +6,21 @@
     {
         [Parameter] public string Title { get; set; }
         [Parameter] public CircularTradeSnapshot Snapshot { get; set; }
-        
-        
-        private string SellTrendStyle => Snapshot.SellTrend > 0
-            ? "background-color:green;color:white"
-            : "background-color:red;color:white";
 
-        private string BuyTrendStyle => Snapshot.BuyTrend < 0
-            ? "background-color:green;color:white"
-            : "background-color:red;color:white";
+        private const string PositiveStyle = "background-color:green;color:white";
+        private const string NegativeStyle = "background-color:red;color:white";        
+        
+        private string SellPriceStyle => Snapshot.SellPriceIsPositive ? PositiveStyle : NegativeStyle;
+        private string SellTrendStyle => Snapshot.SellTrendIsPositive ? PositiveStyle : NegativeStyle;
 
-        private string DifferenceStyle => Snapshot.Difference >= Snapshot.Target
-            ? "background-color:green;color:white"
-            : "background-color:red;color:white";
+        private string BuyPriceStyle => Snapshot.BuyPriceIsPositive ? PositiveStyle : NegativeStyle;
+        private string BuyTrendStyle => Snapshot.BuyTrendIsPositive ? PositiveStyle : NegativeStyle;
+
+        private string DifferenceStyle => Snapshot.DifferenceIsPositive ? PositiveStyle : NegativeStyle;
 
         private string DecimalShort(decimal d)
         {
-            var prefix = d >= 0 ? "+" : "";
-            return $"{prefix}{d:000.000}";
+            return $"{d:000.00}";
         }
         private string Decimal(decimal d, string prefix = null)
         {

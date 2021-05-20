@@ -39,6 +39,24 @@
       <Compile Update="Algorithms\Surfing\Sequence.FromUsdt.cs">
         <DependentUpon>Sequence.puml</DependentUpon>
       </Compile>
+      <Compile Update="Experiments\Surfing\Sequence.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Experiments\Surfing\Sequence.FromOtherCoin.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Experiments\Surfing\Sequence.FromUsdt.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Experiments\Surfing\Sequence.FromOtherCoin.SymbolPair.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Experiments\Surfing\Sequence.ToUsdt.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
+      <Compile Update="Experiments\Surfing\Sequence.FromOtherCoin.IsNoSymbolPair.cs">
+        <DependentUpon>Sequence.puml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
