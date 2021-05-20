@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Threading;
+    using Microsoft.EntityFrameworkCore;
 
     public partial class Sequence : ISequence
     {
@@ -181,6 +182,32 @@ namespace EtAlii.BinanceMagic.Service
 
             error = null;
             return true;
+        }
+        
+        
+        private void SaveAndReplaceSnapshot(CircularTradeSnapshot snapshot, EtAlii.BinanceMagic.Transaction transaction)
+        {
+            snapshot.SellSymbol = transaction.Sell.SymbolName;
+            snapshot.SellPrice = transaction.Sell.QuoteQuantity;
+            snapshot.SellQuantity = transaction.Sell.Quantity;
+
+            snapshot.BuySymbol = transaction.Buy.SymbolName;
+            snapshot.BuyPrice = transaction.Buy.QuoteQuantity;
+            snapshot.BuyQuantity = transaction.Buy.Quantity;
+
+            snapshot.Result = $"Transaction done";
+            snapshot.LastCheck = _timeManager.GetNow();
+            snapshot.LastSuccess = _timeManager.GetNow(); 
+                    
+            using var data = new DataContext();
+            snapshot.Profit = snapshot.SellPrice - snapshot.BuyPrice;
+            snapshot.TotalProfit = snapshot.Profit + data.GetTotalProfits(_trading);
+
+            _context.RaiseChanged(StatusInfo.Important);
+                    
+            _context.Snapshot = snapshot = snapshot.ShallowClone();
+            data.Entry(snapshot).State = EntityState.Added;
+            data.SaveChanges();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace EtAlii.BinanceMagic.Service
 {
     using System.Threading;
-    using Microsoft.EntityFrameworkCore;
 
     public partial class Sequence
     {
@@ -23,24 +22,7 @@
 
                 if (_client.TryConvert(sellAction, buyAction, _trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
                 {
-                    snapshot.SellSymbol = transaction.Sell.SymbolName;
-                    snapshot.SellPrice = transaction.Sell.QuoteQuantity;
-                    snapshot.SellQuantity = transaction.Sell.Quantity;
-
-                    snapshot.BuySymbol = transaction.Buy.SymbolName;
-                    snapshot.BuyPrice = transaction.Buy.QuoteQuantity;
-                    snapshot.BuyQuantity = transaction.Buy.Quantity;
-
-                    snapshot.Result = $"Transaction done!";
-                    snapshot.LastCheck = _timeManager.GetNow();
-                    snapshot.LastSuccess = _timeManager.GetNow(); 
-                    _context.RaiseChanged(StatusInfo.Important);
-
-                    _context.Snapshot = snapshot = snapshot.ShallowClone();
-                    using var data = new DataContext();
-                    data.Entry(snapshot).State = EntityState.Added;
-                    data.SaveChanges();
-
+                    SaveAndReplaceSnapshot(snapshot, transaction);
                     targetSucceeded = true;
                 }
                 else

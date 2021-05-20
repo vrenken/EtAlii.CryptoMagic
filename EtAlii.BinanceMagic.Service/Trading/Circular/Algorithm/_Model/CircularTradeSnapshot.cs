@@ -45,6 +45,7 @@
         public bool Error { get; set; }
 
         public bool IsWorthIt { get; set; }
+        public decimal TotalProfit { get; set; }
 
         public CircularTradeSnapshot ShallowClone()
         {

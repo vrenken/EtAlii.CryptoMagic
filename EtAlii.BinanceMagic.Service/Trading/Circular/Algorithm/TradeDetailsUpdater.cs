@@ -34,8 +34,6 @@
                 : _trading.InitialTarget;
             
             snapshot.LastSuccess = lastTransaction?.NextCheck ?? DateTime.MinValue;
-            snapshot.Profit = data.GetTotalProfits(_trading);
-
             snapshot.SellSymbol = source;
             snapshot.BuySymbol = destination;
             snapshot.ReferenceSymbol = _trading.ReferenceSymbol;

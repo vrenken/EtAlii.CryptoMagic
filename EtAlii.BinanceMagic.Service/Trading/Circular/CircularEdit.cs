@@ -20,7 +20,7 @@
         protected override CircularTrading CreateTrading()
         {
             using var data = new DataContext();
-            return new CircularTrading()
+            return new CircularTrading
             {
                 ReferenceSymbol = data.Settings.Single(s => s.Key == SettingKey.ReferenceSymbol).Value
             };
