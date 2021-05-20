@@ -54,6 +54,12 @@
     <Compile Update="Trading\Circular\CircularTradeSnapshotCard.cs">
       <DependentUpon>CircularTradeSnapshotCard.razor</DependentUpon>
     </Compile>
+    <Compile Update="Trading\OneOff\OneOffEdit.cs">
+      <DependentUpon>OneOffEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Dashboard.cs">
+      <DependentUpon>Dashboard.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
