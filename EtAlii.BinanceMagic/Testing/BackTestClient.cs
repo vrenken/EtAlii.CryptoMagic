@@ -49,7 +49,7 @@ namespace EtAlii.BinanceMagic
 
         public void Start(string apiKey, string secretKey)
         {
-            _output.WriteLine("Starting back-testing client...");
+            _output.WriteLine("Preparing back-testing...");
 
             var folder = Path.Combine(_folder, "Cache", _tradingId.ToString());
             if (!Directory.Exists(folder))
@@ -69,6 +69,7 @@ namespace EtAlii.BinanceMagic
                     using var client = new WebClient();
                     client.DownloadFile(url, fullFileName);
                 }
+                _output.WriteLine($"Reading from file {fileName}");
                 
                 _output.WriteLine($"Splitting in lines");
 
@@ -88,28 +89,24 @@ namespace EtAlii.BinanceMagic
                     .OrderBy(moment => moment)
                     .First())
                 .ToArray();
-            // var allSameStartTime = startTimes.All(time => time == startTimes[0]);
-            // if(!allSameStartTime)            
-            // {
-            //     _program.HandleFail("History files have different start times");
-            // }
 
             var endTimes = _history.Select(h => h.Value
                     .Select(e => e.To)
                     .OrderByDescending(moment => moment)
                     .First())
                 .ToArray();
-            // var allSameEndTime = endTimes.All(time => time == endTimes[0]);
-            // if(!allSameEndTime)            
-            // {
-            //     _program.HandleFail("History files have different end times");
-            // }
 
+            _output.WriteLine("History found:");
+            for (var i = 0; i < _history.Count; i++)
+            {
+                _output.WriteLine($"{_history.Keys.ToArray()[i]}: {startTimes[i]} - {endTimes[i]}");                
+            }
+            
             FirstRecordedHistory = startTimes[0];
             LastRecordedHistory = endTimes[0];
             Moment = startTimes[0];
             
-            _output.WriteLine("Starting back-testing: Done");
+            _output.WriteLine("Ready for back-testing");
         }
 
         private HistoryEntry ToHistoryEntry(string line)
