@@ -10,13 +10,13 @@
         private const string PositiveStyle = "background-color:green;color:white";
         private const string NegativeStyle = "background-color:red;color:white";        
         
-        private string SellPriceStyle => Snapshot.SellPriceIsPositive ? PositiveStyle : NegativeStyle;
-        private string SellTrendStyle => Snapshot.SellTrendIsPositive ? PositiveStyle : NegativeStyle;
+        private string SellPriceStyle => Snapshot.SellPriceIsOptimal ? PositiveStyle : NegativeStyle;
+        private string SellTrendStyle => Snapshot.SellTrendIsOptimal ? PositiveStyle : NegativeStyle;
 
-        private string BuyPriceStyle => Snapshot.BuyPriceIsPositive ? PositiveStyle : NegativeStyle;
-        private string BuyTrendStyle => Snapshot.BuyTrendIsPositive ? PositiveStyle : NegativeStyle;
+        private string BuyPriceStyle => Snapshot.BuyPriceIsOptimal ? PositiveStyle : NegativeStyle;
+        private string BuyTrendStyle => Snapshot.BuyTrendIsOptimal ? PositiveStyle : NegativeStyle;
 
-        private string DifferenceStyle => Snapshot.DifferenceIsPositive ? PositiveStyle : NegativeStyle;
+        private string DifferenceStyle => Snapshot.DifferenceIsOptimal ? PositiveStyle : NegativeStyle;
 
         private string DecimalShort(decimal d)
         {

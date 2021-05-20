@@ -22,22 +22,28 @@
         {
             var snapshot = _context.Snapshot;
             snapshot.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
-            snapshot.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
-
             snapshot.SellQuantity = situation.Source.PastQuantity * _trading.MaxQuantityToTrade;
             snapshot.SellPrice = situation.Source.PresentPrice * snapshot.SellQuantity;
+            snapshot.SellPriceIsOptimal = snapshot.SellPrice >= snapshot.SellQuantityMinimum;
             snapshot.SellTrend = situation.SellTrend;
+            snapshot.SellTrendIsOptimal = snapshot.SellPrice <= 60m; // Remark. it is positive when it does not increase anymore.
+
+            snapshot.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
             snapshot.BuyQuantity = ((snapshot.BuyQuantityMinimum * _trading.QuantityFactor) / situation.Destination.PresentPrice) * _trading.MaxQuantityToTrade;
             snapshot.BuyPrice = snapshot.BuyQuantity * situation.Destination.PresentPrice;
+            snapshot.BuyPriceIsOptimal = snapshot.BuyPrice >= snapshot.BuyQuantityMinimum;
             snapshot.BuyTrend = situation.BuyTrend;
-            snapshot.SufficientProfit = snapshot.SellPrice - snapshot.BuyPrice > snapshot.Target;
+            snapshot.BuyTrendIsOptimal = snapshot.BuyTrend >= 40m; // Remark. it is positive when it does not decrease anymore. 
+
             snapshot.Difference = snapshot.SellPrice - snapshot.BuyPrice;
-
-            snapshot.SellPriceIsAboveNotionalMinimum = snapshot.SellPrice > snapshot.SellQuantityMinimum;
-            snapshot.BuyPriceIsAboveNotionalMinimum = snapshot.BuyPrice > snapshot.BuyQuantityMinimum;
-
-            snapshot.TrendsAreNegative = snapshot.SellTrend < 0 || snapshot.BuyTrend > 0;
-            snapshot.IsWorthIt = snapshot.SufficientProfit && snapshot.SellPriceIsAboveNotionalMinimum && snapshot.BuyPriceIsAboveNotionalMinimum && snapshot.TrendsAreNegative;
+            snapshot.DifferenceIsOptimal = snapshot.Difference > snapshot.Target;
+            
+            snapshot.IsWorthIt = 
+                snapshot.DifferenceIsOptimal && 
+                snapshot.SellPriceIsOptimal && 
+                snapshot.BuyPriceIsOptimal && 
+                snapshot.SellTrendIsOptimal &&
+                snapshot.BuyTrendIsOptimal;
 
             _context.RaiseChanged();
 
