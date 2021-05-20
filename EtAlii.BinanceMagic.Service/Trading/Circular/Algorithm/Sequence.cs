@@ -33,7 +33,7 @@ namespace EtAlii.BinanceMagic.Service
         {
         }
         
-        public void Run(CancellationToken cancellationToken)
+        public void Run(CancellationToken cancellationToken, out bool keepRunning)
         {
             var snapshot = _context.Snapshot;
 
@@ -53,6 +53,14 @@ namespace EtAlii.BinanceMagic.Service
                     var isTransition = snapshot.NextCheck.Hour != snapshot.LastCheck.Hour;
                     _context.RaiseChanged(isTransition ? StatusInfo.Important : StatusInfo.Normal);
 
+                    if (_timeManager.ShouldStop())
+                    {
+                        snapshot.Result = "Back-test completed";
+                        _context.RaiseChanged(StatusInfo.Important);
+                        keepRunning = false;
+                        return;
+                    }
+                    
                     _timeManager.Wait(_trading.SampleInterval, cancellationToken);
                 }
                 snapshot.NextCheck = DateTime.MinValue;
@@ -98,6 +106,8 @@ namespace EtAlii.BinanceMagic.Service
                 _context.RaiseChanged();
                 shouldDelay = true;
             }
+
+            keepRunning = true;
         }
 
         private bool TryGetSituation(CircularTradeSnapshot snapshot, CancellationToken cancellationToken, out Situation situation, out string error)
@@ -126,12 +136,12 @@ namespace EtAlii.BinanceMagic.Service
                 return false;
             }
 
-            if (!_client.TryGetTrend(snapshot.SellSymbol, _trading.ReferenceSymbol, cancellationToken, out var sellTrend, out error))
+            if (!_client.TryGetTrend(snapshot.SellSymbol, _trading.ReferenceSymbol, _trading.RsiPeriod, cancellationToken, out var sellTrend, out error))
             {
                 situation = null;
                 return false;
             }
-            if (!_client.TryGetTrend(snapshot.BuySymbol, _trading.ReferenceSymbol, cancellationToken, out var buyTrend, out error))
+            if (!_client.TryGetTrend(snapshot.BuySymbol, _trading.ReferenceSymbol, _trading.RsiPeriod, cancellationToken, out var buyTrend, out error))
             {
                 situation = null;
                 return false;
