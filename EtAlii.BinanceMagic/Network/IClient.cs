@@ -25,6 +25,6 @@ namespace EtAlii.BinanceMagic
 
         bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsBought, out string error);
 
-        string[] GetSymbols();
+        SymbolDefinition[] GetSymbols(string referenceSymbol);
     }
 }

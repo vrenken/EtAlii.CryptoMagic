@@ -17,7 +17,6 @@
         private static BinanceClient _client;
         private static string _clientApiKey;
         private static string _clientSecretKey;
-        private static string[] _symbols;
         
         private readonly IActionValidator _validator;
 
@@ -56,14 +55,13 @@
             _logger.Information("Starting client: Done");
         }
 
-        public string[] GetSymbols()
+        public SymbolDefinition[] GetSymbols(string referenceSymbol)
         {
-            if (_symbols != null)
-            {
-                var response = _client.Spot.System.GetExchangeInfo();
-                _symbols = response.Data.Symbols.Select(s => s.Name).ToArray();
-            }
-            return _symbols;
+            var response = _client.Spot.System.GetExchangeInfo();
+            return response.Data.Symbols
+                .Where(s => s.QuoteAsset == referenceSymbol)
+                .Select(s => new SymbolDefinition { Name = s.BaseAsset, Base = s.QuoteAsset })
+                .ToArray();
         }
 
         public void Stop()
