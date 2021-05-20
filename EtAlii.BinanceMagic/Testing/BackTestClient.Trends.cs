@@ -9,10 +9,7 @@
 
     public partial class BackTestClient 
     {
-        public bool TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend[] trends, out string error)
-        {
-            throw new NotSupportedException();
-        }
+        public bool TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend[] trends, out string error) => throw new NotSupportedException();
         
         public bool TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken, out decimal trend, out string error)
         {

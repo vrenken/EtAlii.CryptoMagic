@@ -109,6 +109,8 @@ namespace EtAlii.BinanceMagic
             _output.WriteLine("Ready for back-testing");
         }
 
+        public string[] GetSymbols() => throw new NotSupportedException();
+        
         private HistoryEntry ToHistoryEntry(string line)
         {
             var items = line

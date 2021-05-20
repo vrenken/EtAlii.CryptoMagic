@@ -14,7 +14,11 @@
     public partial class Client : IClient
     {
         private readonly ILogger _logger = Log.ForContext<Client>();
-        private BinanceClient _client;
+        private static BinanceClient _client;
+        private static string _clientApiKey;
+        private static string _clientSecretKey;
+        private static string[] _symbols;
+        
         private readonly IActionValidator _validator;
 
         public bool PlaceTestOrders { get; init; }
@@ -27,31 +31,39 @@
         public void Start(string apiKey, string secretKey)
         {
             _logger.Information("Starting client");
-            
-            var options = new BinanceClientOptions
+
+            if (_clientApiKey != apiKey || _clientSecretKey != secretKey)
             {
-                RateLimitingBehaviour = RateLimitingBehaviour.Wait,
-                ApiCredentials = new ApiCredentials(apiKey, secretKey),
-                TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
-            };
-            _client = new BinanceClient(options);
+                var options = new BinanceClientOptions
+                {
+                    RateLimitingBehaviour = RateLimitingBehaviour.Wait,
+                    ApiCredentials = new ApiCredentials(apiKey, secretKey),
+                    TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
+                };
+                _client = new BinanceClient(options);
+                _clientApiKey = apiKey;
+                _clientSecretKey = secretKey;
+                
+                var startResult = _client.Spot.UserStream.StartUserStream();
 
-            // var socketOptions = new BinanceSocketClientOptions
-            // {
-            //     ApiCredentials = new ApiCredentials(_settings.ApiKey, _settings.SecretKey),
-            // };
-            //_socketClient = new BinanceSocketClient(socketOptions);
-            //var result = _socketClient.Spot.SubscribeToSymbolMiniTickerUpdates(new[] {""}, b => b.);
-
-            var startResult = _client.Spot.UserStream.StartUserStream();
-
-            if (!startResult.Success)
-            {
-                var message = $"Failed to start user stream: {startResult.Error}";
-                throw new InvalidOperationException(message);
+                if (!startResult.Success)
+                {
+                    var message = $"Failed to start user stream: {startResult.Error}";
+                    throw new InvalidOperationException(message);
+                }
             }
             
             _logger.Information("Starting client: Done");
+        }
+
+        public string[] GetSymbols()
+        {
+            if (_symbols != null)
+            {
+                var response = _client.Spot.System.GetExchangeInfo();
+                _symbols = response.Data.Symbols.Select(s => s.Name).ToArray();
+            }
+            return _symbols;
         }
 
         public void Stop()
