@@ -4,7 +4,7 @@
 
     public partial class OneOffList 
     {
-        protected override string GetViewNavigationUrl(Guid id) => $"/circular/view/{id}";
-        protected override string GetEditNavigationUrl() => "/circular/edit";
+        protected override string GetViewNavigationUrl(Guid id) => $"/one-off/view/{id}";
+        protected override string GetEditNavigationUrl() => "/one-off/edit";
     }
 }
