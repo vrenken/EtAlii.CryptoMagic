@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
 
-    public abstract class EditBase<TTrading> : ComponentBase
+    public abstract partial class EditBase<TTrading> : ComponentBase
         where TTrading : TradingBase, new()
     {
         [Inject] AlgorithmManager AlgorithmManager { get; init; }

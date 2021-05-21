@@ -27,9 +27,7 @@
                         </Field>
                     </Validation>
                     
-                    <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
-                        <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
-                    </Field>
+                    <Button Color="Color.Primary" Clicked="@Submit" disabled=@IsInvalid>Save</Button>
                 </CardBody>
             </Card>
         </Column>

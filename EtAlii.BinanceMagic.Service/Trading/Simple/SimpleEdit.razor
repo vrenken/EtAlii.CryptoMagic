@@ -4,7 +4,7 @@
 
 @inherits EditBase<SimpleTrading> 
 
-<Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext">
+<Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext" StatusChanged="OnValidationChanged">
 <Row>
     <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
         <Card Margin="Margin.Is4">
@@ -26,9 +26,7 @@
                         </Field>
                     </Validation>
                     
-                    <Field>
-                        <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
-                    </Field>
+                    <Button Color="Color.Primary" Clicked="@Submit" disabled=@IsInvalid>Save</Button>
                 </CardBody>
             </Card>
         </Column>
