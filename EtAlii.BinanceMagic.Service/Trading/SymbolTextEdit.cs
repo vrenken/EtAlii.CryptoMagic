@@ -11,12 +11,11 @@
     {
         [Inject] protected ApplicationContext ApplicationContext { get; init; }
 
-        [Parameter] public EventCallback<string> SymbolChanged { get; set; }
+        [Parameter] public bool HasValidSymbol { get; set; }
+        [Parameter] public EventCallback<bool> HasValidSymbolChanged { get; set; }
         
         [CascadingParameter] public EditContext EditContext { get; protected set; }
 
-        private string _text;
-        
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -33,8 +32,10 @@
 
         private void OnSearchChanged(object text)
         {
-            _text = (string)text;
             EditContext.Validate();
+            
+            HasValidSymbol = text == null;
+            HasValidSymbolChanged.InvokeAsync(HasValidSymbol);
         }
 
         private void ValidateSymbol(ValidatorEventArgs e)
@@ -45,18 +46,18 @@
                 return;
             }
 
+            if (!HasValidSymbol)
+            {
+                e.Status = ValidationStatus.Error;
+                return;
+            }
+
             if (Data.All(s => s.Name != symbol))
             {
                 e.Status = ValidationStatus.Error;
                 return;
             }
-
-            if (_text != null && Data.All(s => s.Name != _text))
-            {
-                e.Status = ValidationStatus.Error;
-                return;
-            }
-
+            
             e.Status = ValidationStatus.Success;
         }
     }

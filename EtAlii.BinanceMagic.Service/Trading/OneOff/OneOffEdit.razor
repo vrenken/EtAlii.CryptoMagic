@@ -27,6 +27,7 @@
                         <FieldLabel>Symbol</FieldLabel>
                         <SymbolTextEdit
                             @bind-SelectedValue="@Model.Symbol"
+                            HasValidSymbolChanged="@OnHasValidSymbolChanged"
                             Placeholder="Symbol"/>
                         <FieldHelp>The symbol to purchase and later sell.</FieldHelp>
                     </Field>
