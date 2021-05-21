@@ -13,7 +13,7 @@
             </CardHeader>
                 <CardBody>
                     <Validation Validator="@ValidationRule.IsNotEmpty">
-                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
+                        <Field>
                             <FieldLabel>Name</FieldLabel>
                             <TextEdit 
                                 Placeholder="Enter name" 
@@ -26,7 +26,7 @@
                         </Field>
                     </Validation>
                     
-                    <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
+                    <Field>
                         <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
                     </Field>
                 </CardBody>

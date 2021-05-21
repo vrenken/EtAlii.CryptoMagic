@@ -11,6 +11,7 @@ namespace EtAlii.BinanceMagic.Service
         public string ReferenceSymbol { get; private set; }
         
         public SymbolDefinition[] Symbols { get; private set; }
+        public bool IsOperational { get; private set; }
 
         public void Initialize()
         {
@@ -27,11 +28,13 @@ namespace EtAlii.BinanceMagic.Service
                 Symbols = _liveClient
                     .GetSymbols(ReferenceSymbol)
                     .ToArray();
+                IsOperational = true;
             }
             else
             {
                 _liveClient = null;
                 Symbols = Array.Empty<SymbolDefinition>();
+                IsOperational = false;
             }
         }
     }

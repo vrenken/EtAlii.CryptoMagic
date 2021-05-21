@@ -15,7 +15,7 @@
                 <CardBody>
 
                     <Validation Validator="@ValidationRule.IsNotEmpty">
-                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
+                        <Field>
                             <FieldLabel>Binance API key</FieldLabel>
                             <TextEdit 
                                 Placeholder="API key" 
@@ -29,7 +29,7 @@
                     </Validation>
 
                     <Validation Validator="@ValidationRule.IsNotEmpty">
-                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
+                        <Field>
                             <FieldLabel>Binance secret key</FieldLabel>
                             <TextEdit 
                                 Placeholder="Secret key" 
@@ -42,7 +42,7 @@
                     </Validation>
 
                     <Validation Validator="@ValidationRule.IsNotEmpty">
-                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
+                        <Field>
                             <FieldLabel>Reference symbol</FieldLabel>
                             <TextEdit 
                                 Placeholder="Symbol" 
@@ -54,7 +54,7 @@
                         </Field>
                     </Validation>
 
-                    <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
+                    <Field>
                         <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
                     </Field>
                 </CardBody>

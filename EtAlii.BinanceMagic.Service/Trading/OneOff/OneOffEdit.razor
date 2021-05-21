@@ -12,9 +12,9 @@
                 <CardTitle>@(Id == null ? "Add new one-off trade" : "Edit one-off trade")</CardTitle>
             </CardHeader>
                 <CardBody>
-                    <Validation Validator="@ValidationRule.IsNotEmpty">
-                        <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsFull.OnMobile">
-                            <FieldLabel>Name</FieldLabel>
+                    <Field>
+                        <FieldLabel>Name</FieldLabel>
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
                             <TextEdit 
                                 Placeholder="Enter name" 
                                 Autofocus="true"
@@ -23,11 +23,69 @@
                                     <ValidationError>Enter name for trade.</ValidationError>
                                 </Feedback>                            
                             </TextEdit>
-                            @* <FieldHelp>A name that represents the circular trade.</FieldHelp> *@
-                        </Field>
-                    </Validation>
+                        </Validation>
+                    </Field>
+                            
+                    <Field>
+                        <FieldLabel>Symbol</FieldLabel>
+                        <Validation Validator="ValidationRule.IsNotEmpty">
+                            <Autocomplete 
+                                TItem="SymbolDefinition" TValue="string"
+                                Data="@Symbols"
+                                Validator="@OnValidateSymbol"                                         
+                                TextField="@(item=>item.ToString())"
+                                ValueField="@(item=>item.Name)"
+                                SelectedValue="@Model.Symbol"
+                                SelectedValueChanged="@OnSymbolChanged"
+                                Filter="AutocompleteFilter.StartsWith"
+                                Placeholder="Symbol" />
+                        </Validation>
+                        <FieldHelp>The symbol to purchase and later sell.</FieldHelp>
+                    </Field>
                     
-                    <Field ColumnSize="ColumnSize.IsHalf.OnTablet.IsHalf.OnMobile">
+                    <Field>
+                        <FieldLabel>Purchase price</FieldLabel>
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>@Model.ReferenceSymbol</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit
+                                        Placeholder="Purchase price"
+                                        @bind-Value="@PurchasePrice">
+                                    </NumericEdit>
+                                </Addon>
+                                <Addon AddonType="AddonType.End">
+                                    <Blazorise.Button Color="Color.Primary" Disabled="@(!CanFetchPrise)" Clicked="@OnFetchPriceClicked">Fetch</Blazorise.Button>
+                                </Addon>
+                            </Addons>
+                        </Validation>
+                        <FieldHelp>@($"The price (in {Model.ReferenceSymbol}) to buy with.")</FieldHelp>
+                    </Field>
+            
+                    <Field>
+                        <FieldLabel>Quote quantity</FieldLabel>
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>@Model.ReferenceSymbol</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit
+                                        Placeholder="Quote quantity"
+                                        @bind-Value="@QuoteQuantity">
+                                    </NumericEdit>
+                                </Addon>
+                                <Addon AddonType="AddonType.End">
+                                    <Button Color="Color.Primary" Clicked="@OnFetchQuoteQuantityClicked">Fetch</Button>
+                                </Addon>
+                            </Addons>
+                        </Validation>
+                        <FieldHelp>@($"The money (in {Model.ReferenceSymbol}) to use in the purchase.")</FieldHelp>
+                    </Field>
+                
+                    <Field>
                         <Button Color="Color.Primary" Clicked="@Submit">Save</Button>
                     </Field>
                 </CardBody>
