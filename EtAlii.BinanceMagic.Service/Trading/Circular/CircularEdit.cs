@@ -17,15 +17,6 @@
             return data.CircularTradings.Single(t => t.Id == id);
         }
 
-        protected override CircularTrading CreateTrading()
-        {
-            using var data = new DataContext();
-            return new CircularTrading
-            {
-                ReferenceSymbol = data.Settings.Single(s => s.Key == SettingKey.ReferenceSymbol).Value
-            };
-        }
-
         protected override string GetNavigationUrl(Guid id) => $"/circular/view/{Model.Id}";
     }
 }

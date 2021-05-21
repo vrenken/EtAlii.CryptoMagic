@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using System;
     using System.Linq;
 
     public class ApplicationContext
@@ -8,6 +9,8 @@ namespace EtAlii.BinanceMagic.Service
         private static IClient _liveClient;
         
         public string ReferenceSymbol { get; private set; }
+        
+        public SymbolDefinition[] Symbols { get; private set; }
 
         public void Initialize()
         {
@@ -15,17 +18,21 @@ namespace EtAlii.BinanceMagic.Service
 
             var binanceApiKey = data.Settings.SingleOrDefault(s => s.Key == SettingKey.BinanceApiKey)?.Value;
             var binanceSecretKey = data.Settings.SingleOrDefault(s => s.Key == SettingKey.BinanceSecretKey)?.Value;
+            ReferenceSymbol = data.Settings.SingleOrDefault(s => s.Key == SettingKey.ReferenceSymbol)?.Value;
+
             if (!string.IsNullOrWhiteSpace(binanceApiKey) && !string.IsNullOrWhiteSpace(binanceSecretKey))
             {
                 _liveClient = new Client(new ActionValidator());
                 _liveClient.Start(binanceApiKey, binanceSecretKey);
+                Symbols = _liveClient
+                    .GetSymbols(ReferenceSymbol)
+                    .ToArray();
             }
             else
             {
                 _liveClient = null;
+                Symbols = Array.Empty<SymbolDefinition>();
             }
-            
-            ReferenceSymbol = data.Settings.SingleOrDefault(s => s.Key == SettingKey.ReferenceSymbol)?.Value;
         }
     }
 }

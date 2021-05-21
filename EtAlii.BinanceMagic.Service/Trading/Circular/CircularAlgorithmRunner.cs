@@ -9,6 +9,7 @@ namespace EtAlii.BinanceMagic.Service
         public string Log => _output.Result;
         public TradingBase Trading => _trading;
         private readonly CircularTrading _trading;
+        private readonly ApplicationContext _applicationContext;
         private readonly WebOutput _output;
 
         public CircularTradeSnapshot Status => _context.Snapshot;
@@ -19,9 +20,10 @@ namespace EtAlii.BinanceMagic.Service
 
         public event Action Changed;
         
-        public CircularAlgorithmRunner(CircularTrading trading)
+        public CircularAlgorithmRunner(CircularTrading trading, ApplicationContext applicationContext)
         {
             _trading = trading;
+            _applicationContext = applicationContext;
             _output = new WebOutput();
         }
 
@@ -34,7 +36,6 @@ namespace EtAlii.BinanceMagic.Service
             using var data = new DataContext();
             var binanceApiKey = data.Settings.Single(s => s.Key == SettingKey.BinanceApiKey).Value;
             var binanceSecretKey = data.Settings.Single(s => s.Key == SettingKey.BinanceSecretKey).Value;
-            var referenceSymbol = data.Settings.Single(s => s.Key == SettingKey.ReferenceSymbol).Value;
 
             var isBackTest = _trading.Connectivity == Connectivity.BackTest; 
             if (isBackTest)
@@ -42,7 +43,7 @@ namespace EtAlii.BinanceMagic.Service
                 var folder = GetType().Assembly.Location;
                 folder = Path.GetDirectoryName(folder);
                 
-                var backTestClient = new BackTestClient(coins, referenceSymbol, _output, _trading.Id, folder);
+                var backTestClient = new BackTestClient(coins, _applicationContext.ReferenceSymbol, _output, _trading.Id, folder);
                 _client = backTestClient;
                 time = new BackTestTimeManager
                 {
