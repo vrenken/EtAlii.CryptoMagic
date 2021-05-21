@@ -1,0 +1,29 @@
+﻿@page "/experimental/list"
+
+@namespace EtAlii.BinanceMagic.Service
+
+@inherits ListBase<ExperimentalTrading>
+
+<Heading Margin="Margin.Is4">
+    <Icon IconName="@("fa-flask")"/> Experimental tradings
+</Heading>
+
+<ListGroup Margin="Margin.Is4">
+    <Repeater Items="@Tradings">
+    <ListGroupItem Clicked="@(() => OnTradingSelected(context.Trading.Id))">
+        @context.Trading.Name
+    </ListGroupItem>
+    </Repeater>
+</ListGroup>
+@if (ApplicationContext.IsOperational)
+{
+    <ListGroup Margin="Margin.Is4">
+        <ListGroupItem Clicked="@OnEditSelected">
+            <Icon Name="@("fa-plus")"/> Add
+        </ListGroupItem>
+    </ListGroup>
+}
+else
+{
+    <Paragraph Margin="Margin.Is4">Application is not yet configured correctly</Paragraph>
+}

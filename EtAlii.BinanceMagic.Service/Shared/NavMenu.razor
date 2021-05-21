@@ -28,94 +28,41 @@
                 </BarItem>
                 
                 <BarItem>
-                    <BarDropdown>
-                        <BarDropdownToggle>
-                            <BarIcon IconName="@("fa-chart-line")" />
-                            One-off
-                        </BarDropdownToggle>
-                        <BarDropdownMenu>
-                            <Repeater Items="@OneOffTradings">
-                                <BarDropdownItem To="@($"/one-off/view/{context.Trading.Id}")">
-                                    @context.Trading.Name
-                                </BarDropdownItem>
-                            </Repeater>
-                            <BarDropdownItem To="/one-off/edit">
-                                <Icon Name="@("fa-plus")" />
-                                Add
-                            </BarDropdownItem>
-                        </BarDropdownMenu>
-                    </BarDropdown>
+                    <BarLink To="/one-off/list">
+                        <BarIcon IconName="@("fa-chart-line")"/>
+                        One-off
+                    </BarLink>
                 </BarItem>
                 
                 <BarItem>
-                    <BarDropdown>
-                        <BarDropdownToggle>
-                            <BarIcon IconName="@("fa-chart-bar")" />
-                            Simple
-                        </BarDropdownToggle>
-                        <BarDropdownMenu>
-                            <Repeater Items="@SimpleTradings">
-                                <BarDropdownItem To="@($"/simple/view/{context.Trading.Id}")">
-                                    @context.Trading.Name
-                                </BarDropdownItem>
-                            </Repeater>
-                            <BarDropdownItem To="/simple/edit">
-                                <Icon Name="@("fa-plus")" />
-                                Add
-                            </BarDropdownItem>
-                        </BarDropdownMenu>
-                    </BarDropdown>
+                    <BarLink To="/simple/list">
+                        <BarIcon IconName="@("fa-chart-bar")" />
+                        Simple
+                    </BarLink>
                 </BarItem>
                 
                 <BarItem>                    
-                    <BarDropdown>
-                        <BarDropdownToggle>
-                            <BarIcon IconName="@("fa-infinity")"/>
-                            Circular
-                        </BarDropdownToggle>
-                        <BarDropdownMenu>
-                            <Repeater Items="@CircularTradings">
-                                <BarDropdownItem To="@($"/circular/view/{context.Trading.Id}")">
-                                    @context.Trading.Name
-                                </BarDropdownItem>
-                            </Repeater>
-                            <BarDropdownItem To="/circular/edit">
-                                <Icon Name="@("fa-plus")"/>
-                                Add
-                            </BarDropdownItem>
-                        </BarDropdownMenu>
-                    </BarDropdown>
+                    <BarLink To="/circular/list">
+                        <BarIcon IconName="@("fa-infinity")"/>
+                        Circular
+                    </BarLink>
                 </BarItem>
                 
                 <BarItem>                    
-                    <BarDropdown>
-                        <BarDropdownToggle>
-                            <BarIcon IconName="@("fa-flask")" />
-                            Experimental 
-                        </BarDropdownToggle>
-                        <BarDropdownMenu>
-                            <Repeater Items="@ExperimentalTradings">
-                                <BarDropdownItem To="@($"/experimental/view/{context.Trading.Id}")">
-                                    @context.Trading.Name
-                                </BarDropdownItem>
-                            </Repeater>
-                            <BarDropdownItem To="experimental/edit">
-                                <Icon Name="@("fa-plus")" />
-                                Add
-                            </BarDropdownItem>
-                        </BarDropdownMenu>
-                    </BarDropdown>
+                    <BarLink To="/experimental/list">
+                        <BarIcon IconName="@("fa-flask")" />
+                        Experimental 
+                    </BarLink>
                 </BarItem>
 
-                
+            </BarStart>
+            <BarEnd>
                 <BarItem>
                     <BarLink To="/settings">
                         <BarIcon IconName="@("fa-cog")" />
                         Settings
                     </BarLink>
                 </BarItem>
-            </BarStart>
-            <BarEnd>
             </BarEnd>
         </BarMenu>
     </Bar>
