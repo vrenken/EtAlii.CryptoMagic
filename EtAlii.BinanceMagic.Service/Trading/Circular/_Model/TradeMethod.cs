@@ -1,9 +1,9 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    public enum Connectivity
+    public enum TradeMethod
     {
         BackTest,
-        Binance,
-        Test
+        BinanceLive,
+        BinanceTest
     }
 }

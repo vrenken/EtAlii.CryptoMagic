@@ -37,7 +37,7 @@ namespace EtAlii.BinanceMagic.Service
             var binanceApiKey = data.Settings.Single(s => s.Key == SettingKey.BinanceApiKey).Value;
             var binanceSecretKey = data.Settings.Single(s => s.Key == SettingKey.BinanceSecretKey).Value;
 
-            var isBackTest = Trading.Connectivity == Connectivity.BackTest; 
+            var isBackTest = Trading.TradeMethod == TradeMethod.BackTest; 
             if (isBackTest)
             {
                 var folder = GetType().Assembly.Location;
@@ -55,7 +55,7 @@ namespace EtAlii.BinanceMagic.Service
                 var actionValidator = new ActionValidator();
                 _client = new Client(actionValidator)
                 {
-                    PlaceTestOrders = Trading.Connectivity == Connectivity.Test
+                    PlaceTestOrders = Trading.TradeMethod == TradeMethod.BinanceTest
                 };
                 time = new RealtimeTimeManager();
             }

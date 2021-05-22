@@ -7,7 +7,7 @@ namespace EtAlii.BinanceMagic.Service
     {
         public string FirstSymbol { get; set; }
         public string SecondSymbol { get; set; }
-        public Connectivity Connectivity { get; set; } = Connectivity.Test;
+        public TradeMethod TradeMethod { get; set; } = TradeMethod.BinanceTest;
         
         public decimal TargetIncrease { get; set; } = 1.05m; // in %
         public decimal InitialSellFactor { get; set; } = 1.1m; // in %

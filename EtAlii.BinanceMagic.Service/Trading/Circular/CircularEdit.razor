@@ -142,10 +142,10 @@
                     <Validation Validator="@ValidationRule.None">
                         <Field>
                             <FieldLabel>Connectivity</FieldLabel>
-                                <RadioGroup TValue="Connectivity" @bind-CheckedValue="@Model.Connectivity" Orientation="Orientation.Vertical">
-                                    <Radio TValue="Connectivity" Value="@(Connectivity.BackTest)">Backtest</Radio>
-                                    <Radio TValue="Connectivity" Value="@(Connectivity.Binance)">Interact with Binance</Radio>
-                                    <Radio TValue="Connectivity" Value="@(Connectivity.Test)">Test calls to Binance</Radio>
+                                <RadioGroup TValue="Connectivity" @bind-CheckedValue="@Model.TradeMethod" Orientation="Orientation.Vertical">
+                                    <Radio TValue="Connectivity" Value="@(TradeMethod.BackTest)">Backtest</Radio>
+                                    <Radio TValue="Connectivity" Value="@(TradeMethod.BinanceLive)">Interact with Binance</Radio>
+                                    <Radio TValue="Connectivity" Value="@(TradeMethod.BinanceTest)">Test calls to Binance</Radio>
                                 </RadioGroup>
                         </Field>
                     </Validation>
