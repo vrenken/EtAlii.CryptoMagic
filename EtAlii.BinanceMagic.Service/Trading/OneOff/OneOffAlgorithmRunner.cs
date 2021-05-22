@@ -1,15 +1,14 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    public class OneOffAlgorithmRunner : IAlgorithmRunner
+    public class OneOffAlgorithmRunner : IAlgorithmRunner<OneOffTrading>
     {
         public event System.Action Changed;
         public string Log { get; } = string.Empty;
-        public TradingBase Trading => _trading;
-        private readonly OneOffTrading _trading;
+        public OneOffTrading Trading { get; }
 
         public OneOffAlgorithmRunner(OneOffTrading trading)
         {
-            _trading = trading;
+            Trading = trading;
         }
         public void Start()
         {

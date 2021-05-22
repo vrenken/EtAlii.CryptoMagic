@@ -102,6 +102,23 @@
                         </Field>
                     </Validation>
 
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 3, 50))">
+                        <Field>
+                            <FieldLabel>RSI period</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit 
+                                        Placeholder="Candlestick periods" 
+                                        @bind-Value="@Model.RsiPeriod"
+                                        Min="3"
+                                        Max="50">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The number of periods that should be used in calculating the RSI indicator.</FieldHelp>
+                        </Field>
+                    </Validation>
+
                     <Validation Validator="@(e => IsBetweenInclusive(e, 100, 150))">
                         <Field>
                             <FieldLabel>Notional minimal correction</FieldLabel>

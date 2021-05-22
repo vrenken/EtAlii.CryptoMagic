@@ -16,8 +16,8 @@ namespace EtAlii.BinanceMagic.Surfing
         private readonly ITimeManager _timeManager;
         private readonly TradeDetails _details;
         
-        public IAlgorithmContext<object> Status => _status;
-        private readonly IAlgorithmContext<object> _status;
+        public IAlgorithmContext<object, object> Status => _status;
+        private readonly IAlgorithmContext<object, object> _status;
 
         private CancellationToken _cancellationToken;
         private Situation? _situation;

@@ -1,8 +1,10 @@
 namespace EtAlii.BinanceMagic
 {
-    public interface IAlgorithmContext<TSnapshot>
+    public interface IAlgorithmContext<TSnapshot, TTrading>
         where TSnapshot: class
+        where TTrading: class
     {
+        TTrading Trading { get; set; }
         TSnapshot Snapshot { get; set; }
         event System.Action<StatusInfo> Changed;
 

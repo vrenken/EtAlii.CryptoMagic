@@ -13,7 +13,7 @@
         [Inject] NavigationManager NavigationManager { get; init; }
         [Inject] protected ApplicationContext ApplicationContext { get; init; }
 
-        protected ObservableCollection<IAlgorithmRunner> Tradings { get; } = new();
+        protected ObservableCollection<IAlgorithmRunner<TTrading>> Tradings { get; } = new();
         
         protected abstract string GetViewNavigationUrl(Guid id);
         protected abstract string GetEditNavigationUrl();
@@ -44,14 +44,14 @@
                 switch (e.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
-                        foreach (IAlgorithmRunner newItem in e.NewItems!)
+                        foreach (var newItem in e.NewItems!.OfType<IAlgorithmRunner<TTrading>>())
                         {
                             AddRunner(newItem);
                         }
 
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        foreach (IAlgorithmRunner oldItem in e.OldItems!)
+                        foreach (var oldItem in e.OldItems!.OfType<IAlgorithmRunner<TTrading>>())
                         {
                             RemoveRunner(oldItem);
                         }
@@ -68,27 +68,24 @@
         
         private void ReloadRunners()
         {
-            var runners = AlgorithmManager.Runners.ToArray();
+            var runners = AlgorithmManager.Runners
+                .OfType<IAlgorithmRunner<TTrading>>()
+                .ToArray();
             foreach (var runner in runners)
             {
                 AddRunner(runner);
             }
         }
-        private void RemoveRunner(IAlgorithmRunner runner)
+        private void RemoveRunner(IAlgorithmRunner<TTrading> runner)
         {
-            if (runner.Trading is TTrading)
-            {
-                Tradings.Remove(runner);
-            }
+            Tradings.Remove(runner);
         }
 
-        private void AddRunner(IAlgorithmRunner runner)
+        private void AddRunner(IAlgorithmRunner<TTrading> runner)
         {
-            if (runner.Trading is TTrading)
-            {
-                Tradings.Add(runner);
-            }            
+            Tradings.Add(runner);
         }
+
         public void Dispose()
         {
             ((INotifyCollectionChanged)AlgorithmManager.Runners).CollectionChanged -= OnRunnersChanged;

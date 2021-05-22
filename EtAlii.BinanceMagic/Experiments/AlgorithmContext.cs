@@ -4,8 +4,9 @@
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
 
-    public class AlgorithmContext<TSnapshot> : IAlgorithmContext<TSnapshot>, IDisposable
+    public class AlgorithmContext<TSnapshot, TTrading> : IAlgorithmContext<TSnapshot, TTrading>, IDisposable
         where TSnapshot: class
+        where TTrading: class
     {
         public TSnapshot Snapshot
         {
@@ -19,9 +20,22 @@
                 }
             }
         }
-
         private TSnapshot _snapshot;
-        
+
+        public TTrading Trading 
+        {
+            get => _trading;
+            set
+            {
+                if (_trading != value)
+                {
+                    _trading = value;
+                    RaiseChanged();
+                }
+            }
+        }
+        private TTrading _trading;
+
         private readonly Subject<object> _observable;
         private readonly IDisposable _subscription;
 

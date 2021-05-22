@@ -1,16 +1,15 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    public class SurfingAlgorithmRunner : IAlgorithmRunner
+    public class SurfingAlgorithmRunner : IAlgorithmRunner<SurfingTrading>
     {
         public event System.Action Changed;
         
         public string Log { get; } = string.Empty;
-        public TradingBase Trading => _trading;
-        private readonly SurfingTrading _trading;
+        public SurfingTrading Trading { get; }
 
         public SurfingAlgorithmRunner(SurfingTrading trading)
         {
-            _trading = trading;
+            Trading = trading;
         }
         public void Start()
         {

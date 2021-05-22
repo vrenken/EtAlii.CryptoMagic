@@ -10,9 +10,13 @@
 
 <ListGroup Margin="Margin.Is4">
     <Repeater Items="@Tradings">
-    <ListGroupItem Clicked="@(() => OnTradingSelected(context.Trading.Id))">
-        @context.Trading.Name
-    </ListGroupItem>
+        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Trading.Id))">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">@context.Trading.Name</h5>
+                <small>@context.Trading.Connectivity</small>
+            </div>
+                <Paragraph>Stuff goes here.</Paragraph>            
+        </ListGroupItem>
     </Repeater>
 </ListGroup>
 @if (ApplicationContext.IsOperational)

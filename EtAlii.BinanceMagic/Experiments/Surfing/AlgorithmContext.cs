@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    public class AlgorithmContext : AlgorithmContext<object>
+    public class AlgorithmContext : AlgorithmContext<object, object>
     {
         private readonly IOutput _output;
         private readonly TradeDetails _details;

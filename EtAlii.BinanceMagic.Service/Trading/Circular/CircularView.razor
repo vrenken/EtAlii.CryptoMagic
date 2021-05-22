@@ -4,6 +4,8 @@
 
 @inherits ViewBase<CircularTrading, CircularAlgorithmRunner>
 
+<Heading Margin="Margin.Is4">@Model.Name</Heading>
+
 <Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is1">
         <Blazorise.Button Color="Color.Primary" Type="ButtonType.Link" Size="Size.Small">
@@ -21,7 +23,7 @@
 <Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
         <Card>
-            <CardHeader>@Model.Name</CardHeader>
+            <CardHeader>Summary</CardHeader>
             <Table Striped="false" Borderless="true" Narrow="true">
                 <TableBody>
                     <TableRow>

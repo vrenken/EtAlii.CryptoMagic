@@ -6,7 +6,7 @@
 
     public abstract class ViewBase<TTrading, TRunner> : ComponentBase, IDisposable
         where TTrading : TradingBase, new()
-        where TRunner : IAlgorithmRunner
+        where TRunner : IAlgorithmRunner<TTrading>
     {
         [Inject] AlgorithmManager AlgorithmManager { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }

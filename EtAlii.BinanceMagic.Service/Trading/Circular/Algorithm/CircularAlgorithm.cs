@@ -6,12 +6,12 @@
     {
         private readonly IClient _client;
         private readonly CircularTrading _trading;
-        private readonly IAlgorithmContext<CircularTradeSnapshot> _context;
+        private readonly IAlgorithmContext<CircularTradeSnapshot, CircularTrading> _context;
 
         public CircularAlgorithm(
             IClient client,
             CircularTrading trading,
-            IAlgorithmContext<CircularTradeSnapshot> context)
+            IAlgorithmContext<CircularTradeSnapshot, CircularTrading> context)
         {
             _client = client;
             _trading = trading;
