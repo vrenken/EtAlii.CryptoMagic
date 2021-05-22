@@ -52,12 +52,12 @@ namespace EtAlii.BinanceMagic.Service
                     snapshot.NextCheck = _timeManager.GetNow() + _trading.SampleInterval;
 
                     var isTransition = snapshot.NextCheck.Hour != snapshot.LastCheck.Hour;
-                    _context.RaiseChanged(isTransition ? StatusInfo.Important : StatusInfo.Normal);
+                    _context.RaiseChanged(isTransition ? AlgorithmChange.Important : AlgorithmChange.Normal);
 
                     if (_timeManager.ShouldStop())
                     {
                         snapshot.Result = "Back-test completed";
-                        _context.RaiseChanged(StatusInfo.Important);
+                        _context.RaiseChanged(AlgorithmChange.Important);
                         keepRunning = false;
                         return;
                     }
@@ -200,7 +200,7 @@ namespace EtAlii.BinanceMagic.Service
             snapshot.Profit = snapshot.SellPrice - snapshot.BuyPrice;
             snapshot.TotalProfit = snapshot.Profit + data.GetTotalProfits(_trading);
 
-            _context.RaiseChanged(StatusInfo.Important);
+            _context.RaiseChanged(AlgorithmChange.Important);
                     
             _context.Snapshot = snapshot = snapshot.ShallowClone();
             data.Entry(snapshot).State = EntityState.Added;

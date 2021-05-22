@@ -6,9 +6,9 @@ namespace EtAlii.BinanceMagic
     {
         TTrading Trading { get; set; }
         TSnapshot Snapshot { get; set; }
-        event System.Action<StatusInfo> Changed;
+        event System.Action<AlgorithmChange> Changed;
 
         void RaiseChanged();
-        void RaiseChanged(StatusInfo statusInfo);
+        void RaiseChanged(AlgorithmChange algorithmChange);
     }
 }

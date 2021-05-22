@@ -39,7 +39,7 @@
         private readonly Subject<object> _observable;
         private readonly IDisposable _subscription;
 
-        public event Action<StatusInfo> Changed;
+        public event Action<AlgorithmChange> Changed;
 
         public AlgorithmContext(TimeSpan? throttle = null)
         {
@@ -52,23 +52,23 @@
             }
 
         }
-        public void RaiseChanged() => RaiseChangedInternal(StatusInfo.Normal);
-        public void RaiseChanged(StatusInfo statusInfo) => RaiseChangedInternal(statusInfo);
+        public void RaiseChanged() => RaiseChangedInternal(AlgorithmChange.Normal);
+        public void RaiseChanged(AlgorithmChange algorithmChange) => RaiseChangedInternal(algorithmChange);
 
-        private void RaiseChangedInternal(StatusInfo statusInfo)
+        private void RaiseChangedInternal(AlgorithmChange algorithmChange)
         {
-            if (statusInfo == StatusInfo.Important || _observable == null)
+            if (algorithmChange == AlgorithmChange.Important || _observable == null)
             {
-                Changed?.Invoke(statusInfo);
+                Changed?.Invoke(algorithmChange);
             }
             else
             {
-                _observable.OnNext(statusInfo);
+                _observable.OnNext(algorithmChange);
             }
         }
         private void RaiseChangedInternal(object o)
         {
-            var statusInfo = (StatusInfo) o;
+            var statusInfo = (AlgorithmChange) o;
             Changed?.Invoke(statusInfo);
         }
 

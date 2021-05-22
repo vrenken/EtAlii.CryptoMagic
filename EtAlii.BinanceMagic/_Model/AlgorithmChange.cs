@@ -1,6 +1,6 @@
 ﻿namespace EtAlii.BinanceMagic
 {
-    public enum StatusInfo
+    public enum AlgorithmChange
     {
         Normal,
         Important,

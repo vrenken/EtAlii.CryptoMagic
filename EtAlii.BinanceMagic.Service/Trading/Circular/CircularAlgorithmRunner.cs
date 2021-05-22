@@ -80,7 +80,7 @@ namespace EtAlii.BinanceMagic.Service
             _loop.Start();
         }
 
-        private void OnSequenceChanged(StatusInfo obj) => Changed?.Invoke();
+        private void OnSequenceChanged(AlgorithmChange obj) => Changed?.Invoke();
 
         public void Stop()
         {
