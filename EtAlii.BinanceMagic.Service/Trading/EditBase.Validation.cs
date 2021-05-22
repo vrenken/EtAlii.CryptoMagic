@@ -28,6 +28,10 @@
             {
                 e.Status = min <= d && d <= max ? ValidationStatus.Success : ValidationStatus.Error;
             }
+            else if (e.Value is int i)
+            {
+                e.Status = min <= i && i <= max ? ValidationStatus.Success : ValidationStatus.Error;
+            }
             else
             {
                 e.Status = ValidationStatus.Error;
