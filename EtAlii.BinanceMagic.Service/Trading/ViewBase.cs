@@ -9,8 +9,8 @@
         where TTrading : TradingBase, new()
         where TRunner : IAlgorithmRunner<TTransaction, TTrading>
     {
-        [Inject] AlgorithmManager AlgorithmManager { get; set; }
-        [Inject] NavigationManager NavigationManager { get; set; }
+        [Inject] AlgorithmManager AlgorithmManager { get; init; }
+        [Inject] NavigationManager NavigationManager { get; init; }
 
         [Parameter] public string Id { get; set; }
 
@@ -31,14 +31,11 @@
         {
             var id = Guid.Parse(Id);
             Model = GetTrading(id);
-            if (CurrentRunner != null)
-            {
-                CurrentRunner.Changed -= OnRunnerChangedInternal;
-            }
+            if (CurrentRunner != null) CurrentRunner.Changed -= OnRunnerChangedInternal;
             CurrentRunner = AlgorithmManager.Runners
                 .OfType<TRunner>()
-                .Single(r => r.Context.Trading.Id == id);
-            CurrentRunner.Changed += OnRunnerChangedInternal;
+                .SingleOrDefault(r => r.Context.Trading.Id == id);
+            if (CurrentRunner != null) CurrentRunner.Changed += OnRunnerChangedInternal;
 
             OnLocationChanged();
             StateHasChanged();

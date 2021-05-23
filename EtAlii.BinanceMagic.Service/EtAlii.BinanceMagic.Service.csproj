@@ -84,6 +84,9 @@
     <Compile Update="Trading\Circular\CircularList.cs">
       <DependentUpon>CircularList.razor</DependentUpon>
     </Compile>
+    <Compile Update="Trading\IAlgorithmContext.cs">
+      <DependentUpon>AlgorithmContext.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

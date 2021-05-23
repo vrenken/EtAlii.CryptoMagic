@@ -3,6 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using Blazorise;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
     using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,8 @@
         private readonly Model _model = new();
         private EditContext _editContext;
         private Validations _validations;
+
+        [Inject] NavigationManager NavigationManager { get; init; }
 
         protected override void OnInitialized()
         {
@@ -35,6 +38,8 @@
                 data.SaveChanges();
                 
                 _applicationContext.Initialize();
+                
+                NavigationManager.NavigateTo("/");
             }
         }
 
