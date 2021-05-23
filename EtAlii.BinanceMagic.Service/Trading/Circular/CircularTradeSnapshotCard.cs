@@ -18,15 +18,5 @@
         private string BuyTrendStyle => Snapshot.BuyTrendIsOptimal ? PositiveStyle : NegativeStyle;
 
         private string DifferenceStyle => Snapshot.DifferenceIsOptimal ? PositiveStyle : NegativeStyle;
-
-        private string DecimalShort(decimal d)
-        {
-            return $"{d:000.00}";
-        }
-        private string Decimal(decimal d, string prefix = null)
-        {
-            prefix ??= d >= 0 ? "+" : "";
-            return $"{prefix}{d:000.000000000}";
-        }
     }
 }

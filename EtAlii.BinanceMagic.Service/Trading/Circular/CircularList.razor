@@ -10,14 +10,7 @@
 
 <ListGroup Margin="Margin.Is4">
     <Repeater Items="@Tradings">
-        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Context.Trading.Id))">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">@context.Context.Trading.Name</h5>
-                <small>@context.Context.Snapshot.Step</small>
-            </div>
-                <Paragraph>@context.Context.Snapshot.Profit @context.Context.Trading.ReferenceSymbol</Paragraph>            
-                <Paragraph>Last: @context.Context.Snapshot.LastSuccess</Paragraph>            
-        </ListGroupItem>
+        <CircularListItem Context="@context.Context" />
     </Repeater>
 </ListGroup>
 @if (ApplicationContext.IsOperational)

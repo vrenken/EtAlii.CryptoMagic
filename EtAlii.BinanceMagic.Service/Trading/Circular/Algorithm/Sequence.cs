@@ -194,6 +194,8 @@ namespace EtAlii.BinanceMagic.Service
             snapshot.LastSuccess = _timeManager.GetNow(); 
                     
             using var data = new DataContext();
+            data.Attach(_context.Trading);
+            
             snapshot.Profit = snapshot.SellPrice - snapshot.BuyPrice;
             
             _context.Trading.TotalProfit = snapshot.Profit + data.GetTotalProfits(_context.Trading);
@@ -202,7 +204,7 @@ namespace EtAlii.BinanceMagic.Service
                     
             _context.Snapshot = snapshot = snapshot.ShallowClone();
 
-            data.Entry(_context.Trading.TotalProfit).State = EntityState.Modified;
+            data.Entry(_context.Trading).State = EntityState.Modified;
             data.Entry(snapshot).State = EntityState.Added;
             data.SaveChanges();
         }

@@ -29,6 +29,7 @@ namespace EtAlii.BinanceMagic.Service
 
         private IAlgorithmRunner CreateRunner(TradingBase trading)
         {
+            trading.Start = DateTime.Now;
             return trading switch
             {
                 CircularTrading circularTrading => new CircularAlgorithmRunner(circularTrading, _applicationContext),

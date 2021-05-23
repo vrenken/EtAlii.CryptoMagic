@@ -5,18 +5,18 @@
     <Table Striped="false" Borderless="true" Narrow="true">
         <TableBody>
             <TableRow>
-                <TableRowCell>Sell: </TableRowCell><TableRowCell><span style="@SellPriceStyle">@Decimal(Snapshot.SellPrice, "+") @Trading.ReferenceSymbol</span></TableRowCell>
-                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Snapshot.SellQuantity, "+") @Snapshot.SellSymbol</TableRowCell>
-                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@SellTrendStyle">@DecimalShort(Snapshot.SellTrend)</span></TableRowCell>
+                <TableRowCell>Sell: </TableRowCell><TableRowCell><span style="@SellPriceStyle">@Snapshot.SellPrice.ToHtml("+") @Trading.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Snapshot.SellQuantity.ToHtml("+") @Snapshot.SellSymbol</TableRowCell>
+                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@SellTrendStyle">@Snapshot.SellTrend.ToShortHtml()</span></TableRowCell>
             </TableRow>
             <TableRow>
-                <TableRowCell>Buy: </TableRowCell><TableRowCell><span style="@BuyPriceStyle">@Decimal(Snapshot.BuyPrice, "-") @Trading.ReferenceSymbol</span></TableRowCell>
-                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Decimal(Snapshot.BuyQuantity, "-") @Snapshot.BuySymbol</TableRowCell>
-                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@BuyTrendStyle">@DecimalShort(Snapshot.BuyTrend)</span></TableRowCell>
+                <TableRowCell>Buy: </TableRowCell><TableRowCell><span style="@BuyPriceStyle">@Snapshot.BuyPrice.ToHtml("-") @Trading.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Snapshot.BuyQuantity.ToHtml("-") @Snapshot.BuySymbol</TableRowCell>
+                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@BuyTrendStyle">@Snapshot.BuyTrend.ToShortHtml()</span></TableRowCell>
             </TableRow>
             <TableRow>
-                <TableRowCell>Diff: </TableRowCell><TableRowCell><span style="@DifferenceStyle">@Decimal(Snapshot.Difference) @Trading.ReferenceSymbol</span></TableRowCell>
-                <TableRowCell>Target: </TableRowCell><TableRowCell>@Decimal(Snapshot.Target, "+") @Trading.ReferenceSymbol</TableRowCell>
+                <TableRowCell>Diff: </TableRowCell><TableRowCell><span style="@DifferenceStyle">@Snapshot.Difference.ToHtml() @Trading.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Target: </TableRowCell><TableRowCell>@Snapshot.Target.ToHtml("+") @Trading.ReferenceSymbol</TableRowCell>
                 <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
             </TableRow>
         </TableBody>
