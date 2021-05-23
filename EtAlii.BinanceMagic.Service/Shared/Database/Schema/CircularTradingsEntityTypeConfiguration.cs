@@ -12,7 +12,7 @@ namespace EtAlii.BinanceMagic.Service
             builder.Property(e => e.FirstSymbol).IsRequired();
             builder.Property(e => e.SecondSymbol).IsRequired();
             
-            builder.HasMany(e => e.Snapshots)
+            builder.HasMany(e => e.Transactions)
                 .WithOne(s => s.Trading)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);

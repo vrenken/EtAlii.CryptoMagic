@@ -13,7 +13,7 @@
 //         private readonly IClient _client;
 //         private readonly Data _data;
 //         private readonly ITimeManager _timeManager;
-//         private readonly CircularTradeDetailsSnapshot _snapshot;
+//         private readonly CircularTransaction _transaction;
 //         
 //         public IStatusProvider Status => _status;
 //         private readonly StatusProvider _status;

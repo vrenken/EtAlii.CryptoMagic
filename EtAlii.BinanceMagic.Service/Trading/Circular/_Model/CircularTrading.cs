@@ -20,7 +20,7 @@ namespace EtAlii.BinanceMagic.Service
         
         public int RsiPeriod { get; set; } = 14;
 
-        public IList<CircularTradeSnapshot> Snapshots { get; private set; } = new List<CircularTradeSnapshot>();
-        public IList<CircularTradeSnapshot> Transactions { get; private set; } = new List<CircularTradeSnapshot>();
+        public IList<CircularTransaction> Transactions { get; private set; } = new List<CircularTransaction>();
+        public IList<CircularTransaction> Transactions2 { get; private set; } = new List<CircularTransaction>();
     }
 }

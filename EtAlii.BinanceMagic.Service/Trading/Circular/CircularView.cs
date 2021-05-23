@@ -8,17 +8,17 @@
 
     public partial class CircularView
     {
-        private ObservableCollection<CircularTradeSnapshot> History { get; } = new();
+        private ObservableCollection<CircularTransaction> History { get; } = new();
 
-        private string LastSuccess => CurrentRunner.Context.Snapshot.LastSuccess != DateTime.MinValue
-            ? CurrentRunner.Context.Snapshot.LastSuccess.ToString(CultureInfo.CurrentCulture)
+        private string LastSuccess => CurrentRunner.Context.CurrentTransaction.LastSuccess != DateTime.MinValue
+            ? CurrentRunner.Context.CurrentTransaction.LastSuccess.ToString(CultureInfo.CurrentCulture)
             : "None";
         
-        private string NextCheck => CurrentRunner.Context.Snapshot.NextCheck != DateTime.MinValue
-            ? CurrentRunner.Context.Snapshot.NextCheck.ToString(CultureInfo.CurrentCulture)
+        private string NextCheck => CurrentRunner.Context.CurrentTransaction.NextCheck != DateTime.MinValue
+            ? CurrentRunner.Context.CurrentTransaction.NextCheck.ToString(CultureInfo.CurrentCulture)
             : "Now";
         
-        private CircularTradeSnapshot Current => CurrentRunner.Context.Snapshot; 
+        private CircularTransaction Current => CurrentRunner.Context.CurrentTransaction; 
         protected override CircularTrading GetTrading(Guid id)
         {
             using var data = new DataContext();
@@ -37,20 +37,20 @@
             }
             
             using var data = new DataContext();
-            var snapshots = data.CircularTradeSnapshots
+            var transactions = data.CircularTransactions
                 .Include(s => s.Trading)
                 .Where(s => s.Trading.Id == CurrentRunner.Context.Trading.Id)
                 .Where(s => s.IsWorthIt)
                 .OrderByDescending(s => s.Step)
                 .ToArray();
 
-            var missingSnapshots = snapshots
+            var missingTransactions = transactions
                 .Where(s => History.All(h => h.Step != s.Step))
                 .Reverse()
                 .ToArray(); 
-            foreach (var snapshot in missingSnapshots)
+            foreach (var transaction in missingTransactions)
             {
-                History.Insert(0, snapshot);
+                History.Insert(0, transaction);
             }
         }
     }

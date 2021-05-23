@@ -5,11 +5,11 @@
     public class CircularAlgorithm : ICircularAlgorithm
     {
         private readonly IClient _client;
-        private readonly IAlgorithmContext<CircularTradeSnapshot, CircularTrading> _context;
+        private readonly IAlgorithmContext<CircularTransaction, CircularTrading> _context;
 
         public CircularAlgorithm(
             IClient client,
-            IAlgorithmContext<CircularTradeSnapshot, CircularTrading> context)
+            IAlgorithmContext<CircularTransaction, CircularTrading> context)
         {
             _client = client;
             _context = context;
@@ -17,50 +17,50 @@
 
         public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            var snapshot = _context.Snapshot;
-            snapshot.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
-            snapshot.SellQuantity = situation.Source.PastQuantity * _context.Trading.MaxQuantityToTrade;
-            snapshot.SellPrice = situation.Source.PresentPrice * snapshot.SellQuantity;
-            snapshot.SellPriceIsOptimal = snapshot.SellPrice >= snapshot.SellQuantityMinimum;
-            snapshot.SellTrend = situation.SellTrend;
-            snapshot.SellTrendIsOptimal = snapshot.SellPrice <= 60m; // Remark. it is positive when it does not increase anymore.
+            var transaction = _context.CurrentTransaction;
+            transaction.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+            transaction.SellQuantity = situation.Source.PastQuantity * _context.Trading.MaxQuantityToTrade;
+            transaction.SellPrice = situation.Source.PresentPrice * transaction.SellQuantity;
+            transaction.SellPriceIsOptimal = transaction.SellPrice >= transaction.SellQuantityMinimum;
+            transaction.SellTrend = situation.SellTrend;
+            transaction.SellTrendIsOptimal = transaction.SellPrice <= 60m; // Remark. it is positive when it does not increase anymore.
 
-            snapshot.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
-            snapshot.BuyQuantity = ((snapshot.BuyQuantityMinimum * _context.Trading.QuantityFactor) / situation.Destination.PresentPrice) * _context.Trading.MaxQuantityToTrade;
-            snapshot.BuyPrice = snapshot.BuyQuantity * situation.Destination.PresentPrice;
-            snapshot.BuyPriceIsOptimal = snapshot.BuyPrice >= snapshot.BuyQuantityMinimum;
-            snapshot.BuyTrend = situation.BuyTrend;
-            snapshot.BuyTrendIsOptimal = snapshot.BuyTrend >= 40m; // Remark. it is positive when it does not decrease anymore. 
+            transaction.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+            transaction.BuyQuantity = ((transaction.BuyQuantityMinimum * _context.Trading.QuantityFactor) / situation.Destination.PresentPrice) * _context.Trading.MaxQuantityToTrade;
+            transaction.BuyPrice = transaction.BuyQuantity * situation.Destination.PresentPrice;
+            transaction.BuyPriceIsOptimal = transaction.BuyPrice >= transaction.BuyQuantityMinimum;
+            transaction.BuyTrend = situation.BuyTrend;
+            transaction.BuyTrendIsOptimal = transaction.BuyTrend >= 40m; // Remark. it is positive when it does not decrease anymore. 
 
-            snapshot.Difference = snapshot.SellPrice - snapshot.BuyPrice;
-            snapshot.DifferenceIsOptimal = snapshot.Difference > snapshot.Target;
+            transaction.Difference = transaction.SellPrice - transaction.BuyPrice;
+            transaction.DifferenceIsOptimal = transaction.Difference > transaction.Target;
             
-            snapshot.IsWorthIt = 
-                snapshot.DifferenceIsOptimal && 
-                snapshot.SellPriceIsOptimal && 
-                snapshot.BuyPriceIsOptimal && 
-                snapshot.SellTrendIsOptimal &&
-                snapshot.BuyTrendIsOptimal;
+            transaction.IsWorthIt = 
+                transaction.DifferenceIsOptimal && 
+                transaction.SellPriceIsOptimal && 
+                transaction.BuyPriceIsOptimal && 
+                transaction.SellTrendIsOptimal &&
+                transaction.BuyTrendIsOptimal;
 
-            _context.RaiseChanged();
+            _context.Update(transaction);
 
-            if (snapshot.IsWorthIt)
+            if (transaction.IsWorthIt)
             {
                 sellAction = new SellAction
                 {
                     Symbol = situation.Source.Symbol,
-                    Quantity = snapshot.SellQuantity,
+                    Quantity = transaction.SellQuantity,
                     Price = situation.Source.PresentPrice,
-                    QuotedQuantity = snapshot.SellPrice,
-                    TransactionId = $"{snapshot.Step:000000}_0_{snapshot.SellSymbol}_{snapshot.BuySymbol}",
+                    QuotedQuantity = transaction.SellPrice,
+                    TransactionId = $"{transaction.Step:000000}_0_{transaction.SellSymbol}_{transaction.BuySymbol}",
                 };
                 buyAction = new BuyAction
                 {
                     Symbol = situation.Destination.Symbol,
-                    Quantity = snapshot.BuyQuantity,
+                    Quantity = transaction.BuyQuantity,
                     Price = situation.Destination.PresentPrice,
-                    QuotedQuantity = snapshot.BuyPrice,
-                    TransactionId = $"{snapshot.Step:000000}_1_{snapshot.BuySymbol}_{snapshot.SellSymbol}",
+                    QuotedQuantity = transaction.BuyPrice,
+                    TransactionId = $"{transaction.Step:000000}_1_{transaction.BuySymbol}_{transaction.SellSymbol}",
                 };
             }
             else
@@ -69,66 +69,66 @@
                 buyAction = null;
             }
 
-            return snapshot.IsWorthIt;
+            return transaction.IsWorthIt;
         }
 
         public void ToInitialConversionActions(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
-            var snapshot = _context.Snapshot;
+            var transaction = _context.CurrentTransaction;
 
             using var data = new DataContext();
 
-            var lastPurchaseForSource = data.FindLastPurchase(snapshot.SellSymbol, _context.Trading);
+            var lastPurchaseForSource = data.FindLastPurchase(transaction.SellSymbol, _context.Trading);
             var quantityToSell = 
                 lastPurchaseForSource?.BuyQuantity ?? 
-                (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(snapshot.SellSymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+                (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(transaction.SellSymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
 
-            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(snapshot.BuySymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(transaction.BuySymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
             quantityToBuy = quantityToBuy * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
             quantityToSell = quantityToSell * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
 
-            var previousSnapShot = data.FindPreviousSnapshot(_context.Trading);
-            if (previousSnapShot == null)
+            var previousTransaction = data.FindPreviousTransaction(_context.Trading);
+            if (previousTransaction == null)
             {
                 sellAction = new SellAction
                 {
-                    Symbol = snapshot.SellSymbol,
+                    Symbol = transaction.SellSymbol,
                     Price = sourcePrice,
                     Quantity = quantityToSell,
                     QuotedQuantity = sourcePrice * quantityToSell,
-                    TransactionId = $"{snapshot.Step:000000}_0_{snapshot.SellSymbol}_{snapshot.BuySymbol}",
+                    TransactionId = $"{transaction.Step:000000}_0_{transaction.SellSymbol}_{transaction.BuySymbol}",
                 };
             }
             else
             {
-                if (previousSnapShot.BuySymbol != snapshot.SellSymbol)
+                if (previousTransaction.BuySymbol != transaction.SellSymbol)
                 {
-                    var message = $"Previous initial transaction did not purchase {snapshot.SellSymbol}";
+                    var message = $"Previous initial transaction did not purchase {transaction.SellSymbol}";
                     throw new InvalidOperationException(message);
                 }
                 
-                var sourceQuantityToSell = previousSnapShot.BuyQuantity;
+                var sourceQuantityToSell = previousTransaction.BuyQuantity;
                 sellAction = new SellAction
                 {
-                    Symbol = snapshot.SellSymbol,
+                    Symbol = transaction.SellSymbol,
                     Quantity = sourceQuantityToSell,
                     Price = sourcePrice,
                     QuotedQuantity = sourcePrice * sourceQuantityToSell,
-                    TransactionId = $"{snapshot.Step:000000}_0_{snapshot.SellSymbol}_{snapshot.BuySymbol}",
+                    TransactionId = $"{transaction.Step:000000}_0_{transaction.SellSymbol}_{transaction.BuySymbol}",
                 };
             }
 
             var destinationPrice = situation.Destination.PresentPrice;
             buyAction = new BuyAction
             {
-                Symbol = snapshot.BuySymbol,
+                Symbol = transaction.BuySymbol,
                 Price = destinationPrice,
                 Quantity = quantityToBuy,
                 QuotedQuantity = destinationPrice * quantityToBuy,
-                TransactionId = $"{snapshot.Step:000000}_1_{snapshot.BuySymbol}_{snapshot.SellSymbol}",
+                TransactionId = $"{transaction.Step:000000}_1_{transaction.BuySymbol}_{transaction.SellSymbol}",
             };
         }
     }

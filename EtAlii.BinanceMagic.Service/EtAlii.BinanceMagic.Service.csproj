@@ -51,8 +51,8 @@
     <Compile Update="Trading\Circular\Algorithm\ITradeDetailsUpdater.cs">
       <DependentUpon>TradeDetailsUpdater.cs</DependentUpon>
     </Compile>
-    <Compile Update="Trading\Circular\CircularTradeSnapshotCard.cs">
-      <DependentUpon>CircularTradeSnapshotCard.razor</DependentUpon>
+    <Compile Update="Trading\Circular\CircularTransactionCard.cs">
+      <DependentUpon>CircularTransactionCard.razor</DependentUpon>
     </Compile>
     <Compile Update="Trading\OneOff\OneOffEdit.cs">
       <DependentUpon>OneOffEdit.razor</DependentUpon>
@@ -60,10 +60,41 @@
     <Compile Update="Trading\Dashboard.cs">
       <DependentUpon>Dashboard.razor</DependentUpon>
     </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromOtherCoin.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromOtherCoin.IsNoSymbolPair.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromOtherCoin.SymbolPair.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromUsdt.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.ToUsdt.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.18" />
+
+    <PackageReference Include="Binance.Net" Version="6.13.3" />
+    <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.18" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
+    <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="stateless" Version="5.11.0" />
+    <PackageReference Include="Trady.Analysis" Version="3.2.8" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
     
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
     <PackageReference Include="Blazorise.Charts" Version="0.9.3.6" />
@@ -82,7 +113,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.6" />
-    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,11 +125,11 @@
     <Folder Include="Trading\Experimental\Algorithm" />
     <Folder Include="Trading\OneOff\Algorithm" />
     <Folder Include="Trading\Simple\Algorithm" />
-    <Folder Include="Trading\Surfing\Algorithm" />
     <Folder Include="wwwroot\fonts" />
   </ItemGroup>
 
   <ItemGroup>
     <StatelessFile Include="Trading\Circular\Algorithm\CircularSequence.puml" />
+    <StatelessFile Include="Trading\Surfing\Algorithm\Sequence.puml" />
   </ItemGroup>
 </Project>

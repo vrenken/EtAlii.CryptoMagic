@@ -1,0 +1,24 @@
+﻿@namespace EtAlii.BinanceMagic.Service
+
+<Card>
+    <CardHeader>@Title</CardHeader>
+    <Table Striped="false" Borderless="true" Narrow="true">
+        <TableBody>
+            <TableRow>
+                <TableRowCell>Sell: </TableRowCell><TableRowCell><span style="@SellPriceStyle">@Transaction.SellPrice.ToHtml("+") @Trading.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Transaction.SellQuantity.ToHtml("+") @Transaction.SellSymbol</TableRowCell>
+                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@SellTrendStyle">@Transaction.SellTrend.ToShortHtml()</span></TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Buy: </TableRowCell><TableRowCell><span style="@BuyPriceStyle">@Transaction.BuyPrice.ToHtml("-") @Trading.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Quantity: </TableRowCell><TableRowCell>@Transaction.BuyQuantity.ToHtml("-") @Transaction.BuySymbol</TableRowCell>
+                <TableRowCell>Trend: </TableRowCell><TableRowCell><span style="@BuyTrendStyle">@Transaction.BuyTrend.ToShortHtml()</span></TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Diff: </TableRowCell><TableRowCell><span style="@DifferenceStyle">@Transaction.Difference.ToHtml() @Trading.ReferenceSymbol</span></TableRowCell>
+                <TableRowCell>Target: </TableRowCell><TableRowCell>@Transaction.Target.ToHtml("+") @Trading.ReferenceSymbol</TableRowCell>
+                <TableRowCell></TableRowCell><TableRowCell></TableRowCell>
+            </TableRow>
+        </TableBody>
+    </Table>
+</Card>        

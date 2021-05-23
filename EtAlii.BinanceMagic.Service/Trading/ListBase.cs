@@ -6,15 +6,15 @@
     using System.Linq;
     using Microsoft.AspNetCore.Components;
 
-    public abstract class ListBase<TSnapshot, TTrading> : ComponentBase, IDisposable
-        where TSnapshot: class
+    public abstract class ListBase<TTransaction, TTrading> : ComponentBase, IDisposable
+        where TTransaction: TransactionBase
         where TTrading : TradingBase, new()
     {
         [Inject] AlgorithmManager AlgorithmManager { get; init; }
         [Inject] NavigationManager NavigationManager { get; init; }
         [Inject] protected ApplicationContext ApplicationContext { get; init; }
 
-        protected ObservableCollection<IAlgorithmRunner<TSnapshot, TTrading>> Tradings { get; } = new();
+        protected ObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> Tradings { get; } = new();
         
         protected abstract string GetViewNavigationUrl(Guid id);
         protected abstract string GetEditNavigationUrl();
@@ -45,14 +45,14 @@
                 switch (e.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
-                        foreach (var newItem in e.NewItems!.OfType<IAlgorithmRunner<TSnapshot, TTrading>>())
+                        foreach (var newItem in e.NewItems!.OfType<IAlgorithmRunner<TTransaction, TTrading>>())
                         {
                             AddRunner(newItem);
                         }
 
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        foreach (var oldItem in e.OldItems!.OfType<IAlgorithmRunner<TSnapshot, TTrading>>())
+                        foreach (var oldItem in e.OldItems!.OfType<IAlgorithmRunner<TTransaction, TTrading>>())
                         {
                             RemoveRunner(oldItem);
                         }
@@ -70,19 +70,19 @@
         private void ReloadRunners()
         {
             var runners = AlgorithmManager.Runners
-                .OfType<IAlgorithmRunner<TSnapshot, TTrading>>()
+                .OfType<IAlgorithmRunner<TTransaction, TTrading>>()
                 .ToArray();
             foreach (var runner in runners)
             {
                 AddRunner(runner);
             }
         }
-        private void RemoveRunner(IAlgorithmRunner<TSnapshot, TTrading> runner)
+        private void RemoveRunner(IAlgorithmRunner<TTransaction, TTrading> runner)
         {
             Tradings.Remove(runner);
         }
 
-        private void AddRunner(IAlgorithmRunner<TSnapshot, TTrading> runner)
+        private void AddRunner(IAlgorithmRunner<TTransaction, TTrading> runner)
         {
             Tradings.Add(runner);
         }

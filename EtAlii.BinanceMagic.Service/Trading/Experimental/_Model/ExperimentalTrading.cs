@@ -4,6 +4,6 @@ namespace EtAlii.BinanceMagic.Service
 
     public class ExperimentalTrading : TradingBase
     {
-        public IList<ExperimentalTradeDetailsSnapshot> Snapshots { get; private set; } = new List<ExperimentalTradeDetailsSnapshot>();
+        public IList<ExperimentalTransaction> Transactions { get; private set; } = new List<ExperimentalTransaction>();
     }
 }

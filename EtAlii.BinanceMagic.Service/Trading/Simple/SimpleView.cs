@@ -5,7 +5,7 @@
 
     public partial class SimpleView
     {
-        public SimpleTradeDetailsSnapshot Current { get; } = new ();
+        public SimpleTransaction Current { get; } = new ();
         protected override SimpleTrading GetTrading(Guid id)
         {
             using var data = new DataContext();

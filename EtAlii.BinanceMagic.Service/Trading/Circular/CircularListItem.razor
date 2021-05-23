@@ -10,11 +10,11 @@
             </Step>
             <Step Name="LastSuccess">
                 <Marker><Icon Name="IconName.Check" /></Marker>
-                <Caption><small><div class="text-center">@Context.Snapshot.LastSuccess.ToMultiLineHtml()</div></small></Caption>
+                <Caption><small><div class="text-center">@Context.CurrentTransaction.LastSuccess.ToMultiLineHtml()</div></small></Caption>
             </Step>
             <Step Name="NextAction">
                 <Marker><Icon Name="@("fa-history")" /></Marker>
-                <Caption><small><div class="text-center">@Context.Snapshot.NextCheck.ToMultiLineHtml()</div></small></Caption>
+                <Caption><small><div class="text-center">@Context.CurrentTransaction.NextCheck.ToMultiLineHtml()</div></small></Caption>
             </Step>
             <Step Name="End">
                 <Marker><Icon Name="@(Context.Trading.TradeMethod == TradeMethod.BackTest ? "fa-flag-checkered" : "fa-infinity")"/></Marker>   
@@ -28,5 +28,5 @@
             <StepPanel Name="End" />
         </Content>
     </Steps>
-    <H1 class="text-right">@Context.Snapshot.Profit.ToHtml("") @Context.Trading.ReferenceSymbol</H1>            
+    <h1 class="text-right">@Context.CurrentTransaction.Profit.ToHtml("") @Context.Trading.ReferenceSymbol</h1>            
 </ListGroupItem>

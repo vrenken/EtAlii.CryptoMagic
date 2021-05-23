@@ -6,27 +6,27 @@
     {
         private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation)
         {
-            var snapshot = _context.Snapshot;
+            var transaction = _context.CurrentTransaction;
             
             var targetSucceeded = false;
             
-            snapshot.Result = "Initial cycle";
-            snapshot.LastCheck = _timeManager.GetNow();
-            _context.RaiseChanged();
+            transaction.Result = "Initial cycle";
+            transaction.LastCheck = _timeManager.GetNow();
+            _context.Update(transaction);
 
             _circularAlgorithm.ToInitialConversionActions(situation, out var initialSellAction, out var initialBuyAction);
-            snapshot.Result = $"Preparing to sell {initialSellAction.Quantity} {initialSellAction.Symbol} and buy {initialBuyAction.Quantity} {initialBuyAction.Symbol}";
-            snapshot.LastCheck = _timeManager.GetNow();
-            _context.RaiseChanged();
+            transaction.Result = $"Preparing to sell {initialSellAction.Quantity} {initialSellAction.Symbol} and buy {initialBuyAction.Quantity} {initialBuyAction.Symbol}";
+            transaction.LastCheck = _timeManager.GetNow();
+            _context.Update(transaction);
 
-            if (_client.TryConvert(initialSellAction, initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
+            if (_client.TryConvert(initialSellAction, initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var tradeTransaction, out var error))
             {
-                SaveAndReplaceSnapshot(snapshot, transaction);
+                SaveAndReplaceTransaction(transaction, tradeTransaction);
                 targetSucceeded = true;
             }
             else
             {
-                snapshot.Result = error;
+                transaction.Result = error;
             }
             return targetSucceeded;
         }

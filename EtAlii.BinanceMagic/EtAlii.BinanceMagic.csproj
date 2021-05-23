@@ -6,57 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Binance.Net" Version="6.13.3" />
-      <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.18" />
-      <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
-      <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
-      <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
-      <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
-      <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-      <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
-      <PackageReference Include="stateless" Version="5.11.0" />
-      <PackageReference Include="Trady.Analysis" Version="3.2.8" />
-      <PackageReference Include="System.Reactive" Version="5.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Algorithms\Surfing\Sequence.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <StatelessFile Include="Experiments\Surfing\Sequence.puml" />
-      <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.IsNoSymbolPair.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Algorithms\Surfing\Sequence.FromOtherCoin.SymbolPair.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Algorithms\Surfing\Sequence.ToUsdt.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Algorithms\Surfing\Sequence.FromUsdt.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Experiments\Surfing\Sequence.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Experiments\Surfing\Sequence.FromOtherCoin.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Experiments\Surfing\Sequence.FromUsdt.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Experiments\Surfing\Sequence.FromOtherCoin.SymbolPair.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Experiments\Surfing\Sequence.ToUsdt.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
-      <Compile Update="Experiments\Surfing\Sequence.FromOtherCoin.IsNoSymbolPair.cs">
-        <DependentUpon>Sequence.puml</DependentUpon>
-      </Compile>
     </ItemGroup>
 
 </Project>

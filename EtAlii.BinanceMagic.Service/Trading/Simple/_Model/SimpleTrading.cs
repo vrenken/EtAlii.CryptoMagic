@@ -4,6 +4,6 @@ namespace EtAlii.BinanceMagic.Service
 
     public class SimpleTrading : TradingBase
     {
-        public IList<SimpleTradeDetailsSnapshot> Snapshots { get; private set; } = new List<SimpleTradeDetailsSnapshot>();
+        public IList<SimpleTransaction> Transactions { get; private set; } = new List<SimpleTransaction>();
     }
 }

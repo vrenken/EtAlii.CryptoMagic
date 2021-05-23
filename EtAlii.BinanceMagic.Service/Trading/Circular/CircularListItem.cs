@@ -5,7 +5,7 @@
 
     public partial class CircularListItem : IDisposable
     {
-        [Parameter] public IAlgorithmContext<CircularTradeSnapshot, CircularTrading> Context { get; set; }
+        [Parameter] public IAlgorithmContext<CircularTransaction, CircularTrading> Context { get; set; }
         [Inject] NavigationManager NavigationManager { get; init; }
 
         protected override void OnInitialized()

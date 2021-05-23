@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Linq;
+    using EtAlii.BinanceMagic.Service.Surfing;
     using Microsoft.EntityFrameworkCore;
 
     public partial class AlgorithmManager 

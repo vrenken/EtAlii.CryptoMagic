@@ -9,14 +9,14 @@ namespace EtAlii.BinanceMagic.Service
         Guid TradingId { get; }
     }
     
-    public interface IAlgorithmRunner<TSnapshot, TTrading> : IAlgorithmRunner
-        where TSnapshot : class
+    public interface IAlgorithmRunner<TTransaction, TTrading> : IAlgorithmRunner
+        where TTransaction : TransactionBase
         where TTrading: TradingBase
     {
         event Action Changed;
         string Log { get; }
 
-        IAlgorithmContext<TSnapshot, TTrading> Context { get; }
+        IAlgorithmContext<TTransaction, TTrading> Context { get; }
         Guid IAlgorithmRunner.TradingId => Context.Trading.Id;
     }
 }

@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using EtAlii.BinanceMagic.Service.Surfing;
     using Microsoft.EntityFrameworkCore;
     using Serilog;
     using Serilog.Extensions.Logging;
@@ -13,7 +14,8 @@ namespace EtAlii.BinanceMagic.Service
         public DbSet<SurfingTrading> SurfingTradings { get; init; }
         public DbSet<ExperimentalTrading> ExperimentalTradings { get; init; }
         public DbSet<OneOffTrading> OneOffTradings { get; init; }
-        public DbSet<CircularTradeSnapshot> CircularTradeSnapshots { get; init; }
+        
+        public DbSet<CircularTransaction> CircularTransactions { get; init; }
         
         private readonly ILogger _logger = Log.ForContext<DataContext>();
 

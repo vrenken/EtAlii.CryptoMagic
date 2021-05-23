@@ -2,7 +2,7 @@
 
 @namespace EtAlii.BinanceMagic.Service
 
-@inherits ViewBase<CircularTradeSnapshot, CircularTrading, CircularAlgorithmRunner>
+@inherits ViewBase<CircularTransaction, CircularTrading, CircularAlgorithmRunner>
 
 <Heading Margin="Margin.Is4">@Model.Name</Heading>
 
@@ -49,9 +49,9 @@
 
 <Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-        <CircularTradeSnapshotCard 
+        <CircularTransactionCard 
             Title="Current cycle" 
-            Snapshot="@CurrentRunner.Context.Snapshot"
+            Transaction="@CurrentRunner.Context.CurrentTransaction"
             Trading="@CurrentRunner.Context.Trading"/>
     </Column>    
 </Row>
@@ -59,9 +59,9 @@
 <Repeater Items="@History">
     <Row Margin="Margin.Is4">
         <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-            <CircularTradeSnapshotCard 
+            <CircularTransactionCard 
                 Title="@($"Cycle {context.LastSuccess}")" 
-                Snapshot="@context" 
+                Transaction="@context" 
                 Trading="@CurrentRunner.Context.Trading"/>
         </Column>
     </Row>

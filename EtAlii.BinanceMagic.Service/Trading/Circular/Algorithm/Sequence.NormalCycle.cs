@@ -6,28 +6,28 @@
     {
         private bool TryHandleNormalCycle(CancellationToken cancellationToken, Situation situation, out bool targetSucceeded)
         {
-            var snapshot = _context.Snapshot;
+            var transaction = _context.CurrentTransaction;
 
             targetSucceeded = false;
 
             if (_circularAlgorithm.TransactionIsWorthIt(situation, out var sellAction, out var buyAction))
             {
-                snapshot.Result = $"Preparing to sell {sellAction.Quantity} {sellAction.Symbol} and buy {buyAction.Quantity} {buyAction.Symbol}";
-                snapshot.LastCheck = _timeManager.GetNow();
-                _context.RaiseChanged();
+                transaction.Result = $"Preparing to sell {sellAction.Quantity} {sellAction.Symbol} and buy {buyAction.Quantity} {buyAction.Symbol}";
+                transaction.LastCheck = _timeManager.GetNow();
+                _context.Update(transaction);
 
-                snapshot.Result = "Feasible transaction found - Converting...";
-                snapshot.LastCheck = _timeManager.GetNow();
-                _context.RaiseChanged();
+                transaction.Result = "Feasible transaction found - Converting...";
+                transaction.LastCheck = _timeManager.GetNow();
+                _context.Update(transaction);
 
-                if (_client.TryConvert(sellAction, buyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
+                if (_client.TryConvert(sellAction, buyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var tradeTransaction, out var error))
                 {
-                    SaveAndReplaceSnapshot(snapshot, transaction);
+                    SaveAndReplaceTransaction(transaction, tradeTransaction);
                     targetSucceeded = true;
                 }
                 else
                 {
-                    snapshot.Result = error;
+                    transaction.Result = error;
                 }
             }
 

@@ -1,5 +1,6 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using EtAlii.BinanceMagic.Service.Surfing;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

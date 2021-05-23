@@ -4,10 +4,10 @@
     using System.Linq;
     using Microsoft.AspNetCore.Components;
 
-    public abstract class ViewBase<TSnapshot, TTrading, TRunner> : ComponentBase, IDisposable
-        where TSnapshot: class
+    public abstract class ViewBase<TTransaction, TTrading, TRunner> : ComponentBase, IDisposable
+        where TTransaction: TransactionBase
         where TTrading : TradingBase, new()
-        where TRunner : IAlgorithmRunner<TSnapshot, TTrading>
+        where TRunner : IAlgorithmRunner<TTransaction, TTrading>
     {
         [Inject] AlgorithmManager AlgorithmManager { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }

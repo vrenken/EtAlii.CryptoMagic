@@ -1,18 +1,15 @@
-namespace EtAlii.BinanceMagic.Service
+namespace EtAlii.BinanceMagic.Service.Surfing
 {
-    public class SurfingAlgorithmRunner : IAlgorithmRunner<SurfingTradeDetailsSnapshot, SurfingTrading>
+    public class SurfingAlgorithmRunner : IAlgorithmRunner<SurfingTransaction, SurfingTrading>
     {
         public event System.Action Changed;
         
         public string Log { get; } = string.Empty;
-        public IAlgorithmContext<SurfingTradeDetailsSnapshot, SurfingTrading> Context { get; }
+        public IAlgorithmContext<SurfingTransaction, SurfingTrading> Context { get; }
 
         public SurfingAlgorithmRunner(SurfingTrading trading)
         {
-            Context = new AlgorithmContext<SurfingTradeDetailsSnapshot, SurfingTrading>
-            {
-                Trading = trading,
-            };
+            Context = new AlgorithmContext<SurfingTransaction, SurfingTrading>(trading);
         }
         public void Start()
         {
