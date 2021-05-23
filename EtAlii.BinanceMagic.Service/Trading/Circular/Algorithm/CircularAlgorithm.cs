@@ -5,31 +5,28 @@
     public class CircularAlgorithm : ICircularAlgorithm
     {
         private readonly IClient _client;
-        private readonly CircularTrading _trading;
         private readonly IAlgorithmContext<CircularTradeSnapshot, CircularTrading> _context;
 
         public CircularAlgorithm(
             IClient client,
-            CircularTrading trading,
             IAlgorithmContext<CircularTradeSnapshot, CircularTrading> context)
         {
             _client = client;
-            _trading = trading;
             _context = context;
         }
 
         public bool TransactionIsWorthIt(Situation situation, out SellAction sellAction, out BuyAction buyAction)
         {
             var snapshot = _context.Snapshot;
-            snapshot.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
-            snapshot.SellQuantity = situation.Source.PastQuantity * _trading.MaxQuantityToTrade;
+            snapshot.SellQuantityMinimum = _client.GetMinimalQuantity(situation.Source.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+            snapshot.SellQuantity = situation.Source.PastQuantity * _context.Trading.MaxQuantityToTrade;
             snapshot.SellPrice = situation.Source.PresentPrice * snapshot.SellQuantity;
             snapshot.SellPriceIsOptimal = snapshot.SellPrice >= snapshot.SellQuantityMinimum;
             snapshot.SellTrend = situation.SellTrend;
             snapshot.SellTrendIsOptimal = snapshot.SellPrice <= 60m; // Remark. it is positive when it does not increase anymore.
 
-            snapshot.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
-            snapshot.BuyQuantity = ((snapshot.BuyQuantityMinimum * _trading.QuantityFactor) / situation.Destination.PresentPrice) * _trading.MaxQuantityToTrade;
+            snapshot.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+            snapshot.BuyQuantity = ((snapshot.BuyQuantityMinimum * _context.Trading.QuantityFactor) / situation.Destination.PresentPrice) * _context.Trading.MaxQuantityToTrade;
             snapshot.BuyPrice = snapshot.BuyQuantity * situation.Destination.PresentPrice;
             snapshot.BuyPriceIsOptimal = snapshot.BuyPrice >= snapshot.BuyQuantityMinimum;
             snapshot.BuyTrend = situation.BuyTrend;
@@ -81,19 +78,19 @@
 
             using var data = new DataContext();
 
-            var lastPurchaseForSource = data.FindLastPurchase(snapshot.SellSymbol, _trading);
+            var lastPurchaseForSource = data.FindLastPurchase(snapshot.SellSymbol, _context.Trading);
             var quantityToSell = 
                 lastPurchaseForSource?.BuyQuantity ?? 
-                (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(snapshot.SellSymbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
+                (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(snapshot.SellSymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
 
-            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(snapshot.BuySymbol, situation.ExchangeInfo, _trading.ReferenceSymbol);
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(snapshot.BuySymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
 
             var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
 
-            quantityToBuy = quantityToBuy * _trading.NotionalMinCorrection * _trading.QuantityFactor;
-            quantityToSell = quantityToSell * _trading.NotionalMinCorrection * _trading.QuantityFactor;
+            quantityToBuy = quantityToBuy * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
+            quantityToSell = quantityToSell * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
 
-            var previousSnapShot = data.FindPreviousSnapshot(_trading);
+            var previousSnapShot = data.FindPreviousSnapshot(_context.Trading);
             if (previousSnapShot == null)
             {
                 sellAction = new SellAction

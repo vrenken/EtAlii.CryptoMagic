@@ -4,5 +4,7 @@ namespace EtAlii.BinanceMagic.Service
     {
         public string Name { get; set; }
         public string ReferenceSymbol { get; init; }
+        
+        public decimal TotalProfit { get; set; }
     }
 }

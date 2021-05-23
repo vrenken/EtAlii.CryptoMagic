@@ -1,15 +1,18 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    public class SimpleAlgorithmRunner : IAlgorithmRunner<SimpleTrading>
+    public class SimpleAlgorithmRunner : IAlgorithmRunner<SimpleTradeDetailsSnapshot, SimpleTrading>
     {
         public event System.Action Changed;
         
         public string Log { get; } = string.Empty;
-        public SimpleTrading Trading { get; }
+        public IAlgorithmContext<SimpleTradeDetailsSnapshot, SimpleTrading> Context { get; }
 
         public SimpleAlgorithmRunner(SimpleTrading trading)
         {
-            Trading = trading;
+            Context = new AlgorithmContext<SimpleTradeDetailsSnapshot, SimpleTrading>
+            {
+                Trading = trading,
+            };
         }
         public void Start()
         {

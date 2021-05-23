@@ -6,6 +6,7 @@
     {
         [Parameter] public string Title { get; set; }
         [Parameter] public CircularTradeSnapshot Snapshot { get; set; }
+        [Parameter] public CircularTrading Trading { get; set; }
 
         private const string PositiveStyle = "background-color:green;color:white";
         private const string NegativeStyle = "background-color:red;color:white";        

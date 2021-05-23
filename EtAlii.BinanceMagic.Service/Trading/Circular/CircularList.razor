@@ -2,7 +2,7 @@
 
 @namespace EtAlii.BinanceMagic.Service
 
-@inherits ListBase<CircularTrading>
+@inherits ListBase<CircularTradeSnapshot, CircularTrading>
 
 <Heading Margin="Margin.Is4">
     <Icon IconName="@("fa-infinity")"/> Circular tradings
@@ -10,12 +10,13 @@
 
 <ListGroup Margin="Margin.Is4">
     <Repeater Items="@Tradings">
-        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Trading.Id))">
+        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Context.Trading.Id))">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">@context.Trading.Name</h5>
-                <small>@context.Trading.TradeMethod</small>
+                <h5 class="mb-1">@context.Context.Trading.Name</h5>
+                <small>@context.Context.Snapshot.Step</small>
             </div>
-                <Paragraph>Stuff goes here.</Paragraph>            
+                <Paragraph>@context.Context.Snapshot.Profit @context.Context.Trading.ReferenceSymbol</Paragraph>            
+                <Paragraph>Last: @context.Context.Snapshot.LastSuccess</Paragraph>            
         </ListGroupItem>
     </Repeater>
 </ListGroup>

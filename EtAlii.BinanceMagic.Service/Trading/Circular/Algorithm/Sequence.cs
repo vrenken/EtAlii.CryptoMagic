@@ -10,7 +10,6 @@ namespace EtAlii.BinanceMagic.Service
         private readonly ITradeDetailsUpdater _detailsUpdater;
         private readonly IClient _client;
         private readonly ITimeManager _timeManager;
-        private readonly CircularTrading _trading;
 
         public IAlgorithmContext<CircularTradeSnapshot, CircularTrading> Status => _context;
         private readonly IAlgorithmContext<CircularTradeSnapshot, CircularTrading> _context;
@@ -19,17 +18,15 @@ namespace EtAlii.BinanceMagic.Service
         public Sequence(
             IClient client,
             ITimeManager timeManager, 
-            CircularTrading trading, 
             IAlgorithmContext<CircularTradeSnapshot, CircularTrading> context, Action initialize = null)
         {
             _client = client;
             _timeManager = timeManager;
-            _trading = trading;
             _context = context;
             _initialize = initialize;
 
-            _detailsUpdater = new TradeDetailsUpdater(trading);
-            _circularAlgorithm = new CircularAlgorithm(client, trading, _context);
+            _detailsUpdater = new TradeDetailsUpdater(_context);
+            _circularAlgorithm = new CircularAlgorithm(client, _context);
         }
 
         public void Initialize(CancellationToken cancellationToken) => _initialize?.Invoke();
@@ -49,7 +46,7 @@ namespace EtAlii.BinanceMagic.Service
             {
                 if (shouldDelay)
                 {
-                    snapshot.NextCheck = _timeManager.GetNow() + _trading.SampleInterval;
+                    snapshot.NextCheck = _timeManager.GetNow() + _context.Trading.SampleInterval;
 
                     var isTransition = snapshot.NextCheck.Hour != snapshot.LastCheck.Hour;
                     _context.RaiseChanged(isTransition ? AlgorithmChange.Important : AlgorithmChange.Normal);
@@ -62,7 +59,7 @@ namespace EtAlii.BinanceMagic.Service
                         return;
                     }
                     
-                    _timeManager.Wait(_trading.SampleInterval, cancellationToken);
+                    _timeManager.Wait(_context.Trading.SampleInterval, cancellationToken);
                 }
                 snapshot.NextCheck = DateTime.MinValue;
                 snapshot.Result = "Fetching current situation...";
@@ -113,43 +110,43 @@ namespace EtAlii.BinanceMagic.Service
 
         private bool TryGetSituation(CircularTradeSnapshot snapshot, CancellationToken cancellationToken, out Situation situation, out string error)
         {
-            if (!_client.TryGetPrice(snapshot.SellSymbol, _trading.ReferenceSymbol, cancellationToken, out var sourcePrice, out error))
+            if (!_client.TryGetPrice(snapshot.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var sourcePrice, out error))
             {
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetPrice(snapshot.BuySymbol, _trading.ReferenceSymbol, cancellationToken, out var targetPrice, out error))
+            if (!_client.TryGetPrice(snapshot.BuySymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var targetPrice, out error))
             {
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetTradeFees(snapshot.SellSymbol, _trading.ReferenceSymbol, cancellationToken, out var sourceMakerFee, out var _, out error))
+            if (!_client.TryGetTradeFees(snapshot.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var sourceMakerFee, out var _, out error))
             {
                 situation = null;
                 return false;
             }
             
-            if (!_client.TryGetTradeFees(snapshot.BuySymbol, _trading.ReferenceSymbol, cancellationToken, out var _, out var destinationTakerFee, out error))
+            if (!_client.TryGetTradeFees(snapshot.BuySymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var _, out var destinationTakerFee, out error))
             {
                 situation = null;
                 return false;
             }
 
-            if (!_client.TryGetTrend(snapshot.SellSymbol, _trading.ReferenceSymbol, _trading.RsiPeriod, cancellationToken, out var sellTrend, out error))
+            if (!_client.TryGetTrend(snapshot.SellSymbol, _context.Trading.ReferenceSymbol, _context.Trading.RsiPeriod, cancellationToken, out var sellTrend, out error))
             {
                 situation = null;
                 return false;
             }
-            if (!_client.TryGetTrend(snapshot.BuySymbol, _trading.ReferenceSymbol, _trading.RsiPeriod, cancellationToken, out var buyTrend, out error))
+            if (!_client.TryGetTrend(snapshot.BuySymbol, _context.Trading.ReferenceSymbol, _context.Trading.RsiPeriod, cancellationToken, out var buyTrend, out error))
             {
                 situation = null;
                 return false;
             }
 
             using var data = new DataContext();
-            var lastSourcePurchase = data.FindLastPurchase(snapshot.SellSymbol, _trading);
+            var lastSourcePurchase = data.FindLastPurchase(snapshot.SellSymbol, _context.Trading);
             var sourceDelta = new Delta
             {
                 Symbol = snapshot.SellSymbol,
@@ -158,7 +155,7 @@ namespace EtAlii.BinanceMagic.Service
                 PresentPrice = sourcePrice,
             };
 
-            var lastTargetSell = data.FindLastSell(snapshot.BuySymbol, _trading);
+            var lastTargetSell = data.FindLastSell(snapshot.BuySymbol, _context.Trading);
             var targetDelta = new Delta
             {
                 Symbol = snapshot.BuySymbol,
@@ -198,11 +195,14 @@ namespace EtAlii.BinanceMagic.Service
                     
             using var data = new DataContext();
             snapshot.Profit = snapshot.SellPrice - snapshot.BuyPrice;
-            snapshot.TotalProfit = snapshot.Profit + data.GetTotalProfits(_trading);
-
+            
+            _context.Trading.TotalProfit = snapshot.Profit + data.GetTotalProfits(_context.Trading);
+            
             _context.RaiseChanged(AlgorithmChange.Important);
                     
             _context.Snapshot = snapshot = snapshot.ShallowClone();
+
+            data.Entry(_context.Trading.TotalProfit).State = EntityState.Modified;
             data.Entry(snapshot).State = EntityState.Added;
             data.SaveChanges();
         }

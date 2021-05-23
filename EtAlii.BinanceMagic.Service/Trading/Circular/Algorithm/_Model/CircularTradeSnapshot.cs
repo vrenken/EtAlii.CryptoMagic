@@ -6,8 +6,6 @@
     {
         public CircularTrading Trading { get; init; }
         
-        public string ReferenceSymbol { get; set; }
-        
         public string SellSymbol { get; set; }
         public decimal SellPrice { get; set; }
         public decimal SellQuantity { get; set; }
@@ -45,7 +43,6 @@
         public bool Error { get; set; }
 
         public bool IsWorthIt { get; set; }
-        public decimal TotalProfit { get; set; }
 
         public CircularTradeSnapshot ShallowClone()
         {

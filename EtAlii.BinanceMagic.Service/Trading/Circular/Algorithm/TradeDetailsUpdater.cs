@@ -5,36 +5,35 @@
 
     public class TradeDetailsUpdater : ITradeDetailsUpdater
     {
-        private readonly CircularTrading _trading;
+        private readonly IAlgorithmContext<CircularTradeSnapshot, CircularTrading> _context;
 
-        public TradeDetailsUpdater(CircularTrading trading)
+        public TradeDetailsUpdater(IAlgorithmContext<CircularTradeSnapshot, CircularTrading> context)
         {
-            _trading = trading;
+            _context = context;
         }
 
         public void UpdateTargetDetails(CircularTradeSnapshot snapshot)
         {
             using var data = new DataContext();
-            var lastTransaction = data.FindPreviousSnapshot(_trading);
+            var lastTransaction = data.FindPreviousSnapshot(_context.Trading);
 
             var snapshotCount = data.CircularTradeSnapshots
                 .Include(s => s.Trading)
-                .Count(s => s.Trading.Id == _trading.Id);
+                .Count(s => s.Trading.Id == _context.Trading.Id);
 
             var source = lastTransaction == null
-                ? _trading.FirstSymbol
+                ? _context.Trading.FirstSymbol
                 : lastTransaction.BuySymbol;
             var destination = lastTransaction == null
-                ? _trading.SecondSymbol
+                ? _context.Trading.SecondSymbol
                 : lastTransaction.SellSymbol;
 
             var target = lastTransaction != null
-                ? lastTransaction.Target * _trading.TargetIncrease
-                : _trading.InitialTarget;
+                ? lastTransaction.Target * _context.Trading.TargetIncrease
+                : _context.Trading.InitialTarget;
             
             snapshot.SellSymbol = source;
             snapshot.BuySymbol = destination;
-            snapshot.ReferenceSymbol = _trading.ReferenceSymbol;
             snapshot.Step = snapshotCount + 1;
             snapshot.Target = target;
             

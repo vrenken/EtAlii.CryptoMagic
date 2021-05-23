@@ -19,7 +19,7 @@ namespace EtAlii.BinanceMagic.Service
 
             if (!isNewTrading)
             {
-                var runnerToReplace = Runners.Single(r => r.Trading.Id == trading.Id);
+                var runnerToReplace = Runners.Single(r => r.TradingId == trading.Id);
                 _runners.Remove(runnerToReplace);
             }
             

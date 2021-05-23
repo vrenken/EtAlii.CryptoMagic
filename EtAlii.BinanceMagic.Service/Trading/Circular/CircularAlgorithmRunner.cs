@@ -4,16 +4,15 @@ namespace EtAlii.BinanceMagic.Service
     using System.IO;
     using System.Linq;
 
-    public class CircularAlgorithmRunner : IAlgorithmRunner<CircularTrading>
+    public class CircularAlgorithmRunner : IAlgorithmRunner<CircularTradeSnapshot, CircularTrading>
     {
         public string Log => _output.Result;
-        public CircularTrading Trading { get; }
+        private readonly CircularTrading _trading;
 
         private readonly ApplicationContext _applicationContext;
         private readonly WebOutput _output;
 
-        public CircularTradeSnapshot Status => _context.Snapshot;
-        private IAlgorithmContext<CircularTradeSnapshot, CircularTrading> _context; 
+        public IAlgorithmContext<CircularTradeSnapshot, CircularTrading> Context { get; private set; } 
         private Loop _loop;
         private IClient _client;
         private Sequence _sequence;
@@ -22,7 +21,7 @@ namespace EtAlii.BinanceMagic.Service
         
         public CircularAlgorithmRunner(CircularTrading trading, ApplicationContext applicationContext)
         {
-            Trading = trading;
+            _trading = trading;
             _applicationContext = applicationContext;
             _output = new WebOutput();
         }
@@ -31,19 +30,19 @@ namespace EtAlii.BinanceMagic.Service
         {
             ITimeManager time;
 
-            var coins = new[] {Trading.FirstSymbol, Trading.SecondSymbol};
+            var coins = new[] {_trading.FirstSymbol, _trading.SecondSymbol};
 
             using var data = new DataContext();
             var binanceApiKey = data.Settings.Single(s => s.Key == SettingKey.BinanceApiKey).Value;
             var binanceSecretKey = data.Settings.Single(s => s.Key == SettingKey.BinanceSecretKey).Value;
 
-            var isBackTest = Trading.TradeMethod == TradeMethod.BackTest; 
+            var isBackTest = _trading.TradeMethod == TradeMethod.BackTest; 
             if (isBackTest)
             {
                 var folder = GetType().Assembly.Location;
                 folder = Path.GetDirectoryName(folder);
                 
-                var backTestClient = new BackTestClient(coins, _applicationContext.ReferenceSymbol, _output, Trading.Id, folder);
+                var backTestClient = new BackTestClient(coins, _applicationContext.ReferenceSymbol, _output, _trading.Id, folder);
                 _client = backTestClient;
                 time = new BackTestTimeManager
                 {
@@ -55,7 +54,7 @@ namespace EtAlii.BinanceMagic.Service
                 var actionValidator = new ActionValidator();
                 _client = new Client(actionValidator)
                 {
-                    PlaceTestOrders = Trading.TradeMethod == TradeMethod.BinanceTest
+                    PlaceTestOrders = _trading.TradeMethod == TradeMethod.BinanceTest
                 };
                 time = new RealtimeTimeManager();
             }
@@ -66,14 +65,15 @@ namespace EtAlii.BinanceMagic.Service
                 ? TimeSpan.FromSeconds(10)
                 : (TimeSpan?)null;
             
-            _context = new AlgorithmContext<CircularTradeSnapshot, CircularTrading>(sampleInterval)
+            Context = new AlgorithmContext<CircularTradeSnapshot, CircularTrading>(sampleInterval)
             {
+                Trading = _trading,
                 Snapshot = new CircularTradeSnapshot
                 {
-                    Trading = Trading,
+                    Trading = _trading,
                 }
             };
-            _sequence = new Sequence(_client, time, Trading, _context, initialize);
+            _sequence = new Sequence(_client, time, Context, initialize);
             
             _sequence.Status.Changed += OnSequenceChanged;
             _loop = new Loop(_sequence);

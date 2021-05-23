@@ -2,7 +2,7 @@
 
 @namespace EtAlii.BinanceMagic.Service
 
-@inherits ListBase<SimpleTrading>
+@inherits ListBase<SimpleTradeDetailsSnapshot, SimpleTrading>
 
 <Heading Margin="Margin.Is4">
     <Icon IconName="@("fa-chart-bar")"/> Simple tradings
@@ -10,8 +10,8 @@
 
 <ListGroup Margin="Margin.Is4">
     <Repeater Items="@Tradings">
-        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Trading.Id))">
-            @context.Trading.Name
+        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Context.Trading.Id))">
+            @context.Context.Trading.Name
         </ListGroupItem>
     </Repeater>
 </ListGroup>

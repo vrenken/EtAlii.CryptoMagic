@@ -4,9 +4,10 @@
     using System.Linq;
     using Microsoft.AspNetCore.Components;
 
-    public abstract class ViewBase<TTrading, TRunner> : ComponentBase, IDisposable
+    public abstract class ViewBase<TSnapshot, TTrading, TRunner> : ComponentBase, IDisposable
+        where TSnapshot: class
         where TTrading : TradingBase, new()
-        where TRunner : IAlgorithmRunner<TTrading>
+        where TRunner : IAlgorithmRunner<TSnapshot, TTrading>
     {
         [Inject] AlgorithmManager AlgorithmManager { get; set; }
         [Inject] NavigationManager NavigationManager { get; set; }
@@ -38,7 +39,7 @@
             }
             CurrentRunner = AlgorithmManager.Runners
                 .OfType<TRunner>()
-                .Single(r => r.Trading.Id == id);
+                .Single(r => r.Context.Trading.Id == id);
             CurrentRunner.Changed += OnRunnerChangedInternal;
 
             OnLocationChanged();

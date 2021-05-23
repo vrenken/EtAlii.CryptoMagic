@@ -19,7 +19,7 @@
             snapshot.LastCheck = _timeManager.GetNow();
             _context.RaiseChanged();
 
-            if (_client.TryConvert(initialSellAction, initialBuyAction, _trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
+            if (_client.TryConvert(initialSellAction, initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var transaction, out var error))
             {
                 SaveAndReplaceSnapshot(snapshot, transaction);
                 targetSucceeded = true;

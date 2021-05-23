@@ -2,7 +2,7 @@
 
 @namespace EtAlii.BinanceMagic.Service
 
-@inherits ViewBase<CircularTrading, CircularAlgorithmRunner>
+@inherits ViewBase<CircularTradeSnapshot, CircularTrading, CircularAlgorithmRunner>
 
 <Heading Margin="Margin.Is4">@Model.Name</Heading>
 
@@ -36,7 +36,7 @@
                         <TableRowCell>Step:</TableRowCell><TableRowCell>@Current.Step</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Profit:</TableRowCell><TableRowCell>@($"{Current.TotalProfit:0.00} {Current.ReferenceSymbol}")</TableRowCell>
+                        <TableRowCell>Profit:</TableRowCell><TableRowCell>@($"{CurrentRunner.Context.Trading.TotalProfit:0.00} {CurrentRunner.Context.Trading.ReferenceSymbol}")</TableRowCell>
                     </TableRow>
                     <TableRow>
                         <TableRowCell>Result:</TableRowCell><TableRowCell>@Current.Result</TableRowCell>
@@ -49,14 +49,20 @@
 
 <Row Margin="Margin.Is4">
     <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-        <CircularTradeSnapshotCard Title="Current cycle" Snapshot="@CurrentRunner.Status" />
+        <CircularTradeSnapshotCard 
+            Title="Current cycle" 
+            Snapshot="@CurrentRunner.Context.Snapshot"
+            Trading="@CurrentRunner.Context.Trading"/>
     </Column>    
 </Row>
 
 <Repeater Items="@History">
     <Row Margin="Margin.Is4">
         <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-                <CircularTradeSnapshotCard Title="@($"Cycle {context.LastSuccess}")" Snapshot="@context" />
+            <CircularTradeSnapshotCard 
+                Title="@($"Cycle {context.LastSuccess}")" 
+                Snapshot="@context" 
+                Trading="@CurrentRunner.Context.Trading"/>
         </Column>
     </Row>
 </Repeater>
