@@ -4,11 +4,11 @@
 
 @inherits ListBase<OneOffTransaction, OneOffTrading>
 
-<Heading Margin="Margin.Is4">
+<Heading Margin="Margin.Is2">
     <Icon IconName="@("fa-chart-line")"/> One-off tradings
 </Heading>
 
-<ListGroup Margin="Margin.Is4">
+<ListGroup Margin="Margin.Is2">
     <Repeater Items="@Tradings">
     <ListGroupItem Clicked="@(() => OnTradingSelected(context.Context.Trading.Id))">
         @context.Context.Trading.Name
@@ -17,7 +17,7 @@
 </ListGroup>
 @if (ApplicationContext.IsOperational)
 {
-    <ListGroup Margin="Margin.Is4">
+    <ListGroup Margin="Margin.Is2">
         <ListGroupItem Clicked="@OnEditSelected">
             <Icon Name="@("fa-plus")"/> Add
         </ListGroupItem>
@@ -25,5 +25,5 @@
 }
 else
 {
-    <Paragraph Margin="Margin.Is4">Application is not yet configured correctly</Paragraph>
+    <Paragraph Margin="Margin.Is2">Application is not yet configured correctly</Paragraph>
 }

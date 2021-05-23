@@ -14,6 +14,11 @@ namespace EtAlii.BinanceMagic.Service
             return $"{prefix}{d:000.000000000}";
         }
 
+        public static string ToProfitHtml(this decimal d)
+        {
+            return $"{d:0.0000}";
+        }
+
         public static string ToMultiLineHtml(this DateTime dateTime, string placeHolder = "") => ToMultiLineHtml((DateTime?) dateTime, placeHolder);
 
         public static string ToMultiLineHtml(this DateTime? dateTime, string placeHolder = "")
