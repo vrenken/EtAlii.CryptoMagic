@@ -4,17 +4,15 @@
 
     public partial class Sequence
     {
-        private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation)
+        private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation, CircularTransaction transaction)
         {
-            var transaction = _context.CurrentTransaction;
-            
             var targetSucceeded = false;
             
             transaction.Result = "Initial cycle";
             transaction.LastCheck = _timeManager.GetNow();
             _context.Update(transaction);
 
-            _circularAlgorithm.ToInitialConversionActions(situation, out var initialSellAction, out var initialBuyAction);
+            _circularAlgorithm.ToInitialConversionActions(situation, transaction, out var initialSellAction, out var initialBuyAction);
             transaction.Result = $"Preparing to sell {initialSellAction.Quantity} {initialSellAction.Symbol} and buy {initialBuyAction.Quantity} {initialBuyAction.Symbol}";
             transaction.LastCheck = _timeManager.GetNow();
             _context.Update(transaction);

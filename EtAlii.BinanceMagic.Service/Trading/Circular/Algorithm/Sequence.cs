@@ -16,7 +16,7 @@ namespace EtAlii.BinanceMagic.Service
 
         public Sequence(
             IClient client,
-            ITimeManager timeManager, 
+            ITimeManager timeManager,
             IAlgorithmContext<CircularTransaction, CircularTrading> context, Action initialize = null)
         {
             _client = client;
@@ -29,10 +29,20 @@ namespace EtAlii.BinanceMagic.Service
         }
 
         public void Initialize(CancellationToken cancellationToken) => _initialize?.Invoke();
-        
+
+        private CircularTransaction GetFirstTransaction()
+        {
+            var data = new DataContext();
+            
+            var transaction = data.FindPreviousTransaction(_context.Trading);
+            return transaction ?? new CircularTransaction
+            {
+                Trading = _context.Trading,
+            };
+        }
         public void Run(CancellationToken cancellationToken, out bool keepRunning)
         {
-            var transaction = _context.CurrentTransaction;
+            var transaction = _context.CurrentTransaction ?? GetFirstTransaction();
 
             _detailsUpdater.UpdateTargetDetails(transaction);
             transaction.LastCheck = _timeManager.GetNow();
@@ -51,16 +61,16 @@ namespace EtAlii.BinanceMagic.Service
                     {
                         transaction.Result = "Back-test completed";
                         _context.Trading.End = DateTime.Now;
-                        _context.Update(_context.Trading);
+                        _context.Update(_context.Trading, transaction);
                         keepRunning = false;
                         return;
                     }
 
-                    _context.Update(transaction);
+                    _context.Update(_context.Trading, transaction);
 
                     _timeManager.Wait(_context.Trading.SampleInterval, cancellationToken);
                 }
-                transaction.NextCheck = DateTime.MinValue;
+                transaction.NextCheck = null;
                 transaction.Result = "Fetching current situation...";
                 transaction.LastCheck = _timeManager.GetNow();
                 _context.Update(transaction);
@@ -88,7 +98,7 @@ namespace EtAlii.BinanceMagic.Service
                 
                 if (situation.IsInitialCycle)
                 {
-                    targetAchieved = HandleInitialCycle(cancellationToken, situation);
+                    targetAchieved = HandleInitialCycle(cancellationToken, situation, transaction);
                     shouldDelay = !targetAchieved;
                     continue;
                 }
@@ -145,7 +155,7 @@ namespace EtAlii.BinanceMagic.Service
             }
 
             using var data = new DataContext();
-            var lastSourcePurchase = data.FindLastPurchase(transaction.SellSymbol, _context.Trading);
+            var lastSourcePurchase = data.FindLastPurchase(transaction.SellSymbol, _context.Trading, transaction);
             var sourceDelta = new Delta
             {
                 Symbol = transaction.SellSymbol,
@@ -154,7 +164,7 @@ namespace EtAlii.BinanceMagic.Service
                 PresentPrice = sourcePrice,
             };
 
-            var lastTargetSell = data.FindLastSell(transaction.BuySymbol, _context.Trading);
+            var lastTargetSell = data.FindLastSell(transaction.BuySymbol, _context.Trading, transaction);
             var targetDelta = new Delta
             {
                 Symbol = transaction.BuySymbol,
@@ -162,6 +172,7 @@ namespace EtAlii.BinanceMagic.Service
                 PastQuantity = lastTargetSell?.SellQuantity ?? 0,
                 PresentPrice = targetPrice
             };
+
             situation = new Situation
             {
                 Source = sourceDelta,
@@ -170,7 +181,7 @@ namespace EtAlii.BinanceMagic.Service
                 Destination = targetDelta,
                 BuyFee = destinationTakerFee,
                 BuyTrend = buyTrend,
-                IsInitialCycle = lastSourcePurchase == null || lastTargetSell == null 
+                IsInitialCycle = data.IsInitialCycle(_context.Trading) 
             };
 
             error = null;
@@ -197,8 +208,10 @@ namespace EtAlii.BinanceMagic.Service
                     
             using var data = new DataContext();
             _context.Trading.TotalProfit = transaction.Profit + data.GetTotalProfits(_context.Trading);
-            
-            _context.Update(_context.Trading, transaction.ShallowClone());
+
+            transaction.Completed = true;
+            transaction = transaction.ShallowClone();
+            _context.Update(_context.Trading, transaction);
         }
     }
 }

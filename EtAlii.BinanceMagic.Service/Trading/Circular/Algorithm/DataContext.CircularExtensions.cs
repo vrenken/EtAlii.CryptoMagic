@@ -5,41 +5,57 @@
 
     public static class DataContextCircularExtensions
     {        
-        public static CircularTransaction FindLastPurchase(this DataContext data, string symbol, CircularTrading trading)
+        public static CircularTransaction FindLastPurchase(this DataContext data, string symbol, CircularTrading trading, CircularTransaction transaction)
         {
             return data.CircularTransactions
-                .Include(s => s.Trading)
-                .Where(s => s.Trading.Id == trading.Id)
-                .Where(s => s.BuyQuantity > 0.0m)
-                .OrderBy(s => s.Step)
-                .LastOrDefault(s => s.BuySymbol == symbol);
+                .Include(t => t.Trading)
+                .Where(t => t.Trading.Id == trading.Id)
+                .Where(t => t.Id != transaction.Id)
+                .Where(t => t.BuyQuantity > 0.0m)
+                .OrderBy(t => t.Step)
+                .LastOrDefault(t => t.BuySymbol == symbol);
         }
 
-        public static CircularTransaction FindLastSell(this DataContext data, string symbol, CircularTrading trading)
+        public static CircularTransaction[] FindPreviousTransactions(this DataContext data, CircularTrading trading)
         {
             return data.CircularTransactions
-                .Include(s => s.Trading)
-                .Where(s => s.Trading.Id == trading.Id)
-                .Where(s => s.SellQuantity > 0.0m)
-                .OrderBy(s => s.Step)
-                .LastOrDefault(s => s.SellSymbol == symbol);
+                .Include(t => t.Trading)
+                .Where(t => t.Trading.Id == trading.Id)
+                .OrderBy(t => t.Step)
+                .ToArray();        }
+
+        public static bool IsInitialCycle(this DataContext data, CircularTrading trading)
+        {
+            return data.CircularTransactions
+                .Include(t => t.Trading)
+                .Count(t => t.Trading.Id == trading.Id) <= 2;
+        }
+        public static CircularTransaction FindLastSell(this DataContext data, string symbol, CircularTrading trading, CircularTransaction transaction)
+        {
+            return data.CircularTransactions
+                .Include(t => t.Trading)
+                .Where(t => t.Trading.Id == trading.Id)
+                .Where(t => t.Id != transaction.Id)
+                .Where(t => t.SellQuantity > 0.0m)
+                .OrderBy(t => t.Step)
+                .LastOrDefault(t => t.SellSymbol == symbol);
         }
 
         public static CircularTransaction FindPreviousTransaction(this DataContext data, CircularTrading trading)
         {
             return data.CircularTransactions
-                .Include(s => s.Trading)
-                .OrderBy(s => s.Step)
-                .LastOrDefault(s => s.Trading.Id == trading.Id);
+                .Include(t => t.Trading)
+                .OrderBy(t => t.Step)
+                .LastOrDefault(t => t.Trading.Id == trading.Id);
         }
         
         public static decimal GetTotalProfits(this DataContext data, CircularTrading trading)
         {
             return data.CircularTransactions
-                .Include(s => s.Trading)
-                .Where(s => s.Trading.Id == trading.Id)
+                .Include(t => t.Trading)
+                .Where(t => t.Trading.Id == trading.Id)
                 .ToArray()
-                .Sum(s => s.Profit);
+                .Sum(t => t.Profit);
         }
     }
 }

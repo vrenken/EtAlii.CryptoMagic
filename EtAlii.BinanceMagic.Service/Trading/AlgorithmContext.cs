@@ -6,24 +6,20 @@
     using Microsoft.EntityFrameworkCore;
 
     public class AlgorithmContext<TTransaction, TTrading> : IAlgorithmContext<TTransaction, TTrading>, IDisposable
-        where TTransaction: TransactionBase
+        where TTransaction: TransactionBase<TTrading>
         where TTrading: TradingBase
     {
-        public TTransaction CurrentTransaction => _transaction;
-        private TTransaction _transaction;
-
-        public TTrading Trading => _trading;
-        private TTrading _trading;
+        public TTransaction CurrentTransaction { get; private set; }
+        public TTrading Trading { get; private set; }
 
         private readonly Subject<object> _observable;
         private readonly IDisposable _subscription;
 
         public event Action<AlgorithmChange> Changed;
 
-        public AlgorithmContext(TTrading trading, TTransaction transaction = null, TimeSpan? throttle = null)
+        public AlgorithmContext(TTrading trading, TimeSpan? throttle = null)
         {
-            _trading = trading;
-            _transaction = transaction;
+            Trading = trading;
             
             if (throttle != null)
             {
@@ -32,49 +28,30 @@
                     .Sample(throttle.Value)
                     .Subscribe(RaiseChangedInternal);
             }
-
         }
 
         public void Update(TTrading trading, TTransaction transaction)
         {
             var isNewTrading = trading.Id == Guid.Empty;
-            var isNewTransaction = trading.Id == Guid.Empty;
+            var isNewTransaction = transaction.Id == Guid.Empty;
 
-            _trading = trading;
-            _transaction = transaction;
-            
             var data = new DataContext();
-            data.Attach(trading);
-            data.Attach(transaction);
+
+            if (CurrentTransaction != null && CurrentTransaction != transaction)
+            {
+                CurrentTransaction.Trading = trading;
+                data.Entry(CurrentTransaction).State = EntityState.Modified;
+            }
+            
+            transaction.Trading = trading;
+
             data.Entry(trading).State = isNewTrading ? EntityState.Added : EntityState.Modified;
             data.Entry(transaction).State = isNewTransaction ? EntityState.Added : EntityState.Modified;
             data.SaveChanges();
 
+            Trading = trading;
+            CurrentTransaction = transaction;
             RaiseChanged(isNewTrading || isNewTransaction ? AlgorithmChange.Important : AlgorithmChange.Normal);
-        }
-
-        public void Update(TTrading trading)
-        {
-            var isNew = trading.Id == Guid.Empty;
-            
-            var data = new DataContext();
-            data.Attach(trading);
-            data.Entry(trading).State = isNew ? EntityState.Added : EntityState.Modified;
-            data.SaveChanges();
-
-            RaiseChanged(isNew ? AlgorithmChange.Important : AlgorithmChange.Normal);
-        }
-
-        public void Update(TTransaction transaction)
-        {
-            var isNew = transaction.Id == Guid.Empty;
-            
-            var data = new DataContext();
-            data.Attach(transaction);
-            data.Entry(transaction).State = isNew ? EntityState.Added : EntityState.Modified;
-            data.SaveChanges();
-
-            RaiseChanged(isNew ? AlgorithmChange.Important : AlgorithmChange.Normal);
         }
 
         private void RaiseChanged(AlgorithmChange algorithmChange = AlgorithmChange.Normal)

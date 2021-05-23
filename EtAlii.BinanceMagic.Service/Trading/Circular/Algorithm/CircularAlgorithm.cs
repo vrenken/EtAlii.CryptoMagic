@@ -72,13 +72,11 @@
             return transaction.IsWorthIt;
         }
 
-        public void ToInitialConversionActions(Situation situation, out SellAction sellAction, out BuyAction buyAction)
+        public void ToInitialConversionActions(Situation situation, CircularTransaction transaction, out SellAction sellAction, out BuyAction buyAction)
         {
-            var transaction = _context.CurrentTransaction;
-
             using var data = new DataContext();
 
-            var lastPurchaseForSource = data.FindLastPurchase(transaction.SellSymbol, _context.Trading);
+            var lastPurchaseForSource = data.FindLastPurchase(transaction.SellSymbol, _context.Trading, transaction);
             var quantityToSell = 
                 lastPurchaseForSource?.BuyQuantity ?? 
                 (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(transaction.SellSymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
@@ -90,8 +88,8 @@
             quantityToBuy = quantityToBuy * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
             quantityToSell = quantityToSell * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
 
-            var previousTransaction = data.FindPreviousTransaction(_context.Trading, _context.CurrentTransaction);
-            if (previousTransaction == null)
+            var previousTransactions = data.FindPreviousTransactions(_context.Trading);
+            if (previousTransactions.Length == 1)
             {
                 sellAction = new SellAction
                 {
@@ -104,13 +102,13 @@
             }
             else
             {
-                if (previousTransaction.BuySymbol != transaction.SellSymbol)
+                if (previousTransactions[0].BuySymbol != transaction.SellSymbol)
                 {
                     var message = $"Previous initial transaction did not purchase {transaction.SellSymbol}";
                     throw new InvalidOperationException(message);
                 }
                 
-                var sourceQuantityToSell = previousTransaction.BuyQuantity;
+                var sourceQuantityToSell = previousTransactions[0].BuyQuantity;
                 sellAction = new SellAction
                 {
                     Symbol = transaction.SellSymbol,

@@ -15,21 +15,16 @@
         public void UpdateTargetDetails(CircularTransaction transaction)
         {
             using var data = new DataContext();
-            var lastTransaction = data.FindPreviousTransaction(_context.Trading);
 
             var transactionCount = data.CircularTransactions
                 .Include(s => s.Trading)
                 .Count(s => s.Trading.Id == _context.Trading.Id);
 
-            var source = lastTransaction == null
-                ? _context.Trading.FirstSymbol
-                : lastTransaction.BuySymbol;
-            var destination = lastTransaction == null
-                ? _context.Trading.SecondSymbol
-                : lastTransaction.SellSymbol;
+            var source = transaction.BuySymbol ?? _context.Trading.FirstSymbol;
+            var destination = transaction.SellSymbol ?? _context.Trading.SecondSymbol;
 
-            var target = lastTransaction != null
-                ? lastTransaction.Target * _context.Trading.TargetIncrease
+            var target = transaction.Target > 0m
+                ? transaction.Target * _context.Trading.TargetIncrease
                 : _context.Trading.InitialTarget;
             
             transaction.SellSymbol = source;
