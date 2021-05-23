@@ -48,17 +48,18 @@ namespace EtAlii.BinanceMagic.Service
                 {
                     snapshot.NextCheck = _timeManager.GetNow() + _context.Trading.SampleInterval;
 
-                    var isTransition = snapshot.NextCheck.Hour != snapshot.LastCheck.Hour;
-                    _context.RaiseChanged(isTransition ? AlgorithmChange.Important : AlgorithmChange.Normal);
-
                     if (_timeManager.ShouldStop())
                     {
                         snapshot.Result = "Back-test completed";
+                        _context.Trading.End = DateTime.Now;
                         _context.RaiseChanged(AlgorithmChange.Important);
                         keepRunning = false;
                         return;
                     }
-                    
+
+                    var isTransition = snapshot.NextCheck.Hour != snapshot.LastCheck.Hour;
+                    _context.RaiseChanged(isTransition ? AlgorithmChange.Important : AlgorithmChange.Normal);
+
                     _timeManager.Wait(_context.Trading.SampleInterval, cancellationToken);
                 }
                 snapshot.NextCheck = DateTime.MinValue;
