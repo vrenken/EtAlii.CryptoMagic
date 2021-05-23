@@ -1,6 +1,6 @@
 namespace EtAlii.BinanceMagic.Service.Surfing
 {
-    public class SurfingTransaction : TransactionBase
+    public class SurfingTransaction : TransactionBase<SurfingTrading>
     {
     }
 }

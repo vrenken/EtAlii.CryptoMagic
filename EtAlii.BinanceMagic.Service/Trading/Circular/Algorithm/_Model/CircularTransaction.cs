@@ -2,10 +2,8 @@
 {
     using System;
 
-    public class CircularTransaction : TransactionBase
+    public class CircularTransaction : TransactionBase<CircularTrading>
     {
-        public CircularTrading Trading { get; init; }
-        
         public string SellSymbol { get; set; }
         public decimal SellPrice { get; set; }
         public decimal SellQuantity { get; set; }
@@ -32,9 +30,9 @@
         public int Step { get; set; }
         
         public bool DifferenceIsOptimal { get; set; }
-        public DateTime LastSuccess { get; set; } = DateTime.MinValue;
-        public DateTime LastCheck { get; set; }
-        public DateTime NextCheck { get; set; }
+        public DateTime? LastSuccess { get; set; }
+        public DateTime? LastCheck { get; set; }
+        public DateTime? NextCheck { get; set; }
         
         public decimal Profit { get; set; }
 

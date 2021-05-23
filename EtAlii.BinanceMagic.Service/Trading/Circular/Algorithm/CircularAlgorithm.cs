@@ -90,7 +90,7 @@
             quantityToBuy = quantityToBuy * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
             quantityToSell = quantityToSell * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
 
-            var previousTransaction = data.FindPreviousTransaction(_context.Trading);
+            var previousTransaction = data.FindPreviousTransaction(_context.Trading, _context.CurrentTransaction);
             if (previousTransaction == null)
             {
                 sellAction = new SellAction

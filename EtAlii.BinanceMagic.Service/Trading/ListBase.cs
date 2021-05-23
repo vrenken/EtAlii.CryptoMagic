@@ -7,7 +7,7 @@
     using Microsoft.AspNetCore.Components;
 
     public abstract class ListBase<TTransaction, TTrading> : ComponentBase, IDisposable
-        where TTransaction: TransactionBase
+        where TTransaction: TransactionBase<TTrading>
         where TTrading : TradingBase, new()
     {
         [Inject] AlgorithmManager AlgorithmManager { get; init; }

@@ -4,24 +4,37 @@
 
 @inherits ListBase<CircularTransaction, CircularTrading>
 
-<Heading Margin="Margin.Is4">
-    <Icon IconName="@("fa-infinity")"/> Circular tradings
-</Heading>
+<Row Margin="Margin.Is4">
+    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+        <Heading>
+            <Icon IconName="@("fa-infinity")"/> Circular tradings
+        </Heading>
+    </Column>
+</Row>
 
-<ListGroup Margin="Margin.Is4">
+<ListGroup>
     <Repeater Items="@Tradings">
-        <CircularListItem Context="@context.Context" />
+        <Row Margin="Margin.Is4">
+            <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+                <CircularListItem Context="@context.Context"/>
+            </Column>
+        </Row>
     </Repeater>
 </ListGroup>
-@if (ApplicationContext.IsOperational)
-{
-    <ListGroup Margin="Margin.Is4">
-        <ListGroupItem Clicked="@OnEditSelected">
-            <Icon Name="@("fa-plus")"/> Add
-        </ListGroupItem>
-    </ListGroup>
-}
-else
-{
-    <Paragraph Margin="Margin.Is4">Application is not yet configured correctly</Paragraph>
-}
+
+<Row Margin="Margin.Is4">
+    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+        @if (ApplicationContext.IsOperational)
+        {
+            <ListGroup>
+                <ListGroupItem Clicked="@OnEditSelected">
+                    <Icon Name="@("fa-plus")"/> Add
+                </ListGroupItem>
+            </ListGroup>
+        }
+        else
+        {
+            <Paragraph>Application is not yet configured correctly</Paragraph>
+        }
+    </Column>
+</Row>

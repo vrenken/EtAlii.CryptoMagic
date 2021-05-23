@@ -6,15 +6,15 @@
         <Items>
             <Step Name="Start">
                 <Marker><Icon Name="@("fa-angle-right")" /></Marker>
-                <Caption><small><div class="text-center">@Context.Trading.Start</div></small></Caption>
+                <Caption><small><div class="text-center">@((MarkupString)Context.Trading.Start.ToMultiLineHtml())</div></small></Caption>
             </Step>
             <Step Name="LastSuccess">
                 <Marker><Icon Name="IconName.Check" /></Marker>
-                <Caption><small><div class="text-center">@Context.CurrentTransaction.LastSuccess.ToMultiLineHtml()</div></small></Caption>
+                <Caption><small><div class="text-center">@((MarkupString)Context.CurrentTransaction?.LastSuccess.ToMultiLineHtml())</div></small></Caption>
             </Step>
             <Step Name="NextAction">
                 <Marker><Icon Name="@("fa-history")" /></Marker>
-                <Caption><small><div class="text-center">@Context.CurrentTransaction.NextCheck.ToMultiLineHtml()</div></small></Caption>
+                <Caption><small><div class="text-center">@((MarkupString)Context.CurrentTransaction?.NextCheck.ToMultiLineHtml())</div></small></Caption>
             </Step>
             <Step Name="End">
                 <Marker><Icon Name="@(Context.Trading.TradeMethod == TradeMethod.BackTest ? "fa-flag-checkered" : "fa-infinity")"/></Marker>   

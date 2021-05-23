@@ -2,7 +2,7 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System;
 
-    public class SimpleTransaction : TransactionBase
+    public class SimpleTransaction : TransactionBase<SimpleTrading>
     {
         public decimal Sell { get; set; }
         public decimal SellQuantity { get; set; }

@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Components;
 
     public abstract class ViewBase<TTransaction, TTrading, TRunner> : ComponentBase, IDisposable
-        where TTransaction: TransactionBase
+        where TTransaction: TransactionBase<TTrading>
         where TTrading : TradingBase, new()
         where TRunner : IAlgorithmRunner<TTransaction, TTrading>
     {
@@ -16,8 +16,6 @@
 
         protected TTrading Model;
         
-        protected MarkupString CurrentRunnerLog => (MarkupString) CurrentRunner.Log;
-
         protected TRunner CurrentRunner;
 
         protected abstract TTrading GetTrading(Guid id);

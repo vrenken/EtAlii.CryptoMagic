@@ -10,7 +10,7 @@ namespace EtAlii.BinanceMagic.Service
     }
     
     public interface IAlgorithmRunner<TTransaction, TTrading> : IAlgorithmRunner
-        where TTransaction : TransactionBase
+        where TTransaction : TransactionBase<TTrading>
         where TTrading: TradingBase
     {
         event Action Changed;

@@ -1,6 +1,6 @@
 namespace EtAlii.BinanceMagic.Service
 {
-    public class ExperimentalTransaction : TransactionBase
+    public class ExperimentalTransaction : TransactionBase<ExperimentalTrading>
     {
     }
 }
