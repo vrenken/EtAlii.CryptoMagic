@@ -14,16 +14,27 @@ namespace EtAlii.BinanceMagic.Service
             return $"{prefix}{d:000.000000000}";
         }
 
-        public static string ToMultiLineHtml(this DateTime dateTime) => ToMultiLineHtml((DateTime?) dateTime);
+        public static string ToMultiLineHtml(this DateTime dateTime, string placeHolder = "") => ToMultiLineHtml((DateTime?) dateTime, placeHolder);
 
-        public static string ToMultiLineHtml(this DateTime? dateTime)
+        public static string ToMultiLineHtml(this DateTime? dateTime, string placeHolder = "")
         {
             if (!dateTime.HasValue || dateTime == DateTime.MinValue)
             {
-                return "";
+                return placeHolder;
             }
 
             return $"{dateTime:d}<br/>{dateTime:T}";
         }
+        
+        public static string ToHtml(this DateTime? dateTime, string placeHolder = "")
+        {
+            if (!dateTime.HasValue || dateTime == DateTime.MinValue)
+            {
+                return placeHolder;
+            }
+
+            return $"{dateTime:G}";
+        }
+
     }
 }

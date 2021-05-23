@@ -27,19 +27,19 @@
             <Table Striped="false" Borderless="true" Narrow="true">
                 <TableBody>
                     <TableRow>
-                        <TableRowCell>Last success:</TableRowCell><TableRowCell>@LastSuccess</TableRowCell>
+                        <TableRowCell>Last success:</TableRowCell><TableRowCell>@CurrentRunner.Context.CurrentTransaction?.LastSuccess.ToHtml("None")</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Next check:</TableRowCell><TableRowCell>@NextCheck</TableRowCell>
+                        <TableRowCell>Next check:</TableRowCell><TableRowCell>@CurrentRunner.Context.CurrentTransaction?.NextCheck.ToHtml("Now")</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Step:</TableRowCell><TableRowCell>@Current.Step</TableRowCell>
+                        <TableRowCell>Step:</TableRowCell><TableRowCell>@Current?.Step</TableRowCell>
                     </TableRow>
                     <TableRow>
                         <TableRowCell>Profit:</TableRowCell><TableRowCell>@($"{CurrentRunner.Context.Trading.TotalProfit:0.00} {CurrentRunner.Context.Trading.ReferenceSymbol}")</TableRowCell>
                     </TableRow>
                     <TableRow>
-                        <TableRowCell>Result:</TableRowCell><TableRowCell>@Current.Result</TableRowCell>
+                        <TableRowCell>Result:</TableRowCell><TableRowCell>@Current?.Result</TableRowCell>
                     </TableRow>
                 </TableBody>
             </Table>
@@ -47,14 +47,17 @@
     </Column>
 </Row>
 
-<Row Margin="Margin.Is4">
-    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-        <CircularTransactionCard 
-            Title="Current cycle" 
-            Transaction="@CurrentRunner.Context.CurrentTransaction"
-            Trading="@CurrentRunner.Context.Trading"/>
-    </Column>    
-</Row>
+@if (CurrentRunner.Context.CurrentTransaction != null)
+{
+    <Row Margin="Margin.Is4">
+        <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+            <CircularTransactionCard 
+                Title="Current cycle" 
+                Transaction="@CurrentRunner.Context.CurrentTransaction"
+                Trading="@CurrentRunner.Context.Trading"/>
+        </Column>    
+    </Row>
+}
 
 <Repeater Items="@History">
     <Row Margin="Margin.Is4">
@@ -67,11 +70,14 @@
     </Row>
 </Repeater>
 
-<Row Margin="Margin.Is4">
-    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
-        <Card>
-            <CardHeader>Backtest startup</CardHeader>
-            <CardBody>@CurrentRunnerLog</CardBody>
-        </Card>        
-    </Column>
-</Row>
+@if (CurrentRunner.Context.Trading.TradeMethod == TradeMethod.BackTest)
+{
+    <Row Margin="Margin.Is4">
+        <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+            <Card>
+                <CardHeader>Backtest startup</CardHeader>
+                <CardBody>@((MarkupString)CurrentRunner.Log)</CardBody>
+            </Card>
+        </Column>
+    </Row>
+}

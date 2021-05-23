@@ -78,6 +78,12 @@
     <Compile Update="Trading\Surfing\Algorithm\Sequence.ToUsdt.cs">
       <DependentUpon>Sequence.puml</DependentUpon>
     </Compile>
+    <Compile Update="Trading\Circular\CircularListItem.cs">
+      <DependentUpon>CircularListItem.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularList.cs">
+      <DependentUpon>CircularList.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

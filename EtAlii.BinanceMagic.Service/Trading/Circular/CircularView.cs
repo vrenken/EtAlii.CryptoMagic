@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Globalization;
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
 
@@ -10,19 +9,11 @@
     {
         private ObservableCollection<CircularTransaction> History { get; } = new();
 
-        private string LastSuccess => CurrentRunner.Context.CurrentTransaction.LastSuccess != DateTime.MinValue
-            ? CurrentRunner.Context.CurrentTransaction.LastSuccess.ToString(CultureInfo.CurrentCulture)
-            : "None";
-        
-        private string NextCheck => CurrentRunner.Context.CurrentTransaction.NextCheck != DateTime.MinValue
-            ? CurrentRunner.Context.CurrentTransaction.NextCheck.ToString(CultureInfo.CurrentCulture)
-            : "Now";
-        
         private CircularTransaction Current => CurrentRunner.Context.CurrentTransaction; 
         protected override CircularTrading GetTrading(Guid id)
         {
             using var data = new DataContext();
-            return data.CircularTradings.Single(t => t.Id == id);
+            return data.CircularTradings.SingleOrDefault(t => t.Id == id);
         }
 
         protected override void OnRunnerChanged() => UpdateHistory(false);

@@ -65,11 +65,7 @@ namespace EtAlii.BinanceMagic.Service
                 ? TimeSpan.FromSeconds(10)
                 : (TimeSpan?)null;
 
-            var transaction = new CircularTransaction
-            {
-                Trading = _trading,
-            };
-            Context = new AlgorithmContext<CircularTransaction, CircularTrading>(_trading, transaction, sampleInterval);
+            Context = new AlgorithmContext<CircularTransaction, CircularTrading>(_trading, sampleInterval);
             _sequence = new Sequence(_client, time, Context, initialize);
             
             _sequence.Status.Changed += OnSequenceChanged;
