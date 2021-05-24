@@ -8,6 +8,8 @@
         {
             var transaction = _context.CurrentTransaction;
 
+            transaction.IsInitialTransaction = false;
+
             targetSucceeded = false;
 
             if (_circularAlgorithm.TransactionIsWorthIt(situation, out var sellAction, out var buyAction))

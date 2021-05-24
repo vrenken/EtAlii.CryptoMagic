@@ -10,13 +10,51 @@
 
         private const string PositiveStyle = "background-color:green;color:white";
         private const string NegativeStyle = "background-color:red;color:white";        
-        
-        private string SellPriceStyle => Transaction.SellPriceIsOptimal ? PositiveStyle : NegativeStyle;
-        private string SellTrendStyle => Transaction.SellTrendIsOptimal ? PositiveStyle : NegativeStyle;
+        private const string NeutralStyle = "background-color:transparent;color:black";
 
-        private string BuyPriceStyle => Transaction.BuyPriceIsOptimal ? PositiveStyle : NegativeStyle;
-        private string BuyTrendStyle => Transaction.BuyTrendIsOptimal ? PositiveStyle : NegativeStyle;
+        private string SellPriceStyle => Transaction switch
+        {
+            { IsInitialTransaction: true } => NeutralStyle,
+            { IsChanging: true } => NeutralStyle,
+            { SellPriceIsOptimal: true } => PositiveStyle,
+            { SellPriceIsOptimal: false } => NegativeStyle,
+            _ => NeutralStyle
+        };
 
-        private string DifferenceStyle => Transaction.DifferenceIsOptimal ? PositiveStyle : NegativeStyle;
+        private string SellTrendStyle => Transaction switch
+        {
+            { IsInitialTransaction: true } => NeutralStyle,
+            { IsChanging: true } => NeutralStyle,
+            { SellTrendIsOptimal: true } => PositiveStyle,
+            { SellTrendIsOptimal: false } => NegativeStyle,
+            _ => NeutralStyle
+        };
+
+        private string BuyPriceStyle => Transaction switch
+        {
+            { IsInitialTransaction: true } => NeutralStyle,
+            { IsChanging: true } => NeutralStyle,
+            { BuyPriceIsOptimal: true } => PositiveStyle,
+            { BuyPriceIsOptimal: false } => NegativeStyle,
+            _ => NeutralStyle
+        };
+
+        private string BuyTrendStyle => Transaction switch
+        {
+            { IsInitialTransaction: true } => NeutralStyle,
+            { IsChanging: true } => NeutralStyle,
+            { BuyTrendIsOptimal: true } => PositiveStyle,
+            { BuyTrendIsOptimal: false } => NegativeStyle,
+            _ => NeutralStyle
+        };
+
+        private string DifferenceStyle => Transaction switch
+        {
+            { IsInitialTransaction: true } => NeutralStyle,
+            { IsChanging: true } => NeutralStyle,
+            { DifferenceIsOptimal: true } => PositiveStyle,
+            { DifferenceIsOptimal: false } => NegativeStyle,
+            _ => NeutralStyle
+        };
     }
 }

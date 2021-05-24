@@ -39,6 +39,8 @@
         public string Result { get; set; }
 
         public bool IsWorthIt { get; set; }
+        public bool IsInitialTransaction { get; set; }
+        public bool IsChanging { get; set; }
         public bool Completed { get; set; }
 
         public CircularTransaction ShallowClone()
@@ -46,6 +48,7 @@
             var other = (CircularTransaction) MemberwiseClone();
             other.Id = Guid.Empty;
             other.Completed = false;
+            other.IsInitialTransaction = false;
             return other;
         }
     }

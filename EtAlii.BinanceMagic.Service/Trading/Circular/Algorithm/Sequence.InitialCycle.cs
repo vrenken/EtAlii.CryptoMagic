@@ -7,7 +7,8 @@
         private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation, CircularTransaction transaction)
         {
             var targetSucceeded = false;
-            
+
+            transaction.IsInitialTransaction = true;
             transaction.Result = "Initial cycle";
             transaction.LastCheck = _timeManager.GetNow();
             _context.Update(transaction);

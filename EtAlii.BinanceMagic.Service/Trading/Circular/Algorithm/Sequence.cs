@@ -56,7 +56,8 @@ namespace EtAlii.BinanceMagic.Service
                 if (shouldDelay)
                 {
                     transaction.NextCheck = _timeManager.GetNow() + _context.Trading.SampleInterval;
-
+                    transaction.IsChanging = false;
+                    
                     if (_timeManager.ShouldStop())
                     {
                         transaction.Result = "Back-test completed";
@@ -71,6 +72,8 @@ namespace EtAlii.BinanceMagic.Service
 
                     _timeManager.Wait(_context.Trading.SampleInterval, cancellationToken);
                 }
+
+                transaction.IsChanging = true;
                 transaction.NextCheck = null;
                 transaction.Result = "Fetching current situation...";
                 transaction.LastCheck = _timeManager.GetNow();
@@ -202,15 +205,19 @@ namespace EtAlii.BinanceMagic.Service
             transaction.LastCheck = _timeManager.GetNow();
             transaction.LastSuccess = _timeManager.GetNow();
 
-            transaction.Profit = transaction.SellPrice - transaction.BuyPrice;
-                    
             using var data = new DataContext();
-
             if (!isInitialTransaction)
             {
+                transaction.Profit = transaction.SellPrice - transaction.BuyPrice;
                 _context.Trading.TotalProfit = transaction.Profit + data.GetTotalProfits(_context.Trading);
             }
+            else
+            {
+                transaction.Profit = 0;
+                _context.Trading.TotalProfit = 0;
+            }
 
+            transaction.IsChanging = false;
             transaction.Completed = true;
             transaction = transaction.ShallowClone();
             _context.Update(transaction);
