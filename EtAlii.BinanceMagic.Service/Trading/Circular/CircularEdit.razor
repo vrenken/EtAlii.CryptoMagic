@@ -62,7 +62,7 @@
                         </Field>
                     </Validation>
 
-                    <Validation Validator="@(e => IsBetweenInclusive(e, 80, 150))">
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 80, 1000))">
                         <Field>
                             <FieldLabel>Quantity factor</FieldLabel>
                             <Addons>
@@ -75,7 +75,7 @@
                                         Placeholder="Quantity factor in %" 
                                         @bind-Value="@QuantityFactorInPercentage"
                                         Min="80"
-                                        Max="150">
+                                        Max="1000">
                                     </NumericEdit>
                                 </Addon>
                             </Addons>
