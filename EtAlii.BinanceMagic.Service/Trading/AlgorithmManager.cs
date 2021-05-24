@@ -28,15 +28,23 @@ namespace EtAlii.BinanceMagic.Service
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (IAlgorithmRunner newItem in e.NewItems!)
+                    foreach (IAlgorithmRunner runnerToStart in e.NewItems!)
                     {
-                        newItem.Start();
+                        runnerToStart.Start();
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (IAlgorithmRunner oldItem in e.OldItems!)
+                    foreach (IAlgorithmRunner runnerToStop in e.OldItems!)
                     {
-                        oldItem.Stop();
+                        try
+                        {
+                            runnerToStop.Stop();
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
                     }
                     break;
             }
@@ -70,7 +78,15 @@ namespace EtAlii.BinanceMagic.Service
         {
             foreach (var runner in Runners)
             {
-                runner.Stop();
+                try
+                {
+                    runner.Stop();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }
             return Task.CompletedTask;
         }

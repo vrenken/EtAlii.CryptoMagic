@@ -76,29 +76,10 @@
         {
             using var data = new DataContext();
 
-            var lastPurchaseForSource = data.FindLastPurchase(transaction.SellSymbol, _context.Trading, transaction);
-            var quantityToSell = 
-                lastPurchaseForSource?.BuyQuantity ?? 
-                (1 / situation.Source.PresentPrice) * _client.GetMinimalQuantity(transaction.SellSymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
-
-            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(transaction.BuySymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
-
-            var sourcePrice = situation.Source.PresentPrice;// _client.GetPrice(target.Source, _settings.ReferenceCoin, cancellationToken);
-
-            quantityToBuy = quantityToBuy * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
-            quantityToSell = quantityToSell * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
-
             var previousTransactions = data.FindPreviousTransactions(_context.Trading);
             if (previousTransactions.Length == 1)
             {
-                sellAction = new SellAction
-                {
-                    Symbol = transaction.SellSymbol,
-                    Price = sourcePrice,
-                    Quantity = quantityToSell,
-                    QuotedQuantity = sourcePrice * quantityToSell,
-                    TransactionId = $"{transaction.Step:000000}_0_{transaction.SellSymbol}_{transaction.BuySymbol}",
-                };
+                sellAction = null;
             }
             else
             {
@@ -113,11 +94,14 @@
                 {
                     Symbol = transaction.SellSymbol,
                     Quantity = sourceQuantityToSell,
-                    Price = sourcePrice,
-                    QuotedQuantity = sourcePrice * sourceQuantityToSell,
+                    Price = situation.Source.PresentPrice,
+                    QuotedQuantity = situation.Source.PresentPrice * sourceQuantityToSell,
                     TransactionId = $"{transaction.Step:000000}_0_{transaction.SellSymbol}_{transaction.BuySymbol}",
                 };
             }
+
+            var quantityToBuy = (1 / situation.Destination.PresentPrice) * _client.GetMinimalQuantity(transaction.BuySymbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
+            quantityToBuy = quantityToBuy * _context.Trading.NotionalMinCorrection * _context.Trading.QuantityFactor;
 
             var destinationPrice = situation.Destination.PresentPrice;
             buyAction = new BuyAction
