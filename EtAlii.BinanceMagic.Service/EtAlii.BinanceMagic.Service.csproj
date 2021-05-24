@@ -87,6 +87,18 @@
     <Compile Update="Trading\IAlgorithmContext.cs">
       <DependentUpon>AlgorithmContext.cs</DependentUpon>
     </Compile>
+    <Compile Update="Trading\ViewBase.Deletion.cs">
+      <DependentUpon>ViewBase.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffView.cs">
+      <DependentUpon>OneOffView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffList.cs">
+      <DependentUpon>OneOffList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\AlgorithmManager.Update.cs">
+      <DependentUpon>AlgorithmManager.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

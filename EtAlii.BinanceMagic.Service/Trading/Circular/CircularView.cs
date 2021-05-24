@@ -20,11 +20,18 @@
 
         protected override void OnLocationChanged() => UpdateHistory(true);
 
+        protected override string GetListUrl() => "/circular/list";
+
         private void UpdateHistory(bool reset)
         {
             if (reset)
             {
                 History.Clear();
+            }
+
+            if (CurrentRunner == null)
+            {
+                return;
             }
             
             using var data = new DataContext();

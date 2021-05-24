@@ -7,6 +7,18 @@ namespace EtAlii.BinanceMagic.Service
 
     public partial class AlgorithmManager 
     {
+        public void Remove(TradingBase trading)
+        {
+            var runnerToRemove = Runners.Single(r => r.TradingId == trading.Id);
+            _runners.Remove(runnerToRemove);
+
+            using var data = new DataContext();
+
+            data.Entry(trading).State = EntityState.Deleted;
+
+            data.SaveChanges();
+        }
+
         public void Update(TradingBase trading)
         {
             var isNewTrading = trading.Id == Guid.Empty;

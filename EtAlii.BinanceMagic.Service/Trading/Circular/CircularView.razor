@@ -19,6 +19,12 @@
             Change
         </Blazorise.Button>
     </Column>
+    <Column ColumnSize="ColumnSize.Is1">
+        <Blazorise.Button Color="Color.Warning" Type="ButtonType.Button" Clicked="@ShowDeleteDialog" Size="Size.Small">
+            <Icon Name="@("fa-trash-alt")"/>
+            Delete
+        </Blazorise.Button>
+    </Column>
 </Row>
 <Row Margin="DefaultLayout.Margin">
     <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
@@ -81,3 +87,18 @@
         </Column>
     </Row>
 }
+
+<Modal @ref="DeleteDialogRef">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>Confirm deletion</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <Paragraph>Are you sure you want to delete "@Model.Name"?</Paragraph>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@DeletionCanceled">No</Button>
+            <Button Color="Color.Primary" Clicked="@DeletionConfirmed">Yes</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

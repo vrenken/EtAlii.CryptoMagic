@@ -4,13 +4,13 @@
     using System.Linq;
     using Microsoft.AspNetCore.Components;
 
-    public abstract class ViewBase<TTransaction, TTrading, TRunner> : ComponentBase, IDisposable
+    public abstract partial class ViewBase<TTransaction, TTrading, TRunner> : ComponentBase, IDisposable
         where TTransaction: TransactionBase<TTrading>
         where TTrading : TradingBase, new()
         where TRunner : IAlgorithmRunner<TTransaction, TTrading>
     {
-        [Inject] AlgorithmManager AlgorithmManager { get; init; }
-        [Inject] NavigationManager NavigationManager { get; init; }
+        [Inject] protected AlgorithmManager AlgorithmManager { get; init; }
+        [Inject] protected NavigationManager NavigationManager { get; init; }
 
         [Parameter] public string Id { get; set; }
 
@@ -18,6 +18,8 @@
         
         protected TRunner CurrentRunner;
 
+        protected abstract string GetListUrl();
+        
         protected abstract TTrading GetTrading(Guid id);
 
 

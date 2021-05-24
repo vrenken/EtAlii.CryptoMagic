@@ -36,15 +36,7 @@ namespace EtAlii.BinanceMagic.Service
                 case NotifyCollectionChangedAction.Remove:
                     foreach (IAlgorithmRunner runnerToStop in e.OldItems!)
                     {
-                        try
-                        {
-                            runnerToStop.Stop();
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            Console.WriteLine(e);
-                            throw;
-                        }
+                        runnerToStop.Stop();
                     }
                     break;
             }
@@ -78,15 +70,7 @@ namespace EtAlii.BinanceMagic.Service
         {
             foreach (var runner in Runners)
             {
-                try
-                {
-                    runner.Stop();
-                }
-                catch (OperationCanceledException e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+                runner.Stop();
             }
             return Task.CompletedTask;
         }

@@ -16,7 +16,6 @@ namespace EtAlii.BinanceMagic.Service
                 .WithOne(s => s.Trading)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

@@ -17,8 +17,15 @@
         
         public void Stop()
         {
-            _cancellationTokenSource.Cancel();
-            _task.Wait();
+            try
+            {
+                _cancellationTokenSource.Cancel();
+                _task.Wait();
+            }
+            catch
+            {
+                // No operation.
+            }
         }
 
         public void Start()
