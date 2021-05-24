@@ -10,7 +10,7 @@
         where TTrading: TradingBase
     {
         public TTransaction CurrentTransaction { get; private set; }
-        public TTrading Trading { get; private set; }
+        public TTrading Trading { get; }
 
         private readonly Subject<object> _observable;
         private readonly IDisposable _subscription;
