@@ -69,7 +69,7 @@
     <Row Margin="DefaultLayout.Margin">
         <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
             <CircularTransactionCard 
-                Title="@($"Cycle {context.LastSuccess}")" 
+                Title="@($"{(context.IsInitialTransaction ? "Initial cycle" : "Cycle")} {context.LastSuccess}")" 
                 Transaction="@context" 
                 Trading="@CurrentRunner.Context.Trading"/>
         </Column>

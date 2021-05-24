@@ -38,6 +38,7 @@
             var transactions = data.CircularTransactions
                 .Include(s => s.Trading)
                 .Where(s => s.Trading.Id == CurrentRunner.Context.Trading.Id)
+                .Where(s => s.Id != CurrentRunner.Context.CurrentTransaction.Id)
                 .Where(s => s.Completed)
                 .OrderByDescending(s => s.Step)
                 .ToArray();
