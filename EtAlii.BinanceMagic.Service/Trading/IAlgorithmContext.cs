@@ -8,7 +8,6 @@ namespace EtAlii.BinanceMagic.Service
         TTransaction CurrentTransaction { get; }
         event System.Action<AlgorithmChange> Changed;
 
-        void Update(TTrading trading, TTransaction transaction);
-        void Update(TTransaction transaction) => Update(Trading, transaction);
+        void Update(TTransaction transaction);
     }
 }

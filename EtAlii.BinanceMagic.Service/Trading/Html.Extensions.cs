@@ -16,7 +16,7 @@ namespace EtAlii.BinanceMagic.Service
 
         public static string ToProfitHtml(this decimal d)
         {
-            return $"{d:0.0000}";
+            return d < 100 ? $"{d:0.00}" : $"{d:0}";
         }
 
         public static string ToMultiLineHtml(this DateTime dateTime, string placeHolder = "") => ToMultiLineHtml((DateTime?) dateTime, placeHolder);

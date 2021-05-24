@@ -60,13 +60,14 @@ namespace EtAlii.BinanceMagic.Service
                     if (_timeManager.ShouldStop())
                     {
                         transaction.Result = "Back-test completed";
+                        transaction.NextCheck = null;
                         _context.Trading.End = DateTime.Now;
-                        _context.Update(_context.Trading, transaction);
+                        _context.Update(transaction);
                         keepRunning = false;
                         return;
                     }
 
-                    _context.Update(_context.Trading, transaction);
+                    _context.Update(transaction);
 
                     _timeManager.Wait(_context.Trading.SampleInterval, cancellationToken);
                 }
@@ -211,7 +212,7 @@ namespace EtAlii.BinanceMagic.Service
 
             transaction.Completed = true;
             transaction = transaction.ShallowClone();
-            _context.Update(_context.Trading, transaction);
+            _context.Update(transaction);
         }
     }
 }

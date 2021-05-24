@@ -30,28 +30,28 @@
             }
         }
 
-        public void Update(TTrading trading, TTransaction transaction)
+        public void Update(TTransaction transaction)
         {
-            var isNewTrading = trading.Id == Guid.Empty;
+            var isNewTrading = Trading.Id == Guid.Empty;
             var isNewTransaction = transaction.Id == Guid.Empty;
-
+            var hasEndDate = Trading.End != null;
+            
             var data = new DataContext();
 
             if (CurrentTransaction != null && CurrentTransaction != transaction)
             {
-                CurrentTransaction.Trading = trading;
+                CurrentTransaction.Trading = Trading;
                 data.Entry(CurrentTransaction).State = EntityState.Modified;
             }
             
-            transaction.Trading = trading;
+            transaction.Trading = Trading;
 
-            data.Entry(trading).State = isNewTrading ? EntityState.Added : EntityState.Modified;
+            data.Entry(Trading).State = isNewTrading ? EntityState.Added : EntityState.Modified;
             data.Entry(transaction).State = isNewTransaction ? EntityState.Added : EntityState.Modified;
             data.SaveChanges();
 
-            Trading = trading;
             CurrentTransaction = transaction;
-            RaiseChanged(isNewTrading || isNewTransaction ? AlgorithmChange.Important : AlgorithmChange.Normal);
+            RaiseChanged(hasEndDate || isNewTrading || isNewTransaction ? AlgorithmChange.Important : AlgorithmChange.Normal);
         }
 
         private void RaiseChanged(AlgorithmChange algorithmChange = AlgorithmChange.Normal)
