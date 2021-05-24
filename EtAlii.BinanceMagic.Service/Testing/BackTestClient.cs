@@ -8,9 +8,11 @@ namespace EtAlii.BinanceMagic.Service
     using System.Net;
     using System.Threading;
     using Binance.Net.Objects.Spot.MarketData;
+    using Serilog;
 
     public partial class BackTestClient : IClient
     {
+        private readonly ILogger _log = Log.ForContext<BackTestClient>();
         private readonly IOutput _output;
         private readonly Guid _tradingId;
         private readonly string _folder;
@@ -149,6 +151,7 @@ namespace EtAlii.BinanceMagic.Service
             {
                 price = 0m;
                 error = "No history";
+                _log.Error(error);
                 return false;
             }
             
@@ -188,10 +191,41 @@ namespace EtAlii.BinanceMagic.Service
             throw new NotImplementedException();
         }
 
+        public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out TradeTransaction transaction, out string error)
+        {
+            if (!TryBuy(buyAction, referenceSymbol, cancellationToken, getNow, out Symbol symbolsBought, out error))
+            {
+                transaction = null;
+                return false;
+            }
+            transaction = new TradeTransaction
+            {
+                Sell = new Symbol
+                {
+                    SymbolName = "",
+                    QuoteQuantity = 0,
+                    Quantity = 0
+
+                },
+                Buy = symbolsBought,
+                Moment = getNow(),
+                Profit = 0 - buyAction.QuotedQuantity 
+            };
+            error = null;
+            return true;
+        }
+
         public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow,
             out Symbol symbolsBought, out string error)
         {
-            throw new NotImplementedException();
+            symbolsBought = new Symbol
+            {
+                SymbolName = buyAction.Symbol,
+                QuoteQuantity = buyAction.QuotedQuantity,
+                Quantity = buyAction.Quantity
+            };
+            error = null;
+            return true;
         }
 
         public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin)

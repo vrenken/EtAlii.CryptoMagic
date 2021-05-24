@@ -23,6 +23,7 @@ namespace EtAlii.BinanceMagic.Service
         bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out TradeTransaction transaction, out string error);
         bool TrySell(SellAction sellAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsSold, out string error);
 
+        bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out TradeTransaction transaction, out string error);
         bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsBought, out string error);
 
         SymbolDefinition[] GetSymbols(string referenceSymbol);

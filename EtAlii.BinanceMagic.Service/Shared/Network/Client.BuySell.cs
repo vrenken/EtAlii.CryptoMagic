@@ -6,9 +6,11 @@
     using Binance.Net;
     using Binance.Net.Enums;
     using Binance.Net.Objects.Spot.SpotData;
+    using Serilog;
 
-    public partial class Client 
+    public partial class Client
     {
+        private readonly ILogger _log = Log.ForContext<Client>();
         public bool TrySell(SellAction sellAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsSold, out string error)
         {
             // var exchangeResult = _client.Spot.System.GetExchangeInfo();
@@ -45,6 +47,7 @@
             if (sellOrder.Error != null)
             {
                 error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
+                _log.Error(error);
                 symbolsSold = null;
                 return false;
             }
@@ -55,6 +58,7 @@
             if (!isSold)
             {
                 error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
+                _log.Error(error);
                 symbolsSold = null;
                 return false;
             }
@@ -70,12 +74,37 @@
             return true;
         }
 
+        public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out TradeTransaction transaction, out string error)
+        {
+            if (!TryBuy(buyAction, referenceSymbol, cancellationToken, getNow, out Symbol symbolsBought, out error))
+            {
+                transaction = null;
+                return false;
+            }
+            transaction = new TradeTransaction
+            {
+                Sell = new Symbol
+                {
+                    SymbolName = "",
+                    QuoteQuantity = 0,
+                    Quantity = 0
+
+                },
+                Buy = symbolsBought,
+                Moment = getNow(),
+                Profit = 0 - buyAction.QuotedQuantity 
+            };
+            error = null;
+            return true;
+        }
+
         public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out Symbol symbolsBought, out string error)
         {
             var exchangeResult = _client.Spot.System.GetExchangeInfo();
             if (!exchangeResult.Success)
             {
                 error = $"Failed to fetch exchange info: {exchangeResult.Error}";
+                _log.Error(error);
                 symbolsBought = null;
                 return false;
             }
@@ -86,6 +115,7 @@
             {
                 if (!TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken, out testPrice, out error))
                 {
+                    _log.Error(error);
                     symbolsBought = null;
                     return false;
                 }
@@ -116,6 +146,7 @@
             if (buyOrder.Error != null)
             {
                 error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}";
+                _log.Error(error);
                 symbolsBought = null;
                 return false;
             }
@@ -126,6 +157,7 @@
             if (!isBought)
             {
                 error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}";
+                _log.Error(error);
                 symbolsBought = null;
                 return false;
             }
@@ -155,6 +187,7 @@
             if (!exchangeResult.Success)
             {
                 error = $"Failed to fetch exchange info: {exchangeResult.Error}";
+                _log.Error(error);
                 transaction = null;
                 return false;
             }
@@ -165,11 +198,13 @@
             {
                 if (!TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken, out buyPrice, out error))
                 {
+                    _log.Error(error);
                     transaction = null;
                     return false;
                 }
                 if (!TryGetPrice(sellAction.Symbol, referenceSymbol, cancellationToken, out sellPrice, out error))
                 {
+                    _log.Error(error);
                     transaction = null;
                     return false;
                 }
@@ -181,11 +216,13 @@
 
             if (!_validator.TryValidate(_client, sellAction, "Sell", referenceSymbol, exchangeInfo, cancellationToken, out sellAction, out error))
             {
+                _log.Error(error);
                 transaction = null;
                 return false;
             }
             if(!_validator.TryValidate(_client, buyAction, "Buy", referenceSymbol, exchangeInfo, cancellationToken, out buyAction, out error))
             {
+                _log.Error(error);
                 transaction = null;
                 return false;
             }
@@ -201,6 +238,7 @@
             if (sellOrder.Error != null)
             {
                 error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
+                _log.Error(error);
                 transaction = null;
                 return false;
             }
@@ -211,6 +249,7 @@
             if (!isSold)
             {
                 error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
+                _log.Error(error);
                 transaction = null;
                 return false;
             }
@@ -226,6 +265,7 @@
             if (buyOrder.Error != null)
             {
                 error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}";
+                _log.Error(error);
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;
@@ -237,6 +277,7 @@
             if (!isBought)
             {
                 error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}";
+                _log.Error(error);
                 RollbackOrder(sellOrder.Data, cancellationToken);
                 transaction = null;
                 return false;

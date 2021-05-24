@@ -15,6 +15,7 @@
         {
             if (!TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken, out var instance, out error))
             {
+                _log.Error(error);
                 trend = 0m;
                 return false;
             }
@@ -31,6 +32,7 @@
             if (response.Error != null)
             {
                 error = $"Failure fetching candlestick data for {symbol}: {response.Error}";
+                _log.Error(error);
                 trend = null;
                 return false;
             }
@@ -39,6 +41,7 @@
             if (response.Error != null)
             {
                 error = $"Failure fetching price data for {symbol}: {response.Error}";
+                _log.Error(error);
                 trend = null;
                 return false;
             }
@@ -79,6 +82,7 @@
             {
                 if (!TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken, out var trend, out error))
                 {
+                    _log.Error(error);
                     trends = null;
                     return false;
                 }

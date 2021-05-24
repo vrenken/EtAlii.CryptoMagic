@@ -20,6 +20,7 @@
             {
                 trend = 0m;
                 error = "No history";
+                _log.Error(error);
                 return false;
             }
 
