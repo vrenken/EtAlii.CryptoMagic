@@ -5,6 +5,7 @@
 
     public partial class CircularEdit 
     {
+        private decimal QuantityFactorInPercentage { get => Model.QuantityFactor * 100; set => Model.QuantityFactor = value / 100m; }
         private decimal TargetIncreaseInPercentage { get => Model.TargetIncrease * 100; set => Model.TargetIncrease = value / 100m; }
         private decimal InitialSellFactorInPercentage { get => Model.InitialSellFactor * 100; set => Model.InitialSellFactor = value / 100m; }
         private decimal MaxQuantityToTradeInPercentage { get => Model.MaxQuantityToTrade * 100; set => Model.MaxQuantityToTrade = value / 100m; }
