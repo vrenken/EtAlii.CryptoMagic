@@ -39,6 +39,8 @@
                     ApiCredentials = new ApiCredentials(apiKey, secretKey),
                     TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
                 };
+                _client?.Dispose();
+                
                 _client = new BinanceClient(options);
                 _clientApiKey = apiKey;
                 _clientSecretKey = secretKey;
@@ -67,7 +69,6 @@
         public void Stop()
         {
             _logger.Information("Stopping client");
-            _client.Dispose();
             _logger.Information("Stopping client: Done");
         }
 
