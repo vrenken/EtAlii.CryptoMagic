@@ -22,7 +22,7 @@
 
                 if (_client.TryConvert(sellAction, buyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var tradeTransaction, out var error))
                 {
-                    SaveAndReplaceTransaction(transaction, tradeTransaction);
+                    SaveAndReplaceTransaction(transaction, tradeTransaction, false);
                     targetSucceeded = true;
                 }
                 else

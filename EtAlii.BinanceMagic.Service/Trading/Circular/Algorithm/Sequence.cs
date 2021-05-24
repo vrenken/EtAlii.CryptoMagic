@@ -190,25 +190,26 @@ namespace EtAlii.BinanceMagic.Service
         }
         
         
-        private void SaveAndReplaceTransaction(CircularTransaction transaction, TradeTransaction tradeTransaction)
+        private void SaveAndReplaceTransaction(CircularTransaction transaction, TradeTransaction tradeTransaction, bool isInitialTransaction)
         {
-            transaction.SellSymbol = tradeTransaction.Sell.SymbolName;
             transaction.SellPrice = tradeTransaction.Sell.QuoteQuantity;
             transaction.SellQuantity = tradeTransaction.Sell.Quantity;
 
-            transaction.BuySymbol = tradeTransaction.Buy.SymbolName;
             transaction.BuyPrice = tradeTransaction.Buy.QuoteQuantity;
             transaction.BuyQuantity = tradeTransaction.Buy.Quantity;
 
             transaction.Result = $"Transaction done";
             transaction.LastCheck = _timeManager.GetNow();
-            transaction.LastSuccess = _timeManager.GetNow(); 
-            
+            transaction.LastSuccess = _timeManager.GetNow();
+
             transaction.Profit = transaction.SellPrice - transaction.BuyPrice;
-            
                     
             using var data = new DataContext();
-            _context.Trading.TotalProfit = transaction.Profit + data.GetTotalProfits(_context.Trading);
+
+            if (!isInitialTransaction)
+            {
+                _context.Trading.TotalProfit = transaction.Profit + data.GetTotalProfits(_context.Trading);
+            }
 
             transaction.Completed = true;
             transaction = transaction.ShallowClone();
