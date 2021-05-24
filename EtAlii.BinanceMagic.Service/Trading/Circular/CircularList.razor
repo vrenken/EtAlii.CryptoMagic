@@ -4,8 +4,8 @@
 
 @inherits ListBase<CircularTransaction, CircularTrading>
 
-<Row Margin="Margin.Is2">
-    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+<Row Margin="DefaultLayout.Margin">
+    <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
         <Heading>
             <Icon IconName="@("fa-infinity")"/> Circular tradings
         </Heading>
@@ -14,16 +14,16 @@
 
 <ListGroup>
     <Repeater Items="@Tradings">
-        <Row Margin="Margin.Is2">
-            <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+        <Row Margin="DefaultLayout.Margin">
+            <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
                 <CircularListItem Context="@context.Context"/>
             </Column>
         </Row>
     </Repeater>
 </ListGroup>
 
-<Row Margin="Margin.Is2">
-    <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+<Row Margin="DefaultLayout.Margin">
+    <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
         @if (ApplicationContext.IsOperational)
         {
             <ListGroup>

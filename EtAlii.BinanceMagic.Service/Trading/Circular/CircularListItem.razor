@@ -14,7 +14,7 @@
             </Step>
             <Step Name="NextAction">
                 <Marker><Icon Name="@("fa-history")" /></Marker>
-                <Caption><small><div class="text-center">@((MarkupString)Context.CurrentTransaction?.NextCheck.ToMultiLineHtml("Now"))</div></small></Caption>
+                <Caption><small><div class="text-center">@((MarkupString)Context.CurrentTransaction?.NextCheck.ToMultiLineHtml(Context.Trading.End != null ? "Now" : ""))</div></small></Caption>
             </Step>
             <Step Name="End">
                 <Marker><Icon Name="@(Context.Trading.TradeMethod == TradeMethod.BackTest ? "fa-flag-checkered" : "fa-infinity")"/></Marker>   

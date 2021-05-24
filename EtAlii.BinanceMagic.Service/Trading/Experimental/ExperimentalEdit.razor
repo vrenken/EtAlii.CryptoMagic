@@ -6,8 +6,8 @@
 
 <Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext">
 <Row>
-    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-        <Card Margin="Margin.Is2">
+    <Column ColumnSize="DefaultLayout.ItemColumnWidth">
+        <Card Margin="DefaultLayout.Margin">
             <CardHeader>
                 <CardTitle>@(Id == null ? "Add new experimental trade" : "Edit experimental trade")</CardTitle>
             </CardHeader>

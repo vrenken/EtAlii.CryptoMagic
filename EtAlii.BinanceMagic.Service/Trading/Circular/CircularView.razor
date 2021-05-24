@@ -4,9 +4,9 @@
 
 @inherits ViewBase<CircularTransaction, CircularTrading, CircularAlgorithmRunner>
 
-<Heading Margin="Margin.Is2">@Model.Name</Heading>
+<Heading Margin="DefaultLayout.Margin">@Model.Name</Heading>
 
-<Row Margin="Margin.Is2">
+<Row Margin="DefaultLayout.Margin">
     <Column ColumnSize="ColumnSize.Is1">
         <Blazorise.Button Color="Color.Primary" Type="ButtonType.Link" Size="Size.Small">
             <Icon Name="IconName.Pause" />
@@ -20,7 +20,7 @@
         </Blazorise.Button>
     </Column>
 </Row>
-<Row Margin="Margin.Is2">
+<Row Margin="DefaultLayout.Margin">
     <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
         <Card>
             <CardHeader>Summary</CardHeader>
@@ -49,8 +49,8 @@
 
 @if (CurrentRunner.Context.CurrentTransaction != null)
 {
-    <Row Margin="Margin.Is2">
-        <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+    <Row Margin="DefaultLayout.Margin">
+        <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
             <CircularTransactionCard 
                 Title="Current cycle" 
                 Transaction="@CurrentRunner.Context.CurrentTransaction"
@@ -60,8 +60,8 @@
 }
 
 <Repeater Items="@History">
-    <Row Margin="Margin.Is2">
-        <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+    <Row Margin="DefaultLayout.Margin">
+        <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
             <CircularTransactionCard 
                 Title="@($"Cycle {context.LastSuccess}")" 
                 Transaction="@context" 
@@ -72,8 +72,8 @@
 
 @if (CurrentRunner.Context.Trading.TradeMethod == TradeMethod.BackTest)
 {
-    <Row Margin="Margin.Is2">
-        <Column ColumnSize="ColumnSize.Is8.OnDesktop.IsAuto.OnTablet">
+    <Row Margin="DefaultLayout.Margin">
+        <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
             <Card>
                 <CardHeader>Backtest startup</CardHeader>
                 <CardBody>@((MarkupString)CurrentRunner.Log)</CardBody>

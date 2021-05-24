@@ -6,8 +6,8 @@
 
 <Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext" StatusChanged="OnValidationChanged">
 <Row>
-    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-        <Card Margin="Margin.Is2">
+    <Column ColumnSize="DefaultLayout.ItemColumnWidth">
+        <Card Margin="DefaultLayout.Margin">
             <CardHeader>
                 <CardTitle>@(Id == null ? "Add new circular trade" : "Edit circular trade")</CardTitle>
             </CardHeader>
@@ -59,6 +59,27 @@
                                 </Addon>
                             </Addons>
                             <FieldHelp>The target increase that should be aimed for each cycle.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 80, 150))">
+                        <Field>
+                            <FieldLabel>Quantity factor</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit
+                                        TValue="decimal"
+                                        Placeholder="Quantity factor in %" 
+                                        @bind-Value="@QuantityFactorInPercentage"
+                                        Min="80"
+                                        Max="150">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The quantity factor to work with. Most often this is a multiplication of 10 @Model.ReferenceSymbol.</FieldHelp>
                         </Field>
                     </Validation>
 
