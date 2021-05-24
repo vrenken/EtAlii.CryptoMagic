@@ -29,16 +29,18 @@
                 History.Clear();
             }
 
-            if (CurrentRunner == null)
+            if (CurrentRunner?.Context?.CurrentTransaction == null)
             {
                 return;
             }
-            
+
+            var currentTradingId = CurrentRunner.Context.Trading.Id;
+            var currentTransactionId = CurrentRunner.Context.CurrentTransaction.Id;
             using var data = new DataContext();
             var transactions = data.CircularTransactions
                 .Include(s => s.Trading)
-                .Where(s => s.Trading.Id == CurrentRunner.Context.Trading.Id)
-                .Where(s => s.Id != CurrentRunner.Context.CurrentTransaction.Id)
+                .Where(s => s.Trading.Id == currentTradingId)
+                .Where(s => s.Id != currentTransactionId)
                 .Where(s => s.Completed)
                 .OrderByDescending(s => s.Step)
                 .ToArray();

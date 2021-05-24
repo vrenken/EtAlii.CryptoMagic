@@ -99,6 +99,9 @@
     <Compile Update="Trading\AlgorithmManager.Update.cs">
       <DependentUpon>AlgorithmManager.cs</DependentUpon>
     </Compile>
+    <Compile Update="Testing\BackTestClient.Trends.cs">
+      <DependentUpon>BackTestClient.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
