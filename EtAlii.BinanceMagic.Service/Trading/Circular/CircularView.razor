@@ -53,7 +53,7 @@
     </Column>
 </Row>
 
-@if (CurrentRunner.Context.CurrentTransaction != null)
+@if (CurrentRunner?.Context?.CurrentTransaction != null)
 {
     <Row Margin="DefaultLayout.Margin">
         <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
@@ -76,7 +76,7 @@
     </Row>
 </Repeater>
 
-@if (CurrentRunner.Context.Trading.TradeMethod == TradeMethod.BackTest)
+@if (CurrentRunner?.Context?.Trading?.TradeMethod == TradeMethod.BackTest)
 {
     <Row Margin="DefaultLayout.Margin">
         <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
