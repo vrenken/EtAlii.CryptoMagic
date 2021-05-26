@@ -31,7 +31,10 @@
 
         private void OnLocationChangedInternal()
         {
-            var id = Guid.Parse(Id);
+            if (!Guid.TryParse(Id, out var id))
+            {
+                NavigationManager.NavigateTo("/");
+            }
             Model = GetTrading(id);
             if (CurrentRunner != null) CurrentRunner.Changed -= OnRunnerChangedInternal;
             CurrentRunner = AlgorithmManager.Runners
