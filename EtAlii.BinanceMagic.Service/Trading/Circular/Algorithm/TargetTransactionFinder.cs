@@ -40,8 +40,10 @@
                     .Include(s => s.Trading)
                     .Count(s => s.Trading.Id == _context.Trading.Id);    
                 transaction.Step = transactionCount + 1;
-                transaction.SellSymbol = transaction.BuySymbol;
-                transaction.BuySymbol = transaction.SellSymbol;
+                var previousBuySymbol = transaction.BuySymbol;
+                var previousSellSymbol = transaction.SellSymbol;
+                transaction.SellSymbol = previousBuySymbol;
+                transaction.BuySymbol = previousSellSymbol;
             }
             
             transaction.Target = transaction.Target > 0m
