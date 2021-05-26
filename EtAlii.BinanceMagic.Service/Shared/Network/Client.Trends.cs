@@ -38,7 +38,7 @@
             }
 
             var priceResponse = _client.Spot.Market.GetPrice(symbolComparedToReference, cancellationToken);
-            if (response.Error != null)
+            if (priceResponse.Error != null)
             {
                 error = $"Failure fetching price data for {symbol}: {response.Error}";
                 _log.Error(error);
