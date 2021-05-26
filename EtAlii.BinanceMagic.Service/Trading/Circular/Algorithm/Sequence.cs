@@ -6,7 +6,7 @@ namespace EtAlii.BinanceMagic.Service
     public partial class Sequence : ISequence
     {
         private readonly ICircularAlgorithm _circularAlgorithm;
-        private readonly ITradeDetailsUpdater _detailsUpdater;
+        private readonly ITargetTransactionFinder _targetTransactionFinder;
         private readonly IClient _client;
         private readonly ITimeManager _timeManager;
 
@@ -24,27 +24,16 @@ namespace EtAlii.BinanceMagic.Service
             _context = context;
             _initialize = initialize;
 
-            _detailsUpdater = new TradeDetailsUpdater(_context);
+            _targetTransactionFinder = new TargetTransactionFinder(_context);
             _circularAlgorithm = new CircularAlgorithm(client, _context);
         }
 
         public void Initialize(CancellationToken cancellationToken) => _initialize?.Invoke();
 
-        private CircularTransaction GetFirstTransaction()
-        {
-            var data = new DataContext();
-            
-            var transaction = data.FindPreviousTransaction(_context.Trading);
-            return transaction ?? new CircularTransaction
-            {
-                Trading = _context.Trading,
-            };
-        }
         public void Run(CancellationToken cancellationToken, out bool keepRunning)
         {
-            var transaction = _context.CurrentTransaction ?? GetFirstTransaction();
+            var transaction = _targetTransactionFinder.Find();
 
-            _detailsUpdater.UpdateTargetDetails(transaction);
             transaction.LastCheck = _timeManager.GetNow();
             _context.Update(transaction);
             

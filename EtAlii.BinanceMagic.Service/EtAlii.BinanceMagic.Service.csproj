@@ -48,8 +48,8 @@
     <Compile Update="Trading\Circular\Algorithm\ICircularAlgorithm.cs">
       <DependentUpon>CircularAlgorithm.cs</DependentUpon>
     </Compile>
-    <Compile Update="Trading\Circular\Algorithm\ITradeDetailsUpdater.cs">
-      <DependentUpon>TradeDetailsUpdater.cs</DependentUpon>
+    <Compile Update="Trading\Circular\Algorithm\ITargetTransactionFinder.cs">
+      <DependentUpon>TargetTransactionFinder.cs</DependentUpon>
     </Compile>
     <Compile Update="Trading\Circular\CircularTransactionCard.cs">
       <DependentUpon>CircularTransactionCard.razor</DependentUpon>

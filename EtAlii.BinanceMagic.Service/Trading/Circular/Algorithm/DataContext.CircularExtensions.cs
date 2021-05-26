@@ -54,6 +54,7 @@
             return data.CircularTransactions
                 .Include(t => t.Trading)
                 .Where(t => t.Trading.Id == trading.Id)
+                .Where(t => !t.IsInitialTransaction)
                 .ToArray()
                 .Sum(t => t.Profit);
         }
