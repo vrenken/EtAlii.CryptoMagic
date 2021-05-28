@@ -6,6 +6,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.BinanceMagic.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.BinanceMagic.Service", "EtAlii.BinanceMagic.Service\EtAlii.BinanceMagic.Service.csproj", "{AD1CA3CD-BA03-4546-8286-8869A2979C73}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Globals", "_Globals", "{686A8901-2B96-4F1B-B3B6-8E53C611447F}"
+ProjectSection(SolutionItems) = preProject
+	.gitignore = .gitignore
+	Global.json = Global.json
+	README.md = README.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

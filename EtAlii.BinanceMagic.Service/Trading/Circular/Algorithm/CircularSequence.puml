@@ -4,26 +4,67 @@
 
 title Automatic trading mechanism A: Circular.
 
-state CheckIfInitialCycle <<choice>>
-state TransferIsWorthIt <<choice>>
+state CheckWhatCycle <<choice>>
 
-[*] --> Start : Start
-Start --> CheckIfInitialCycle : Continue
-Start : OnEntry:
-Start : - Load from disk.
+state InitialPurchaseOfB {
+    state "BuyB" as BuyBInInitialCycle
+    state "CheckIfSufficientReference" as CheckIfSufficientReferenceInInitialPurchaseOfB
+    state "HasSufficientReference" as HasSufficientReferenceInInitialPurchaseOfB <<choice>>
+    [*] --> CheckIfSufficientReferenceInInitialPurchaseOfB
+    CheckIfSufficientReferenceInInitialPurchaseOfB --> HasSufficientReferenceInInitialPurchaseOfB : Continue
+    HasSufficientReferenceInInitialPurchaseOfB --> BuyBInInitialCycle : Yes
+    HasSufficientReferenceInInitialPurchaseOfB --> [*] : No 
+    BuyBInInitialCycle --> [*] : Continue
+}
 
-CheckIfInitialCycle --> InitialPurchase : IsInitialCycle
-CheckIfInitialCycle --> GetSituation : IsNormalCycle
+state InitialPurchaseOfA {
+    state "BuyA" as BuyAInInitialCycle
+    state "CheckIfSufficientReference" as CheckIfSufficientReferenceInInitialPurchaseOfA
+    state "HasSufficientReference" as HasSufficientReferenceInInitialPurchaseOfA <<choice>>
+    [*] --> CheckIfSufficientReferenceInInitialPurchaseOfA
+    CheckIfSufficientReferenceInInitialPurchaseOfA --> HasSufficientReferenceInInitialPurchaseOfA : Continue
+    HasSufficientReferenceInInitialPurchaseOfA --> BuyAInInitialCycle : Yes      
+    HasSufficientReferenceInInitialPurchaseOfA --> [*] : No      
+    BuyAInInitialCycle --> [*] : Continue
+}
 
-InitialPurchase --> Wait
+state TransferFromAToB {
+    [*] --> GetSituationInTransferFromAToB
+    state TransferFromAToBIsWorthIt <<choice>>
+    state HasSufficientA <<choice>>
+    GetSituationInTransferFromAToB --> TransferFromAToBIsWorthIt 
 
-GetSituation -> TransferIsWorthIt
+    TransferFromAToBIsWorthIt --> CheckIfSufficientA : Yes
+    TransferFromAToBIsWorthIt --> [*] : No
+    CheckIfSufficientA --> HasSufficientA : Continue
+    HasSufficientA --> [*] : No
+    HasSufficientA --> SellABuyB : Yes 
+    SellABuyB --> [*] : Continue
+}
+state TransferFromBToA {
+    [*] --> GetSituationInTransferFromBToA
+    state TransferFromBToAIsWorthIt <<choice>>
+    state HasSufficientB <<choice>>
+    GetSituationInTransferFromBToA --> TransferFromBToAIsWorthIt : Continue
+    TransferFromBToAIsWorthIt --> CheckIfSufficientB : Yes
+    TransferFromBToAIsWorthIt --> [*] : No
+    CheckIfSufficientB --> HasSufficientB : Continue
+    HasSufficientB --> [*] : No
+    HasSufficientB --> SellBBuyA : Yes 
+    SellBBuyA --> [*] : Continue
+}
 
-TransferIsWorthIt --> Transfer : Yes
-TransferIsWorthIt --> Wait : No
+[*] --> LoadPreviousCycleFromDatabase : Start
+LoadPreviousCycleFromDatabase --> CheckWhatCycle : Continue
 
-Transfer --> Wait
+CheckWhatCycle --> InitialPurchaseOfA : IsInitialCycleToA
+CheckWhatCycle --> InitialPurchaseOfB : IsInitialCycleToB
+CheckWhatCycle --> TransferFromAToB : IsNormalCycleFromAToB
+CheckWhatCycle --> TransferFromBToA : IsNormalCycleFromBToA
 
-Wait -up-> GetSituation : Continue
+InitialPurchaseOfA --> Wait 
+InitialPurchaseOfB --> Wait 
+TransferFromAToB --> Wait 
+TransferFromBToA --> Wait 
 
 @enduml
