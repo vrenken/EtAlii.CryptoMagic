@@ -14,5 +14,6 @@
         public Delta Destination { get; init; }
         
         public bool IsInitialCycle { get; init; }
+        public Cycle Cycle { get; init; }
     }
 }

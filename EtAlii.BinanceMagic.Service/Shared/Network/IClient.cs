@@ -9,6 +9,9 @@ namespace EtAlii.BinanceMagic.Service
     {
         void Start(string apiKey, string secretKey);
         void Stop();
+
+        bool TryHasSufficientQuota(string symbol, decimal minimumValue, out string error);
+        
         bool TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal price, out string error);
 
         bool TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error);

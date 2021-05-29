@@ -12,7 +12,7 @@
                 <CardTitle>@(Id == null ? "Add new simple trade" : "Change simple trade")</CardTitle>
             </CardHeader>
                 <CardBody>
-                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Validation Validator="ValidationRule.IsNotEmpty">
                         <Field>
                             <FieldLabel>Name</FieldLabel>
                             <TextEdit 

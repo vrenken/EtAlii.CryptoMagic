@@ -247,5 +247,11 @@ namespace EtAlii.BinanceMagic.Service
             error = null;
             return true;
         }
+
+        public bool TryHasSufficientQuota(string symbol, decimal minimumValue, out string error)
+        {
+            error = null;
+            return true;
+        }
     }
 }

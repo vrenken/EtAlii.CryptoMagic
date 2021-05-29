@@ -2,7 +2,7 @@
     The Router component displays whichever component has a @page
     directive matching the current URI.
 *@
-<Blazorise.ThemeProvider Theme="@_theme">
+<Blazorise.ThemeProvider Theme="_theme">
     <Router AppAssembly="typeof(App).Assembly">
         <Found Context="routeData">
             <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />

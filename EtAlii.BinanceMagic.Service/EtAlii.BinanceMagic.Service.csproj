@@ -102,6 +102,18 @@
     <Compile Update="Testing\BackTestClient.Trends.cs">
       <DependentUpon>BackTestClient.cs</DependentUpon>
     </Compile>
+    <Compile Update="Trading\Circular\Algorithm\CircularSequence.Generated.cs">
+      <DependentUpon>CircularSequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Experimental\ExperimentalList.cs">
+      <DependentUpon>ExperimentalList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Experimental\ExperimentalEdit.cs">
+      <DependentUpon>ExperimentalEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Simple\SimpleList.cs">
+      <DependentUpon>SimpleList.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -130,11 +142,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
     <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -151,7 +163,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <StatelessFile Include="Trading\Circular\Algorithm\CircularSequence.puml" />
+    <Content Include="Trading\Circular\Algorithm\CircularSequence.puml" />
     <StatelessFile Include="Trading\Surfing\Algorithm\Sequence.puml" />
   </ItemGroup>
 </Project>

@@ -7,14 +7,14 @@ title Automatic trading mechanism A: Circular.
 state CheckWhatCycle <<choice>>
 
 state InitialPurchaseOfB {
-    state "BuyB" as BuyBInInitialCycle
+    state "SellABuyB" as SellABuyBInInitialCycle
     state "CheckIfSufficientReference" as CheckIfSufficientReferenceInInitialPurchaseOfB
     state "HasSufficientReference" as HasSufficientReferenceInInitialPurchaseOfB <<choice>>
     [*] --> CheckIfSufficientReferenceInInitialPurchaseOfB
     CheckIfSufficientReferenceInInitialPurchaseOfB --> HasSufficientReferenceInInitialPurchaseOfB : Continue
-    HasSufficientReferenceInInitialPurchaseOfB --> BuyBInInitialCycle : Yes
+    HasSufficientReferenceInInitialPurchaseOfB --> SellABuyBInInitialCycle : Yes
     HasSufficientReferenceInInitialPurchaseOfB --> [*] : No 
-    BuyBInInitialCycle --> [*] : Continue
+    SellABuyBInInitialCycle --> [*] : Continue
 }
 
 state InitialPurchaseOfA {
@@ -28,11 +28,12 @@ state InitialPurchaseOfA {
     BuyAInInitialCycle --> [*] : Continue
 }
 
+
 state TransferFromAToB {
     [*] --> GetSituationInTransferFromAToB
     state TransferFromAToBIsWorthIt <<choice>>
     state HasSufficientA <<choice>>
-    GetSituationInTransferFromAToB --> TransferFromAToBIsWorthIt 
+    GetSituationInTransferFromAToB --> TransferFromAToBIsWorthIt : Continue 
 
     TransferFromAToBIsWorthIt --> CheckIfSufficientA : Yes
     TransferFromAToBIsWorthIt --> [*] : No
@@ -62,9 +63,9 @@ CheckWhatCycle --> InitialPurchaseOfB : IsInitialCycleToB
 CheckWhatCycle --> TransferFromAToB : IsNormalCycleFromAToB
 CheckWhatCycle --> TransferFromBToA : IsNormalCycleFromBToA
 
-InitialPurchaseOfA --> Wait 
-InitialPurchaseOfB --> Wait 
-TransferFromAToB --> Wait 
-TransferFromBToA --> Wait 
+InitialPurchaseOfA --> Wait : Continue
+InitialPurchaseOfB --> Wait : Continue 
+TransferFromAToB --> Wait : Continue
+TransferFromBToA --> Wait : Continue 
 
 @enduml

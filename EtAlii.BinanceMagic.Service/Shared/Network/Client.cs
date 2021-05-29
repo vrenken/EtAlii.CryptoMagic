@@ -42,6 +42,7 @@
                 _client?.Dispose();
                 
                 _client = new BinanceClient(options);
+                
                 _clientApiKey = apiKey;
                 _clientSecretKey = secretKey;
                 
@@ -125,6 +126,26 @@
         {
             var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == coin && s.QuoteAsset == referenceCoin);
             return symbol.MinNotionalFilter!.MinNotional;
+        }
+
+        public bool TryHasSufficientQuota(string symbol, decimal minimumValue, out string error)
+        {
+            var result = _client.General.GetUserCoins();
+            if (!result.Success)
+            {
+                error = $"Failure checking for quota of {symbol}: {result.Error}";
+                return false;
+            }
+
+            var coin = result.Data.SingleOrDefault(c => c.Coin == symbol);
+            if (coin == null)
+            {
+                error = $"Failure checking for quota of {symbol}: Coin not found";
+                return false;
+            }
+
+            error = null;
+            return coin.Free > minimumValue;
         }
     }
 }
