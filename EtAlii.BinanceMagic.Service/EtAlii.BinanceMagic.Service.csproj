@@ -114,6 +114,9 @@
     <Compile Update="Trading\Simple\SimpleList.cs">
       <DependentUpon>SimpleList.razor</DependentUpon>
     </Compile>
+    <Compile Update="Trading\Circular\CircularView.Chart.cs">
+      <DependentUpon>CircularView.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

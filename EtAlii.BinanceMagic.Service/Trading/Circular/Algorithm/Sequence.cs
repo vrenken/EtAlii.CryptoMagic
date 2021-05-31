@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Threading;
+    using Microsoft.EntityFrameworkCore;
 
     public partial class Sequence : ISequence
     {
@@ -87,8 +88,8 @@ namespace EtAlii.BinanceMagic.Service
                     _context.Update(transaction);
                     continue;
                 }
-                situation = situation with { ExchangeInfo = exchangeInfo };
                 
+                situation = situation with { ExchangeInfo = exchangeInfo };
                 if (situation.IsInitialCycle)
                 {
                     targetAchieved = HandleInitialCycle(cancellationToken, situation, transaction);
@@ -123,7 +124,7 @@ namespace EtAlii.BinanceMagic.Service
                 situation = null;
                 return false;
             }
-
+                
             if (!_client.TryGetTradeFees(transaction.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var sourceMakerFee, out var _, out error))
             {
                 situation = null;
@@ -148,6 +149,18 @@ namespace EtAlii.BinanceMagic.Service
             }
 
             using var data = new DataContext();
+            var snapshot = new Snapshot
+            {
+                Moment = DateTime.Now,
+                Trading = _context.Trading,
+                FirstSymbolMarketPrice = transaction.SellSymbol == _context.Trading.FirstSymbol ? sourcePrice : targetPrice,
+                SecondSymbolMarketPrice = transaction.SellSymbol == _context.Trading.FirstSymbol ? targetPrice : sourcePrice
+            };
+
+            data.Entry(snapshot).State = EntityState.Added;
+            data.Entry(_context.Trading).State = EntityState.Unchanged;
+            data.SaveChanges();
+
             var lastSourcePurchase = data.FindLastPurchase(transaction.SellSymbol, _context.Trading, transaction);
             var sourceDelta = new Delta
             {

@@ -27,7 +27,7 @@
     </Column>
 </Row>
 <Row Margin="DefaultLayout.Margin">
-    <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
+    <Column ColumnSize="ColumnSize.Is5.OnDesktop.IsAuto.OnTablet">
         <Card>
             <CardHeader>Summary</CardHeader>
             <Table Striped="false" Borderless="true" Narrow="true">
@@ -51,12 +51,32 @@
             </Table>
         </Card>        
     </Column>
+    <Column ColumnSize="ColumnSize.Is5.OnDesktop.IsAuto.OnTablet">
+        <Card>
+            <CardHeader>
+                <CardTitle>Chart</CardTitle>
+            </CardHeader>
+            <CardBody>
+                <LineChart 
+                    @ref="_lineChart" 
+                    TItem="LiveDataPoint" 
+                    OptionsObject="@_lineChartOptions">
+                    <ChartStreaming 
+                        TItem="LiveDataPoint"
+                        Options="_chartStreamingOptions"
+                        Refreshed="@OnLineRefreshed" />
+                </LineChart>
+            </CardBody>
+            <CardFooter>
+            </CardFooter>
+        </Card>
+    </Column>
 </Row>
 
 @if (CurrentRunner?.Context?.CurrentTransaction != null)
 {
     <Row Margin="DefaultLayout.Margin">
-        <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
+        <Column ColumnSize="ColumnSize.Is10.OnDesktop.IsAuto.OnTablet">
             <CircularTransactionCard 
                 Title="Current cycle" 
                 Transaction="@CurrentRunner.Context.CurrentTransaction"
@@ -67,7 +87,7 @@
 
 <Repeater Items="@History">
     <Row Margin="DefaultLayout.Margin">
-        <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
+        <Column ColumnSize="ColumnSize.Is10.OnDesktop.IsAuto.OnTablet">
             <CircularTransactionCard 
                 Title="@($"{(context.IsInitialTransaction ? "Initial cycle" : "Cycle")} {context.LastSuccess}")" 
                 Transaction="@context" 
@@ -79,7 +99,7 @@
 @if (CurrentRunner?.Context?.Trading?.TradeMethod == TradeMethod.BackTest)
 {
     <Row Margin="DefaultLayout.Margin">
-        <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
+        <Column ColumnSize="ColumnSize.Is10.OnDesktop.IsAuto.OnTablet">
             <Card>
                 <CardHeader>Backtest startup</CardHeader>
                 <CardBody>@((MarkupString)CurrentRunner.Log)</CardBody>

@@ -9,7 +9,8 @@
     {
         private ObservableCollection<CircularTransaction> History { get; } = new();
 
-        private CircularTransaction Current => CurrentRunner.Context.CurrentTransaction; 
+        private CircularTransaction Current => CurrentRunner.Context.CurrentTransaction;
+        
         protected override CircularTrading GetTrading(Guid id)
         {
             using var data = new DataContext();
@@ -18,7 +19,12 @@
 
         protected override void OnRunnerChanged() => UpdateHistory(false);
 
-        protected override void OnLocationChanged() => UpdateHistory(true);
+        protected override void OnLocationChanged()
+        {
+            UpdateHistory(true);
+            _lineChartOptions = CreateLineChartOptions();
+            _chartStreamingOptions = CreateChartStreamingOptions();
+        }
 
         protected override string GetListUrl() => "/circular/list";
 

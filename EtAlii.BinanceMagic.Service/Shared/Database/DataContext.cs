@@ -11,6 +11,7 @@ namespace EtAlii.BinanceMagic.Service
         
         public DbSet<SimpleTrading> SimpleTradings { get; init; }
         public DbSet<CircularTrading> CircularTradings { get; init; }
+        public DbSet<Snapshot> Snapshots { get; init; }
         public DbSet<SurfingTrading> SurfingTradings { get; init; }
         public DbSet<ExperimentalTrading> ExperimentalTradings { get; init; }
         public DbSet<OneOffTrading> OneOffTradings { get; init; }

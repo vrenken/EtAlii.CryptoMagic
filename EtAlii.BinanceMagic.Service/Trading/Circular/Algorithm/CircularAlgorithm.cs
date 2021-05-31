@@ -26,7 +26,7 @@
             transaction.SellTrendIsOptimal = transaction.SellPrice <= 60m; // Remark. it is positive when it does not increase anymore.
 
             transaction.BuyQuantityMinimum = _client.GetMinimalQuantity(situation.Destination.Symbol, situation.ExchangeInfo, _context.Trading.ReferenceSymbol);
-            transaction.BuyQuantity = ((transaction.BuyQuantityMinimum * _context.Trading.QuantityFactor) / situation.Destination.PresentPrice) * _context.Trading.MaxQuantityToTrade;
+            transaction.BuyQuantity = transaction.BuyQuantityMinimum * _context.Trading.QuantityFactor / situation.Destination.PresentPrice * _context.Trading.MaxQuantityToTrade;
             transaction.BuyPrice = transaction.BuyQuantity * situation.Destination.PresentPrice;
             transaction.BuyPriceIsOptimal = transaction.BuyPrice >= transaction.BuyQuantityMinimum;
             transaction.BuyTrend = situation.BuyTrend;
