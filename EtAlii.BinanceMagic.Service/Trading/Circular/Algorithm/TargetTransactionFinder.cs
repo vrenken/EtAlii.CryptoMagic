@@ -25,7 +25,8 @@
                 {
                     Trading = _context.Trading,
                     SellSymbol =  _context.Trading.FirstSymbol,
-                    BuySymbol = _context.Trading.SecondSymbol
+                    BuySymbol = _context.Trading.SecondSymbol,
+                    Target = _context.Trading.InitialTarget
                 };
 
                 if (transaction.Completed)
@@ -44,11 +45,9 @@
                 var previousSellSymbol = transaction.SellSymbol;
                 transaction.SellSymbol = previousBuySymbol;
                 transaction.BuySymbol = previousSellSymbol;
+                transaction.Target = transaction.Target * _context.Trading.TargetIncrease;
             }
             
-            transaction.Target = transaction.Target > 0m
-                ? transaction.Target * _context.Trading.TargetIncrease
-                : _context.Trading.InitialTarget;
             transaction.Result = "Found next target";
             
             return transaction;
