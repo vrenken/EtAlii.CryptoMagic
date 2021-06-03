@@ -20,6 +20,10 @@
 
         private readonly string[] _labels = { "Green", "Blue", "Yellow", "Red", "Purple", "Orange" };
 
+        private List<LiveDataPoint> _firstSymbolSnapshots;
+        private List<LiveDataPoint> _secondSymbolSnapshots;
+        private List<LiveDataPoint> _differenceSnapshots;
+
         private readonly List<string> _backgroundColors = new()
         {
             ChartColor.FromRgba( 75, 192, 192, 0.5f ), 
@@ -49,10 +53,59 @@
                 Delay = (int)_sampleDelay.TotalMilliseconds, 
             };
         }
+
+        private void PopulateSnapshots()
+        {
+            if (Model == null)
+            {
+                _firstSymbolSnapshots = new List<LiveDataPoint>();
+                _secondSymbolSnapshots = new List<LiveDataPoint>();
+                _differenceSnapshots = new List<LiveDataPoint>();
+                return;
+            }
+            
+            var maxNumberOfRecords = (int)(_chartWidth / Model.SampleInterval);
+            
+            using var data = new DataContext();
+            _firstSymbolSnapshots = data.Snapshots
+                .AsNoTracking()
+                .Include(s => s.Trading)
+                .Where(s => s.Trading == Model)
+                .OrderByDescending(s => s.Moment)
+                .Take(maxNumberOfRecords)
+                .Select(s => new LiveDataPoint { X = s.Moment, Y = s.FirstSymbolMarketPrice} )
+                .Reverse()
+                .ToList();
+
+            _secondSymbolSnapshots = data.Snapshots
+                .AsNoTracking()
+                .Include(s => s.Trading)
+                .Where(s => s.Trading == Model)
+                .OrderByDescending(s => s.Moment)
+                .Take(maxNumberOfRecords)
+                .Select(s => new LiveDataPoint { X = s.Moment, Y = s.SecondSymbolMarketPrice} )
+                .Reverse()
+                .ToList();
+
+            _differenceSnapshots = data.CircularTransactions
+                .AsNoTracking()
+                .Include(s => s.Trading)
+                .Where(s => s.Trading == Model)
+                .OrderByDescending(s => s.Step)
+                .Take(maxNumberOfRecords)
+                .Select(s => new LiveDataPoint { X = s.LastCheck.Value, Y = s.Difference} )
+                .Reverse()
+                .ToList();
+        }
         
         private object CreateLineChartOptions()
         {
-            return new
+            if (Model == null)
+            {
+                return null;
+            }
+            
+            var options = new
             {
                 Title = new
                 {
@@ -61,11 +114,11 @@
                 },
                 Scales = new
                 {
-                    YAxes = new object[]
+                    YAxes = new []
                     {
-                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, min = 0m, max = 1m },
-                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, min = 0m, max = 1m },
-                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, min = 0m, max = 1m }
+                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, ticks = new AxisTicks { min = 0m, max = 1m } },
+                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, ticks = new AxisTicks { min = 0m, max = 1m } },
+                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, ticks = new AxisTicks { min = 0m, max = 1m } }
                     },
                     // XAxes = new object[]
                     // {
@@ -84,11 +137,32 @@
                 },
                 Animation = false
             };
+            
+            if (_firstSymbolSnapshots.Any())
+            {
+                options.Scales.YAxes[0].ticks.min = _firstSymbolSnapshots.Min(s => s.Y) * 0.9m;
+                options.Scales.YAxes[0].ticks.max = _firstSymbolSnapshots.Max(s => s.Y) * 1.1m;
+            }
+            if (_secondSymbolSnapshots.Any())
+            {
+                options.Scales.YAxes[1].ticks.min = _secondSymbolSnapshots.Min(s => s.Y) * 0.9m;
+                options.Scales.YAxes[1].ticks.max = _secondSymbolSnapshots.Max(s => s.Y) * 1.1m;
+            }
+
+            if (_differenceSnapshots.Any())
+            {
+                options.Scales.YAxes[2].ticks.min = _differenceSnapshots.Min(s => s.Y) * 0.9m;
+                options.Scales.YAxes[2].ticks.max = _differenceSnapshots.Max(s => s.Y) * 1.1m;
+            }
+
+            return options;
         }
+
+        
         
         protected override async Task OnAfterRenderAsync( bool firstRender )
         {
-            if ( firstRender )
+            if ( firstRender && Model != null)
             {
                 await HandleRedraw( _lineChart, new Func<LineChartDataset<LiveDataPoint>>[]
                 {
@@ -101,27 +175,11 @@
 
         private LineChartDataset<LiveDataPoint> GetLineChartDatasetForFirstSymbol()
         {
-            var maxNumberOfRecords = (int)(_chartWidth / Model.SampleInterval);
-            
-            using var data = new DataContext();
-            var snapshots = data.Snapshots
-                .AsNoTracking()
-                .Include(s => s.Trading)
-                .Where(s => s.Trading == Model)
-                .OrderByDescending(s => s.Moment)
-                .Take(maxNumberOfRecords)
-                .Select(s => new LiveDataPoint { X = s.Moment, Y = s.SecondSymbolMarketPrice} )
-                .Reverse()
-                .ToList();
-
-            _lineChartOptions.Scales.YAxes[0].min = snapshots.Min(s => s.Y);
-            _lineChartOptions.Scales.YAxes[0].max = snapshots.Max(s => s.Y);
-            
             return new SettableChartDataset  
             {
                 // yAxisID = "0",
                 // xAxisID = "0",
-                Data = snapshots,
+                Data = _firstSymbolSnapshots,
                 PointRadius = 0,
                 Label = Model.FirstSymbol,
                 BackgroundColor = _backgroundColors[0],
@@ -134,27 +192,11 @@
         
         private LineChartDataset<LiveDataPoint> GetLineChartDatasetForSecondSymbol()
         {
-            var maxNumberOfRecords = (int)(_chartWidth / Model.SampleInterval);
-            
-            using var data = new DataContext();
-            var snapshots = data.Snapshots
-                .AsNoTracking()
-                .Include(s => s.Trading)
-                .Where(s => s.Trading == Model)
-                .OrderByDescending(s => s.Moment)
-                .Take(maxNumberOfRecords)
-                .Select(s => new LiveDataPoint { X = s.Moment, Y = s.FirstSymbolMarketPrice} )
-                .Reverse()
-                .ToList();
-
-            _lineChartOptions.Scales.YAxes[1].min = snapshots.Min(s => s.Y);
-            _lineChartOptions.Scales.YAxes[1].max = snapshots.Max(s => s.Y);
-                
             return new SettableChartDataset  
             {
                 // yAxisID = "1",
                 // xAxisID = "0",
-                Data = snapshots,
+                Data = _secondSymbolSnapshots,
                 PointRadius = 0,
                 Label = Model.SecondSymbol,
                 BackgroundColor = _backgroundColors[1],
@@ -167,27 +209,11 @@
 
         private LineChartDataset<LiveDataPoint> GetLineChartDatasetForDifference()
         {
-            var maxNumberOfRecords = (int)(_chartWidth / Model.SampleInterval);
-            
-            using var data = new DataContext();
-            var snapshots = data.CircularTransactions
-                .AsNoTracking()
-                .Include(s => s.Trading)
-                .Where(s => s.Trading == Model)
-                .OrderByDescending(s => s.Step)
-                .Take(maxNumberOfRecords)
-                .Select(s => new LiveDataPoint { X = s.LastCheck.Value, Y = s.Difference} )
-                .Reverse()
-                .ToList();
-
-            _lineChartOptions.Scales.YAxes[2].min = snapshots.Min(s => s.Y);
-            _lineChartOptions.Scales.YAxes[2].max = snapshots.Max(s => s.Y);
-                
             return new SettableChartDataset  
             {
                 // yAxisID = "2",
                 // xAxisID = "0",
-                Data = snapshots,
+                Data = _differenceSnapshots,
                 PointRadius = 0,
                 Label = "Difference",
                 BackgroundColor = _backgroundColors[2],
@@ -227,8 +253,8 @@
                     X = DateTime.Now,
                     Y = snapshot.FirstSymbolMarketPrice,
                 };
-                _lineChartOptions.Scales.YAxes[0].min = Math.Min(snapshot.FirstSymbolMarketPrice, _lineChartOptions.Scales.YAxes[0].min);
-                _lineChartOptions.Scales.YAxes[0].max = Math.Max(snapshot.FirstSymbolMarketPrice, _lineChartOptions.Scales.YAxes[0].max);
+                _lineChartOptions.Scales.YAxes[0].ticks.min = Math.Min(snapshot.FirstSymbolMarketPrice, _lineChartOptions.Scales.YAxes[0].ticks.min);
+                _lineChartOptions.Scales.YAxes[0].ticks.max = Math.Max(snapshot.FirstSymbolMarketPrice, _lineChartOptions.Scales.YAxes[0].ticks.max);
             }
             else if(chartData.DatasetIndex == 1)
             {
@@ -237,8 +263,8 @@
                     X = DateTime.Now,
                     Y = snapshot.SecondSymbolMarketPrice,
                 };
-                _lineChartOptions.Scales.YAxes[1].min = Math.Min(snapshot.SecondSymbolMarketPrice, _lineChartOptions.Scales.YAxes[1].min);
-                _lineChartOptions.Scales.YAxes[1].max = Math.Max(snapshot.SecondSymbolMarketPrice, _lineChartOptions.Scales.YAxes[1].max);
+                _lineChartOptions.Scales.YAxes[1].ticks.min = Math.Min(snapshot.SecondSymbolMarketPrice, _lineChartOptions.Scales.YAxes[1].ticks.min);
+                _lineChartOptions.Scales.YAxes[1].ticks.max = Math.Max(snapshot.SecondSymbolMarketPrice, _lineChartOptions.Scales.YAxes[1].ticks.max);
             }
             else 
             {
@@ -247,11 +273,9 @@
                     X = DateTime.Now,
                     Y = Current.Difference,
                 };
-                _lineChartOptions.Scales.YAxes[2].min = Math.Min(Current.Difference, _lineChartOptions.Scales.YAxes[2].min);
-                _lineChartOptions.Scales.YAxes[2].max = Math.Max(Current.Difference, _lineChartOptions.Scales.YAxes[2].max);
+                _lineChartOptions.Scales.YAxes[2].ticks.min = Math.Min(Current.Difference, _lineChartOptions.Scales.YAxes[2].ticks.min);
+                _lineChartOptions.Scales.YAxes[2].ticks.max = Math.Max(Current.Difference, _lineChartOptions.Scales.YAxes[2].ticks.max);
             }
-
-            await InvokeAsync(async () => await _lineChart.SetOptions(_lineChartOptions));
         }
     }
 }

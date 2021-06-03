@@ -22,6 +22,8 @@
         protected override void OnLocationChanged()
         {
             UpdateHistory(true);
+
+            PopulateSnapshots();
             _lineChartOptions = CreateLineChartOptions();
             _chartStreamingOptions = CreateChartStreamingOptions();
         }
