@@ -3,9 +3,10 @@
     using System;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using Binance.Net;
     using Binance.Net.Enums;
-    using Binance.Net.Objects.Spot;
+    using Binance.Net.Objects;
     using Binance.Net.Objects.Spot.MarketData;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
@@ -27,7 +28,7 @@
             _validator = actionValidator;
         }
 
-        public void Start(string apiKey, string secretKey)
+        public async Task Start(string apiKey, string secretKey)
         {
             _logger.Information("Starting client");
 
@@ -46,7 +47,7 @@
                 _clientApiKey = apiKey;
                 _clientSecretKey = secretKey;
                 
-                var startResult = _client.Spot.UserStream.StartUserStream();
+                var startResult = await _client.Spot.UserStream.StartUserStreamAsync();
 
                 if (!startResult.Success)
                 {
@@ -60,8 +61,9 @@
 
         public SymbolDefinition[] GetSymbols(string referenceSymbol)
         {
-            var response = _client.Spot.System.GetExchangeInfo();
-            return response.Data.Symbols
+            var response = _client.Spot.System.GetExchangeInfoAsync();
+            response.Wait();
+            return response.Result.Data.Symbols
                 .Where(s => s.QuoteAsset == referenceSymbol)
                 .Select(s => new SymbolDefinition { Name = s.BaseAsset, Base = s.QuoteAsset })
                 .ToArray();
@@ -73,53 +75,39 @@
             _logger.Information("Stopping client: Done");
         }
 
-        public bool TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal price, out string error)
+        public async Task<(bool success, decimal price, string error)> TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken)
         {
             var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
-            var result = _client.Spot.Market.GetPrice(symbolComparedToReference, cancellationToken);
+            var result = await _client.Spot.Market.GetPriceAsync(symbolComparedToReference, cancellationToken);
             if (result.Error != null)
             {
-                error = $"Failure fetching price for {symbol}: {result.Error}";
-                price = decimal.Zero;
-                return false;
+                return (false, decimal.Zero, $"Failure fetching price for {symbol}: {result.Error}");
             }
 
-            price = result.Data.Price;
-            error = null;
-            return true;
+            return (true, result.Data.Price, null);
         }
         
-        public bool TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
+        public async Task<(bool success, decimal makerFee, decimal takerFee, string error)> TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken)
         {
             var coinComparedToReference = $"{symbol}{referenceSymbol}"; 
-            var result = _client.Spot.Market.GetTradeFee(coinComparedToReference, null, cancellationToken);
+            var result = await _client.Spot.Market.GetTradeFeeAsync(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
-                error = $"Failure fetching trade fees for {symbol}: {result.Error}";
-                makerFee = 0m;
-                takerFee = 0m;
-                return false;
+                return (false, 0m, 0m, $"Failure fetching trade fees for {symbol}: {result.Error}");
             }
 
             var fees = result.Data.First();
-            makerFee = fees.MakerFee;
-            takerFee = fees.TakerFee;
-            error = null;
-            return true;
+            return (true, fees.MakerFee, fees.TakerFee, null);
         }
         
-        public bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo, out string error)
+        public async Task<(bool success, BinanceExchangeInfo exchangeInfo, string error)> TryGetExchangeInfo(CancellationToken cancellationToken)
         {
-            var exchangeResult = _client.Spot.System.GetExchangeInfo(cancellationToken);
+            var exchangeResult = await _client.Spot.System.GetExchangeInfoAsync(cancellationToken);
             if (!exchangeResult.Success)
             {
-                error = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                exchangeInfo = null;
-                return false;
+                return (false, null, $"Failed to fetch exchange info: {exchangeResult.Error}");
             }
-            exchangeInfo = exchangeResult.Data;
-            error = null;
-            return true;
+            return (true, exchangeResult.Data, null);
         }
         
         public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin)
@@ -128,24 +116,21 @@
             return symbol.MinNotionalFilter!.MinNotional;
         }
 
-        public bool TryHasSufficientQuota(string symbol, decimal minimumValue, out string error)
+        public async Task<(bool success, string error)> TryHasSufficientQuota(string symbol, decimal minimumValue)
         {
-            var result = _client.General.GetUserCoins();
+            var result = await _client.General.GetUserCoinsAsync();
             if (!result.Success)
             {
-                error = $"Failure checking for quota of {symbol}: {result.Error}";
-                return false;
+                return (false, $"Failure checking for quota of {symbol}: {result.Error}");
             }
 
             var coin = result.Data.SingleOrDefault(c => c.Coin == symbol);
             if (coin == null)
             {
-                error = $"Failure checking for quota of {symbol}: Coin not found";
-                return false;
+                return (false, $"Failure checking for quota of {symbol}: Coin not found");
             }
 
-            error = null;
-            return coin.Free > minimumValue;
+            return (coin.Free > minimumValue, null);
         }
     }
 }

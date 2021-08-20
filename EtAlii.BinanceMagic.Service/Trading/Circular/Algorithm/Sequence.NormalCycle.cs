@@ -1,16 +1,18 @@
 ﻿namespace EtAlii.BinanceMagic.Service
 {
     using System.Threading;
+    using System.Threading.Tasks;
 
     public partial class Sequence
     {
-        private bool TryHandleNormalCycle(CancellationToken cancellationToken, Situation situation, out bool targetSucceeded)
+        private async Task<(bool success, bool targetSucceeded)> TryHandleNormalCycle(CancellationToken cancellationToken, Situation situation)
         {
             var transaction = _context.CurrentTransaction;
 
             transaction.IsInitialTransaction = false;
 
-            targetSucceeded = false;
+            var targetSucceeded = false;
+            var success = false;
 
             if (_circularAlgorithm.TransactionIsWorthIt(situation, out var sellAction, out var buyAction))
             {
@@ -22,7 +24,10 @@
                 transaction.LastCheck = _timeManager.GetNow();
                 _context.Update(transaction);
 
-                if (_client.TryConvert(sellAction, buyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var tradeTransaction, out var error))
+                TradeTransaction tradeTransaction;
+                string error;
+                (success, tradeTransaction, error) = await  _client.TryConvert(sellAction, buyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow);
+                if (success)
                 {
                     SaveAndReplaceTransaction(transaction, tradeTransaction, false);
                     targetSucceeded = true;
@@ -33,7 +38,7 @@
                 }
             }
 
-            return targetSucceeded;
+            return (success, targetSucceeded);
         }
     }
 }

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using Binance.Net.Enums;
     using EtAlii.BinanceMagic.Service.Surfing;
     using Trady.Analysis.Extension;
@@ -11,39 +12,35 @@
     public partial class Client 
     {
         
-        public bool TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken, out decimal trend, out string error)
+        public async Task<(bool success, decimal trend, string error)> TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken)
         {
-            if (!TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken, out var instance, out error))
+            var (success, instance, error) = await TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken);
+            if (!success)
             {
                 _log.Error(error);
-                trend = 0m;
-                return false;
+                return (false, 0m, error);
             }
 
-            trend = instance.Rsi;
-            error = null;
-            return true;
+            return (true, instance.Rsi, null);
         }
 
-        private bool TryGetTrendInternal(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend trend, out string error)
+        private async Task<(bool success, Trend trend, string error)> TryGetTrendInternal(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken)
         {
             var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
-            var response = _client.Spot.Market.GetKlines(symbolComparedToReference, KlineInterval.OneMinute, limit:period * 2, ct: cancellationToken);
+            var response = await _client.Spot.Market.GetKlinesAsync(symbolComparedToReference, KlineInterval.OneMinute, limit:period * 2, ct: cancellationToken);
             if (response.Error != null)
             {
-                error = $"Failure fetching candlestick data for {symbol}: {response.Error}";
+                var error = $"Failure fetching candlestick data for {symbol}: {response.Error}";
                 _log.Error(error);
-                trend = null;
-                return false;
+                return (false, null, error);
             }
 
-            var priceResponse = _client.Spot.Market.GetPrice(symbolComparedToReference, cancellationToken);
+            var priceResponse = await _client.Spot.Market.GetPriceAsync(symbolComparedToReference, cancellationToken);
             if (priceResponse.Error != null)
             {
-                error = $"Failure fetching price data for {symbol}: {response.Error}";
+                var error = $"Failure fetching price data for {symbol}: {response.Error}";
                 _log.Error(error);
-                trend = null;
-                return false;
+                return (false, null, error);
             }
 
             var candles = response.Data.Select(k => new Candle
@@ -59,7 +56,7 @@
             var rsi = rsiSequence.Last().Tick;
 
             var data = response.Data.Last();
-            trend = new Trend
+            var trend = new Trend
             {
                 Symbol = symbol,
                 Open = data.Open,
@@ -71,27 +68,24 @@
                 Price = priceResponse.Data.Price
             };
 
-            error = null;
-            return true;
+            return (true, trend, null);
         }
 
-        public bool TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend[] trends, out string error)
+        public async Task<(bool success, Trend[] trends, string error)> TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken)
         {
             var result = new List<Trend>();
             foreach (var symbol in symbols)
             {
-                if (!TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken, out var trend, out error))
+                var (success, trend, error) = await TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken);
+                if (!success)
                 {
                     _log.Error(error);
-                    trends = null;
-                    return false;
+                    return (false, null, error);
                 }
                 result.Add(trend);
             }
 
-            trends = result.ToArray();
-            error = null;
-            return true;
+            return (true, result.ToArray(), null);
         }
     }
 }

@@ -33,15 +33,15 @@
             _task = Task.Run(Run);
         }
 
-        private void Run()
+        private async Task Run()
         {
             var cancellationToken = _cancellationTokenSource.Token;
 
-            _sequence.Initialize(cancellationToken);
+            await _sequence.Initialize(cancellationToken);
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                _sequence.Run(cancellationToken, out var keepRunning);
+                var keepRunning = await _sequence.Run(cancellationToken);
                 if (!keepRunning)
                 {
                     break;

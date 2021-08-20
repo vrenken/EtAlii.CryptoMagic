@@ -3,25 +3,25 @@
     using System;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using EtAlii.BinanceMagic.Service.Surfing;
     using Trady.Analysis.Extension;
     using Trady.Core;
 
     public partial class BackTestClient 
     {
-        public bool TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken, out Trend[] trends, out string error) => throw new NotSupportedException();
+        public Task<(bool success, Trend[] trends, string error)> TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken) => throw new NotSupportedException();
         
-        public bool TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken, out decimal trend, out string error)
+        public Task<(bool success, decimal trend, string error)> TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken)
         {
             var historyKvp = _history.Single(h => h.Key == symbol);
 
             var history = historyKvp.Value.SingleOrDefault(entry => entry.From < Moment && Moment <= entry.To);
             if (history == null)
             {
-                trend = 0m;
-                error = "No history";
+                var error = "No history";
                 _log.Error(error);
-                return false;
+                return Task.FromResult((false, 0m, error));
             }
 
             var index = Array.IndexOf(historyKvp.Value, history);
@@ -41,9 +41,8 @@
             )).ToArray();
             
             var rsiSequence = candles.Rsi(period).ToArray();
-            trend = rsiSequence.Last().Tick ?? 0m;
-            error = null;
-            return true;
+            var trend = rsiSequence.Last().Tick ?? 0m;
+            return Task.FromResult<(bool success, decimal trend, string)>((true, trend, null));
         }
 
     }

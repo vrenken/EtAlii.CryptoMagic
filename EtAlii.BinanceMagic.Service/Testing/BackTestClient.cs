@@ -7,6 +7,7 @@ namespace EtAlii.BinanceMagic.Service
     using System.Linq;
     using System.Net;
     using System.Threading;
+    using System.Threading.Tasks;
     using Binance.Net.Objects.Spot.MarketData;
     using Serilog;
 
@@ -49,7 +50,7 @@ namespace EtAlii.BinanceMagic.Service
             _folder = folder;
         }
 
-        public void Start(string apiKey, string secretKey)
+        public Task Start(string apiKey, string secretKey)
         {
             _output.WriteLine("Preparing back-testing...");
 
@@ -109,6 +110,7 @@ namespace EtAlii.BinanceMagic.Service
             Moment = startTimes[0];
             
             _output.WriteLine("Ready for back-testing");
+            return Task.CompletedTask;
         }
 
         public SymbolDefinition[] GetSymbols(string referenceSymbol) => throw new NotSupportedException();
@@ -143,27 +145,25 @@ namespace EtAlii.BinanceMagic.Service
             }
         }
         
-        public bool TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal price, out string error)
+        public Task<(bool success, decimal price, string error)> TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken)
         {
             var history = _currentHistory[symbol];
 
             if (history == null)
             {
-                price = 0m;
-                error = "No history";
+                var error = "No history";
                 _log.Error(error);
-                return false;
+                return Task.FromResult((false, 0m, error));
             }
             
-            price = (history.Close + history.Open) / 2m;
-            error = null;
-            return true;
+            var price = (history.Close + history.Open) / 2m;
+            return Task.FromResult<(bool success, decimal price, string error)>((false, price, null));
         }
 
         
-        public bool TryConvert(SellAction sellAction, BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out TradeTransaction transaction, out string error)
+        public Task<(bool success, TradeTransaction transaction, string error)> TryConvert(SellAction sellAction, BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow)
         {
-            transaction = new TradeTransaction
+            var transaction = new TradeTransaction
             {
                 Sell = new Symbol
                 {
@@ -181,24 +181,22 @@ namespace EtAlii.BinanceMagic.Service
                 Moment = getNow(),
                 Profit = sellAction.QuotedQuantity - buyAction.QuotedQuantity 
             };
-            error = null;
-            return true;
+            return Task.FromResult<(bool success, TradeTransaction transaction, string error)>((true, transaction, null));
         }
 
-        public bool TrySell(SellAction sellAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow,
-            out Symbol symbolsSold, out string error)
+        public Task<(bool success, Symbol symbolsSold, string error)> TrySell(SellAction sellAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow)
         {
             throw new NotImplementedException();
         }
 
-        public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow, out TradeTransaction transaction, out string error)
+        public async Task<(bool success, TradeTransaction transaction, string error)> TryBuyTransaction(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow)
         {
-            if (!TryBuy(buyAction, referenceSymbol, cancellationToken, getNow, out Symbol symbolsBought, out error))
+            var (success, symbolsBought, error) = await TryBuySymbol(buyAction, referenceSymbol, cancellationToken, getNow); 
+            if (!success)
             {
-                transaction = null;
-                return false;
+                return (false, null, error);
             }
-            transaction = new TradeTransaction
+            var transaction = new TradeTransaction
             {
                 Sell = new Symbol
                 {
@@ -211,21 +209,18 @@ namespace EtAlii.BinanceMagic.Service
                 Moment = getNow(),
                 Profit = 0 - buyAction.QuotedQuantity 
             };
-            error = null;
-            return true;
+            return (true, transaction, null);
         }
 
-        public bool TryBuy(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow,
-            out Symbol symbolsBought, out string error)
+        public Task<(bool success, Symbol symbolsBought, string error)> TryBuySymbol(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow)
         {
-            symbolsBought = new Symbol
+            var symbolsBought = new Symbol
             {
                 SymbolName = buyAction.Symbol,
                 QuoteQuantity = buyAction.QuotedQuantity,
                 Quantity = buyAction.Quantity
             };
-            error = null;
-            return true;
+            return Task.FromResult<(bool success, Symbol symbolsBought, string error)>((true, symbolsBought, null)) ;
         }
 
         public decimal GetMinimalQuantity(string coin, BinanceExchangeInfo exchangeInfo, string referenceCoin)
@@ -233,25 +228,19 @@ namespace EtAlii.BinanceMagic.Service
             return 10m;
         }
 
-        public bool TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken, out decimal makerFee, out decimal takerFee, out string error)
+        public Task<(bool success, decimal makerFee, decimal takerFee, string error)> TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken)
         {
-            makerFee = 0.1m;
-            takerFee = 0.1m;
-            error = null;
-            return true;
+            return Task.FromResult<(bool success, decimal makerFee, decimal takerFee, string error)>((true, 0.1m, 0.1m, null));
         }
 
-        public bool TryGetExchangeInfo(CancellationToken cancellationToken, out BinanceExchangeInfo exchangeInfo, out string error)
+        public Task<(bool success, BinanceExchangeInfo exchangeInfo, string error)> TryGetExchangeInfo(CancellationToken cancellationToken)
         {
-            exchangeInfo = null;
-            error = null;
-            return true;
+            return Task.FromResult<(bool success, BinanceExchangeInfo exchangeInfo, string error)>((true, null, null));
         }
 
-        public bool TryHasSufficientQuota(string symbol, decimal minimumValue, out string error)
+        public Task<(bool success, string error)> TryHasSufficientQuota(string symbol, decimal minimumValue)
         {
-            error = null;
-            return true;
+            return Task.FromResult<(bool success, string error)>((true, null));
         }
     }
 }

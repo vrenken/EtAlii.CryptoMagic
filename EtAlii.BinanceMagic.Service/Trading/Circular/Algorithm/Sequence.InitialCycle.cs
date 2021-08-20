@@ -1,10 +1,11 @@
 ﻿namespace EtAlii.BinanceMagic.Service
 {
     using System.Threading;
+    using System.Threading.Tasks;
 
     public partial class Sequence
     {
-        private bool HandleInitialCycle(CancellationToken cancellationToken, Situation situation, CircularTransaction transaction)
+        private async Task<bool> HandleInitialCycle(CancellationToken cancellationToken, Situation situation, CircularTransaction transaction)
         {
             var targetSucceeded = false;
 
@@ -21,7 +22,11 @@
                 transaction.LastCheck = _timeManager.GetNow();
                 _context.Update(transaction);
 
-                if (_client.TryBuy(initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out TradeTransaction tradeTransaction, out var error))
+                TradeTransaction tradeTransaction;
+                bool success;
+                string error;
+                (success, tradeTransaction, error) = await _client.TryBuyTransaction(initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow);
+                if (success)
                 {
                     SaveAndReplaceTransaction(transaction, tradeTransaction, true);
                     targetSucceeded = true;
@@ -37,7 +42,8 @@
                 transaction.LastCheck = _timeManager.GetNow();
                 _context.Update(transaction);
 
-                if (_client.TryConvert(initialSellAction, initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow, out var tradeTransaction, out var error))
+                var (success, tradeTransaction, error) = await _client.TryConvert(initialSellAction, initialBuyAction, _context.Trading.ReferenceSymbol, cancellationToken, _timeManager.GetNow);
+                if (success)
                 {
                     SaveAndReplaceTransaction(transaction, tradeTransaction, true);
                     targetSucceeded = true;

@@ -2,6 +2,8 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
+    using Binance.Net.Objects.Spot.MarketData;
     using Microsoft.EntityFrameworkCore;
 
     public partial class Sequence : ISequence
@@ -13,12 +15,12 @@ namespace EtAlii.BinanceMagic.Service
 
         public IAlgorithmContext<CircularTransaction, CircularTrading> Status => _context;
         private readonly IAlgorithmContext<CircularTransaction, CircularTrading> _context;
-        private readonly Action _initialize;
+        private readonly Func<Task> _initialize;
 
         public Sequence(
             IClient client,
             ITimeManager timeManager,
-            IAlgorithmContext<CircularTransaction, CircularTrading> context, Action initialize = null)
+            IAlgorithmContext<CircularTransaction, CircularTrading> context, Func<Task> initialize = null)
         {
             _client = client;
             _timeManager = timeManager;
@@ -29,9 +31,9 @@ namespace EtAlii.BinanceMagic.Service
             _circularAlgorithm = new CircularAlgorithm(client, _context);
         }
 
-        public void Initialize(CancellationToken cancellationToken) => _initialize?.Invoke();
+        public Task Initialize(CancellationToken cancellationToken) => _initialize?.Invoke();
 
-        public void Run(CancellationToken cancellationToken, out bool keepRunning)
+        public async Task<bool> Run(CancellationToken cancellationToken)
         {
             var transaction = _targetTransactionFinder.Find();
 
@@ -54,8 +56,7 @@ namespace EtAlii.BinanceMagic.Service
                         transaction.NextCheck = null;
                         _context.Trading.End = DateTime.Now;
                         _context.Update(transaction);
-                        keepRunning = false;
-                        return;
+                        return false;
                     }
 
                     _context.Update(transaction);
@@ -69,7 +70,8 @@ namespace EtAlii.BinanceMagic.Service
                 transaction.LastCheck = _timeManager.GetNow();
                 _context.Update(transaction);
 
-                if (!TryGetSituation(transaction, cancellationToken, out var situation, out var error))
+                var (success, situation, error) = await TryGetSituation(transaction, cancellationToken);
+                if (!success)
                 {
                     transaction.Result = error;
                     _context.Update(transaction);
@@ -81,7 +83,9 @@ namespace EtAlii.BinanceMagic.Service
                 transaction.LastCheck = _timeManager.GetNow();
                 _context.Update(transaction);
 
-                if (!_client.TryGetExchangeInfo(cancellationToken, out var exchangeInfo, out error))
+                BinanceExchangeInfo exchangeInfo;
+                (success, exchangeInfo, error) = await _client.TryGetExchangeInfo(cancellationToken);
+                if (!success)
                 {
                     shouldDelay = true;
                     transaction.Result = error;
@@ -92,11 +96,13 @@ namespace EtAlii.BinanceMagic.Service
                 situation = situation with { ExchangeInfo = exchangeInfo };
                 if (situation.IsInitialCycle)
                 {
-                    targetAchieved = HandleInitialCycle(cancellationToken, situation, transaction);
+                    targetAchieved = await HandleInitialCycle(cancellationToken, situation, transaction);
                     shouldDelay = !targetAchieved;
                     continue;
                 }
-                if(TryHandleNormalCycle(cancellationToken, situation, out targetAchieved))
+
+                (success, targetAchieved) = await TryHandleNormalCycle(cancellationToken, situation);
+                if(success)
                 {
                     shouldDelay = !targetAchieved;
                     continue;
@@ -108,47 +114,56 @@ namespace EtAlii.BinanceMagic.Service
                 shouldDelay = true;
             }
 
-            keepRunning = true;
+            return true;
         }
 
-        private bool TryGetSituation(CircularTransaction transaction, CancellationToken cancellationToken, out Situation situation, out string error)
+        private async Task<(bool success, Situation situation, string error)> TryGetSituation(CircularTransaction transaction, CancellationToken cancellationToken)
         {
-            if (!_client.TryGetPrice(transaction.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var sourcePrice, out error))
+            bool success;
+            string error;
+            decimal sourcePrice;
+            decimal targetPrice;
+            (success, sourcePrice, error) = await _client.TryGetPrice(transaction.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken);
+            if (!success)
             {
-                situation = null;
-                return false;
+                return (false, null, error);
             }
 
-            if (!_client.TryGetPrice(transaction.BuySymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var targetPrice, out error))
+            (success, targetPrice, error) = await _client.TryGetPrice(transaction.BuySymbol, _context.Trading.ReferenceSymbol, cancellationToken);
+            if (!success)
             {
-                situation = null;
-                return false;
-            }
-                
-            if (!_client.TryGetTradeFees(transaction.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var sourceMakerFee, out var _, out error))
-            {
-                situation = null;
-                return false;
+                return (false, null, error);
             }
             
-            if (!_client.TryGetTradeFees(transaction.BuySymbol, _context.Trading.ReferenceSymbol, cancellationToken, out var _, out var destinationTakerFee, out error))
+            decimal sourceMakerFee;
+            (success, sourceMakerFee, _, error) = await _client.TryGetTradeFees(transaction.SellSymbol, _context.Trading.ReferenceSymbol, cancellationToken);
+            if (!success)
             {
-                situation = null;
-                return false;
+                return (false, null, error);
             }
 
-            if (!_client.TryGetTrend(transaction.SellSymbol, _context.Trading.ReferenceSymbol, _context.Trading.RsiPeriod, cancellationToken, out var sellTrend, out error))
+            decimal destinationTakerFee;
+            (success, _, destinationTakerFee, error) = await _client.TryGetTradeFees(transaction.BuySymbol, _context.Trading.ReferenceSymbol, cancellationToken);
+            if (!success)
             {
-                situation = null;
-                return false;
-            }
-            if (!_client.TryGetTrend(transaction.BuySymbol, _context.Trading.ReferenceSymbol, _context.Trading.RsiPeriod, cancellationToken, out var buyTrend, out error))
-            {
-                situation = null;
-                return false;
+                return (false, null, error);
             }
 
-            using var data = new DataContext();
+            decimal sellTrend;
+            (success, sellTrend, error) = await _client.TryGetTrend(transaction.SellSymbol, _context.Trading.ReferenceSymbol, _context.Trading.RsiPeriod, cancellationToken); 
+            if (!success)
+            {
+                return (false, null, error);
+            }
+
+            decimal buyTrend;
+            (success, buyTrend, error) = await _client.TryGetTrend(transaction.BuySymbol, _context.Trading.ReferenceSymbol, _context.Trading.RsiPeriod, cancellationToken);
+            if (!success)
+            {
+                return (false, null, error);
+            }
+
+            await using var data = new DataContext();
             var snapshot = new Snapshot
             {
                 Moment = DateTime.Now,
@@ -159,7 +174,7 @@ namespace EtAlii.BinanceMagic.Service
 
             data.Entry(snapshot).State = EntityState.Added;
             data.Entry(_context.Trading).State = EntityState.Unchanged;
-            data.SaveChanges();
+            await data.SaveChangesAsync(cancellationToken);
 
             var lastSourcePurchase = data.FindLastPurchase(transaction.SellSymbol, _context.Trading, transaction);
             var sourceDelta = new Delta
@@ -179,7 +194,7 @@ namespace EtAlii.BinanceMagic.Service
                 PresentPrice = targetPrice
             };
 
-            situation = new Situation
+            var situation = new Situation
             {
                 Source = sourceDelta,
                 SellFee = sourceMakerFee,
@@ -190,8 +205,7 @@ namespace EtAlii.BinanceMagic.Service
                 IsInitialCycle = data.IsInitialCycle(_context.Trading) 
             };
 
-            error = null;
-            return true;
+            return (true, situation, null);
         }
         
         

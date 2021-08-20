@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public partial class OneOffEdit 
     {
@@ -28,9 +29,10 @@
 
         protected override string GetNavigationUrl(Guid id) => $"/one-off/view/{Model.Id}";
 
-        private void OnFetchPriceClicked()
+        private async Task OnFetchPriceClicked()
         {
-            if (ApplicationContext.LiveClient.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None, out var price, out _))
+            var (success, price, _) = await ApplicationContext.LiveClient.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None);
+            if (success)
             {
                 PurchasePrice = price;
             }
@@ -40,9 +42,10 @@
             }
         }
         
-        private void OnFetchQuoteQuantityClicked()
+        private async Task OnFetchQuoteQuantityClicked()
         {
-            if (ApplicationContext.LiveClient.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None, out var price, out _))
+            var (success, price, _) = await ApplicationContext.LiveClient.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None);
+            if (success)
             {
                 PurchasePrice = price;
             }

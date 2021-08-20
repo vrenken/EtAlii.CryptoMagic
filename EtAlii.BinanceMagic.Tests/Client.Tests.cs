@@ -2,6 +2,7 @@ namespace EtAlii.BinanceMagic.Tests
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using EtAlii.BinanceMagic.Service;
     using Xunit;
 
@@ -48,7 +49,7 @@ namespace EtAlii.BinanceMagic.Tests
         }
                         
         [Fact]
-        public void Client_TryConvert()
+        public async Task Client_TryConvert()
         {
             // Arrange.
             var referenceSymbol = "USDT";
@@ -57,7 +58,7 @@ namespace EtAlii.BinanceMagic.Tests
             {
                 PlaceTestOrders = true
             };
-            client.Start("ApiKey", "SecretKey");
+            await client.Start("ApiKey", "SecretKey");
             var cancellationToken = CancellationToken.None;
             var transactionId = _context.Random.Next();
             var sellAction = new SellAction
@@ -78,9 +79,10 @@ namespace EtAlii.BinanceMagic.Tests
             };
             
             // Act.
-            client.TryConvert(sellAction, buyAction, referenceSymbol, cancellationToken, () => DateTime.Now, out var transaction, out var error);
+            var (success, transaction,error) = await client.TryConvert(sellAction, buyAction, referenceSymbol, cancellationToken, () => DateTime.Now);
             
             // Assert.
+            Assert.True(success);
             Assert.NotNull(transaction);
             Assert.Null(error);
         }

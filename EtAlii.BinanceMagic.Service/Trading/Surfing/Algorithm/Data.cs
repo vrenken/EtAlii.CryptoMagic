@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public class Data 
     {        
@@ -20,20 +21,20 @@
         public void Load() => _persistence.Load();
         public void AddTransaction(TradeTransaction transaction) => _persistence.Add(transaction);
 
-        public bool TryGetSituation(CancellationToken cancellationToken, TradeDetails details, out Situation situation, out string error)
+        public async Task<(bool success, Situation situation, string error)> TryGetSituation(CancellationToken cancellationToken, TradeDetails details)
         {
-            if (!_client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, _settings.RsiPeriod, cancellationToken, out var trends, out error))
+            var (success, trends, error) = await _client.TryGetTrends(_settings.AllowedCoins, _settings.PayoutCoin, _settings.RsiPeriod, cancellationToken);
+            if (!success)
             {
-                situation = null;
-                return false;
+                return (false, null, error);
             }
 
-            situation = new Situation
+            var situation = new Situation
             {
                 CurrentCoin = details.CurrentSymbol,
                 Trends = trends
             };
-            return true;
+            return (true, situation, null);
         }
     }
 }

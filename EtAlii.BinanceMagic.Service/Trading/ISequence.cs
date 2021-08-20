@@ -1,11 +1,12 @@
 namespace EtAlii.BinanceMagic.Service
 {
     using System.Threading;
+    using System.Threading.Tasks;
 
     public interface ISequence
     {
-        void Run(CancellationToken cancellationToken, out bool keepRunning);
+        Task<bool> Run(CancellationToken cancellationToken);
 
-        void Initialize(CancellationToken cancellationToken);
+        Task Initialize(CancellationToken cancellationToken);
     }
 }

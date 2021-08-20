@@ -3,6 +3,7 @@ namespace EtAlii.BinanceMagic.Service
     using System;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class CircularAlgorithmRunner : IAlgorithmRunner<CircularTransaction, CircularTrading>
     {
@@ -59,7 +60,7 @@ namespace EtAlii.BinanceMagic.Service
                 time = new RealtimeTimeManager();
             }
 
-            var initialize = new Action(() => _client.Start(binanceApiKey, binanceSecretKey));
+            var initialize = new Func<Task>(() => _client.Start(binanceApiKey, binanceSecretKey));
             
             var sampleInterval = isBackTest
                 ? TimeSpan.FromSeconds(10)
