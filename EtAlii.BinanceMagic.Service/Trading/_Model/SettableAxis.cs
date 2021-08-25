@@ -5,14 +5,14 @@ namespace EtAlii.BinanceMagic.Service
     public class SettableAxis
     {
         public object ScaleLabel { get; init; }
-        public bool display { get; init; }
-        public AxisTicks ticks { get; init; }
+        public bool Display { get; init; }
+        public AxisTicks Ticks { get; init; }
     }
 
     public class AxisTicks
     {
-        public decimal min { get; set; }
-        public decimal max { get; set; }
+        public decimal Min { get; set; }
+        public decimal Max { get; set; }
     }
     public class SettableChartDataset : LineChartDataset<LiveDataPoint>
     {

@@ -12,7 +12,10 @@
         {
             base.OnInitialized();
 
-            Context.Changed += OnContextChanged;
+            if (Context != null)
+            {
+                Context.Changed += OnContextChanged;
+            }
         }
 
         private void OnContextChanged(AlgorithmChange change) => InvokeAsync(StateHasChanged);

@@ -116,9 +116,9 @@
                 {
                     YAxes = new []
                     {
-                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, ticks = new AxisTicks { min = 0m, max = 1m } },
-                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, ticks = new AxisTicks { min = 0m, max = 1m } },
-                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, display = false, ticks = new AxisTicks { min = 0m, max = 1m } }
+                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, Display = false, Ticks = new AxisTicks { Min = 0m, Max = 1m } },
+                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, Display = false, Ticks = new AxisTicks { Min = 0m, Max = 1m } },
+                        new SettableAxis { ScaleLabel = new { LabelString = Model.ReferenceSymbol }, Display = false, Ticks = new AxisTicks { Min = 0m, Max = 1m } }
                     },
                     // XAxes = new object[]
                     // {
@@ -140,19 +140,19 @@
             
             if (_firstSymbolSnapshots.Any())
             {
-                options.Scales.YAxes[0].ticks.min = _firstSymbolSnapshots.Min(s => s.Y) * 0.9m;
-                options.Scales.YAxes[0].ticks.max = _firstSymbolSnapshots.Max(s => s.Y) * 1.1m;
+                options.Scales.YAxes[0].Ticks.Min = _firstSymbolSnapshots.Min(s => s.Y) * 0.9m;
+                options.Scales.YAxes[0].Ticks.Max = _firstSymbolSnapshots.Max(s => s.Y) * 1.1m;
             }
             if (_secondSymbolSnapshots.Any())
             {
-                options.Scales.YAxes[1].ticks.min = _secondSymbolSnapshots.Min(s => s.Y) * 0.9m;
-                options.Scales.YAxes[1].ticks.max = _secondSymbolSnapshots.Max(s => s.Y) * 1.1m;
+                options.Scales.YAxes[1].Ticks.Min = _secondSymbolSnapshots.Min(s => s.Y) * 0.9m;
+                options.Scales.YAxes[1].Ticks.Max = _secondSymbolSnapshots.Max(s => s.Y) * 1.1m;
             }
 
             if (_differenceSnapshots.Any())
             {
-                options.Scales.YAxes[2].ticks.min = _differenceSnapshots.Min(s => s.Y) * 0.9m;
-                options.Scales.YAxes[2].ticks.max = _differenceSnapshots.Max(s => s.Y) * 1.1m;
+                options.Scales.YAxes[2].Ticks.Min = _differenceSnapshots.Min(s => s.Y) * 0.9m;
+                options.Scales.YAxes[2].Ticks.Max = _differenceSnapshots.Max(s => s.Y) * 1.1m;
             }
 
             return options;
