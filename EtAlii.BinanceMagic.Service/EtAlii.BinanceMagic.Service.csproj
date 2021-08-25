@@ -121,7 +121,7 @@
 
   <ItemGroup>
     <PackageReference Include="EtAlii.Generators.Stateless" Version="1.0.20" />
-    <PackageReference Include="Binance.Net" Version="7.0.2" />
+    <PackageReference Include="Binance.Net" Version="7.0.4" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
@@ -133,20 +133,20 @@
     <PackageReference Include="Trady.Analysis" Version="3.2.8" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Charts" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Components" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Animate" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.DataGrid" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Sidebar" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Snackbar" Version="0.9.3.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Charts" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Components" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Animate" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
     <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.6">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
