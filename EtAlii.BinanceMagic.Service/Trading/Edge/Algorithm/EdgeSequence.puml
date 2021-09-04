@@ -8,7 +8,7 @@ title Automatic trading mechanism B: Edge.
 state InitialPurchase
 
 [*] --> InitialPurchase : Start
-InitialPurchase --> TrySell
-TrySell --> [*]
+InitialPurchase --> TrySell : Continue
+TrySell --> [*] : Continue
 
 @enduml

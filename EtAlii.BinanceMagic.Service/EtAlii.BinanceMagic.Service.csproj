@@ -178,7 +178,9 @@
 
   <ItemGroup>
     <Content Include="Trading\Circular\Algorithm\CircularSequence.puml" />
-    <MicroMachine Include="Trading\Surfing\Algorithm\Sequence.puml" />
-    <MicroMachine Include="Trading\Edge\Algorithm\EdgeSequence.puml" />
+    <None Include="Trading\Surfing\Algorithm\Sequence.puml" />
+    <None Include="Trading\Edge\Algorithm\EdgeSequence.puml" />
+<!--    <MicroMachine Include="Trading\Surfing\Algorithm\Sequence.puml" />-->
+<!--    <MicroMachine Include="Trading\Edge\Algorithm\EdgeSequence.puml" />-->
   </ItemGroup>
 </Project>
