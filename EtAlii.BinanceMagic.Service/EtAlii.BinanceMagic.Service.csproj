@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="EtAlii.Generators.MicroMachine" Version="1.5.0-preview-0018" />
-    <PackageReference Include="Binance.Net" Version="7.1.1" />
+    <PackageReference Include="Binance.Net" Version="7.1.2" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
@@ -31,7 +31,7 @@
     <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.3" />
     <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
     <ProjectReference Include="..\EtAlii.BinanceMagic\EtAlii.BinanceMagic.csproj" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
