@@ -56,6 +56,7 @@ namespace EtAlii.BinanceMagic.Service
                 .Concat(data.SimpleTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.CircularTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.SurfingTradings.Cast<TradingBase>().ToArray())
+                .Concat(data.EdgeTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.ExperimentalTradings.Cast<TradingBase>().ToArray())
                 .ToArray();
             

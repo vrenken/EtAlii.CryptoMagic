@@ -19,6 +19,7 @@ namespace EtAlii.BinanceMagic.Service
                 .HasValue<SurfingTrading>("surfing")
                 .HasValue<SimpleTrading>("simple")
                 .HasValue<OneOffTrading>("one-off")
+                .HasValue<EdgeTrading>("edge")
                 .HasValue<ExperimentalTrading>("experimental");
         }
     }

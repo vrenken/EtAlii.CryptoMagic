@@ -49,6 +49,7 @@ namespace EtAlii.BinanceMagic.Service
                 SimpleTrading simpleTrading => new SimpleAlgorithmRunner(simpleTrading),
                 ExperimentalTrading experimentalTrading => new ExperimentalAlgorithmRunner(experimentalTrading),
                 OneOffTrading oneOffTrading => new OneOffAlgorithmRunner(oneOffTrading),
+                EdgeTrading edgeTrading => new EdgeAlgorithmRunner(edgeTrading),
                 SurfingTrading surfingTrading => new SurfingAlgorithmRunner(surfingTrading),
                 _ => throw new InvalidOperationException("Not supported trading"),
             };

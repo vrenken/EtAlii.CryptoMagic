@@ -2,15 +2,15 @@ namespace EtAlii.BinanceMagic.Service
 {
     using System;
 
-    public class OneOffAlgorithmRunner : IAlgorithmRunner<OneOffTransaction, OneOffTrading>
+    public class EdgeAlgorithmRunner : IAlgorithmRunner<EdgeTransaction, EdgeTrading>
     {
         public event Action Changed;
         public string Log { get; } = string.Empty;
-        public IAlgorithmContext<OneOffTransaction, OneOffTrading> Context { get; }
+        public IAlgorithmContext<EdgeTransaction, EdgeTrading> Context { get; }
 
-        public OneOffAlgorithmRunner(OneOffTrading trading)
+        public EdgeAlgorithmRunner(EdgeTrading trading)
         {
-            Context = new AlgorithmContext<OneOffTransaction, OneOffTrading>(trading);
+            Context = new AlgorithmContext<EdgeTransaction, EdgeTrading>(trading);
         }
         public void Start()
         {

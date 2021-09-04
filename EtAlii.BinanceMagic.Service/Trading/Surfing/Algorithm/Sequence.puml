@@ -1,6 +1,7 @@
 @startuml
-'stateless namespace EtAlii.BinanceMagic.Service.Surfing
-'stateless class SequenceBase
+'namespace EtAlii.BinanceMagic.Service.Surfing
+'class Sequence
+'generate partial
 
 title Automatic trading mechanism B: Coin surfin'.
 

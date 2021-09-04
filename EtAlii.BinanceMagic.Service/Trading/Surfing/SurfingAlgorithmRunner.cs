@@ -13,11 +13,12 @@ namespace EtAlii.BinanceMagic.Service.Surfing
         }
         public void Start()
         {
-            
+            Changed?.Invoke();
         }
 
         public void Stop()
         {
+            Changed?.Invoke();
         }
     }
 }

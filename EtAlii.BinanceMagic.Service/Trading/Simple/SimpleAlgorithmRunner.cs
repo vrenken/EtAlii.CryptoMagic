@@ -13,11 +13,12 @@ namespace EtAlii.BinanceMagic.Service
         }
         public void Start()
         {
-            
+            Changed?.Invoke();
         }
 
         public void Stop()
         {
+            Changed?.Invoke();
         }
     }
 }

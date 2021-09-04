@@ -13,6 +13,7 @@ namespace EtAlii.BinanceMagic.Service
         public DbSet<CircularTrading> CircularTradings { get; init; }
         public DbSet<Snapshot> Snapshots { get; init; }
         public DbSet<SurfingTrading> SurfingTradings { get; init; }
+        public DbSet<EdgeTrading> EdgeTradings { get; init; }
         public DbSet<ExperimentalTrading> ExperimentalTradings { get; init; }
         public DbSet<OneOffTrading> OneOffTradings { get; init; }
         
@@ -40,6 +41,8 @@ namespace EtAlii.BinanceMagic.Service
             modelBuilder.ApplyConfiguration(new SettingEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TradingsEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new CircularTradingsEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new EdgeTradingsEntityTypeConfiguration());
+            
         }
     }
 }
