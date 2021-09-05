@@ -2,23 +2,20 @@
 {
     using System;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
 
     public partial class OneOffEdit 
     {
-        private decimal? PurchasePrice
+        private decimal? PurchaseQuoteQuantity
         {
-            get => Model.PurchasePrice;
-            set => Model.PurchasePrice = value ?? 0;
+            get => Model.PurchaseQuoteQuantity;
+            set => Model.PurchaseQuoteQuantity = value ?? 50;
         }
-        
-        private bool CanFetchPrice { get; set; }
 
-        private decimal? QuoteQuantity
+        private decimal TargetPercentageIncrease
         {
-            get => Model.QuoteQuantity;
-            set => Model.QuoteQuantity = value ?? 0;
+            get => Model.TargetPercentageIncrease;
+            set => Model.TargetPercentageIncrease = value;
         }
         
         protected override OneOffTrading GetTrading(Guid id)
@@ -28,40 +25,18 @@
         }
 
         protected override string GetNavigationUrl(Guid id) => $"/one-off/list";
-
-        private async Task OnFetchPriceClicked()
-        {
-            var (success, price, _) = await ApplicationContext.LiveClient.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None);
-            if (success)
-            {
-                PurchasePrice = price;
-            }
-            else
-            {
-                PurchasePrice = null;
-            }
-        }
         
-        private async Task OnFetchQuoteQuantityClicked()
+        protected override async Task<bool> CanSubmit()
         {
-            var (success, price, _) = await ApplicationContext.LiveClient.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None);
-            if (success)
-            {
-                PurchasePrice = price;
-            }
-            else
-            {
-                PurchasePrice = null;
-            }
-        }
+            (bool success, string error) = await CanStart();
 
-        private void OnHasValidSymbolChanged(bool hasValidSymbol) => CanFetchPrice = hasValidSymbol;
-
-        protected override void Submit()
-        {
-            Model.Start = DateTime.Now;
-            Model.Name = $"{Model.Symbol} {Model.Quantity}% / 12%"; 
-            base.Submit();
+            _error = error;
+            if (!success)
+            {
+                ShowFailureDialog();
+            }
+            
+            return success;
         }
     }
 }

@@ -16,7 +16,8 @@
         private int _totalSuccesses;
         private int _totalFailure;
         private int _totalOpen;
-        private decimal _totalProfit;
+        private decimal _totalCurrentProfit;
+        private decimal _totalGuaranteedProfit;
 
         protected override void OnRunnerChanged(IAlgorithmRunner<OneOffTransaction, OneOffTrading> runner)
         {
@@ -30,7 +31,11 @@
                 _totalFailure = oneOffTradings.Count(t => t.IsCancelled);
                 _totalOpen = oneOffTradings.Count(t => !t.IsCancelled && !t.IsSuccess);
 
-                _totalProfit = oneOffTradings.Sum(t => t.Profit) - oneOffTradings.Sum(t => t.Loss);
+                _totalCurrentProfit = oneOffTradings
+                    .Sum(t => t.FinalQuoteQuantity - t.PurchaseQuoteQuantity);
+                _totalGuaranteedProfit = oneOffTradings
+                    .Where(t => t.IsCancelled || t.IsSuccess)
+                    .Sum(t => t.FinalQuoteQuantity - t.PurchaseQuoteQuantity);
                 
                 StateHasChanged();
             });
@@ -54,6 +59,40 @@
                 _ when Math.Abs(ts.Value.TotalMinutes - 1) < 0.0001f => $"{ts.Value.TotalMinutes:0} minute",
                 _ => $"{ts.Value.TotalMinutes:0} minutes",
             };
+        }
+
+        private decimal ToCurrentValue(OneOffTrading trading) => trading.PurchaseSymbolQuantity * trading.CurrentPrice;
+
+        private string ToPercentage(decimal d)
+        {
+            var prefix = d >= 0 ? "+" : "";
+            return $"{prefix}{d:0.00}";
+
+        }
+
+        private string ToLossMessage(OneOffTrading trading)
+        {
+            var change = trading.FinalQuoteQuantity - trading.PurchaseQuoteQuantity;
+            return change <= 0
+                ? $"(loss= ~{Math.Abs(change):0.00} {trading.ReferenceSymbol})"
+                : "";
+        }
+
+        private string ToCancelConfirmationMessage(OneOffTrading trading)
+        {
+            if (trading == null) return "";
+            var change = trading.FinalQuoteQuantity - trading.PurchaseQuoteQuantity;
+            return change <= 0
+                ? $"This will cause a loss of ~{Math.Abs(change):0.00} {trading.ReferenceSymbol})"
+                : $"This will cause a payout of ~{trading.FinalQuoteQuantity:0.00} {trading.ReferenceSymbol}";
+        }
+
+        private Color ToButtonColor(OneOffTrading trading)
+        {
+            var change = trading.FinalQuoteQuantity - trading.PurchaseQuoteQuantity;
+            return change <= 0
+                ? Color.Danger
+                : Color.Info;
         }
     }
 }

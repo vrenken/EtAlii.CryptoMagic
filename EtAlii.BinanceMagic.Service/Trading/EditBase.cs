@@ -1,6 +1,7 @@
 ﻿namespace EtAlii.BinanceMagic.Service
 {
     using System;
+    using System.Threading.Tasks;
     using Blazorise;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
@@ -9,7 +10,7 @@
         where TTrading : TradingBase, new()
     {
         [Inject] AlgorithmManager AlgorithmManager { get; init; }
-        [Inject] NavigationManager NavigationManager { get; init; }
+        [Inject] protected NavigationManager NavigationManager { get; init; }
         
         [Inject] protected ApplicationContext ApplicationContext { get; init; }
 
@@ -25,6 +26,7 @@
         {
             return new ()
             {
+                Start = DateTime.Now,
                 ReferenceSymbol = ApplicationContext.ReferenceSymbol
             };        
         }
@@ -46,16 +48,21 @@
             EditContext = new EditContext(Model);
         }
 
-        protected virtual void Submit()
+        protected virtual async Task Submit()
         {
             if (Validations.ValidateAll())
             {
-                AlgorithmManager.Update(Model);
+                if (await CanSubmit())
+                {
+                    AlgorithmManager.Update(Model);
 
-                var navigationUrl = GetNavigationUrl(Model.Id);
+                    var navigationUrl = GetNavigationUrl(Model.Id);
                 
-                NavigationManager.NavigateTo(navigationUrl);
+                    NavigationManager.NavigateTo(navigationUrl);
+                }
             }
         }
+
+        protected virtual Task<bool> CanSubmit() => Task.FromResult(true);
     }
 }

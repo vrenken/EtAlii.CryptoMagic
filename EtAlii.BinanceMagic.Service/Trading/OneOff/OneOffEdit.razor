@@ -16,32 +16,10 @@
                         <FieldLabel>Symbol</FieldLabel>
                         <SymbolTextEdit
                             @bind-SelectedValue="@Model.Symbol"
-                            HasValidSymbolChanged="@OnHasValidSymbolChanged"
                             Placeholder="Symbol"/>
                         <FieldHelp>The symbol to purchase and later sell.</FieldHelp>
                     </Field>
                     
-                    <Validation Validator="@HasQuantity">
-                        <Field>
-                            <FieldLabel>Purchase price</FieldLabel>
-                                <Addons>
-                                    <Addon AddonType="AddonType.Start">
-                                        <AddonLabel>@Model.ReferenceSymbol</AddonLabel>
-                                    </Addon>
-                                    <Addon AddonType="AddonType.Body">
-                                        <NumericEdit
-                                            Placeholder="Purchase price"
-                                            @bind-Value="@PurchasePrice">
-                                        </NumericEdit>
-                                    </Addon>
-                                    <Addon AddonType="AddonType.End">
-                                        <Blazorise.Button Color="Color.Primary" Disabled="@(!CanFetchPrice)" Clicked="@OnFetchPriceClicked">Fetch</Blazorise.Button>
-                                    </Addon>
-                                </Addons>
-                            <FieldHelp>@($"The price (in {Model.ReferenceSymbol}) to buy with.")</FieldHelp>
-                        </Field>
-                    </Validation>
-        
                     <Validation Validator="@HasQuantity">
                         <Field>
                             <FieldLabel>Quote quantity</FieldLabel>
@@ -51,15 +29,35 @@
                                     </Addon>
                                     <Addon AddonType="AddonType.Body">
                                         <NumericEdit
-                                            Placeholder="Quote quantity"
-                                            @bind-Value="@QuoteQuantity">
+                                            ShowStepButtons="false"
+                                            Placeholder="Purchase quote quantity"
+                                            @bind-Value="@PurchaseQuoteQuantity">
                                         </NumericEdit>
-                                    </Addon>
-                                    <Addon AddonType="AddonType.End">
-                                        <Button Color="Color.Primary" Clicked="@OnFetchQuoteQuantityClicked">Fetch</Button>
                                     </Addon>
                                 </Addons>
                             <FieldHelp>@($"The money (in {Model.ReferenceSymbol}) to use in the purchase.")</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 0.01m, 1000))">
+                        <Field>
+                            <FieldLabel>Target percentage increase</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit
+                                        ShowStepButtons="false"
+                                        TValue="decimal"
+                                        Placeholder="Target percentage increase in %" 
+                                        @bind-Value="@TargetPercentageIncrease"
+                                        Min="0.01m"
+                                        Max="1000">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The target percentage increase at which should be sold.</FieldHelp>
                         </Field>
                     </Validation>
                     
@@ -79,3 +77,19 @@
         </Column>
     </Row>
 </Validations>
+
+<Modal @ref="_failureDialogRef" >
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>Error starting trade</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <Paragraph>The following trade could not be started: @(Model?.Name)?</Paragraph>
+            <Paragraph>Error @(_error)</Paragraph>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Primary" Clicked="@FailureConfirmed">Ok</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+

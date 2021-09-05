@@ -97,7 +97,6 @@
 
         public async Task<(bool success, Symbol symbolsBought, string error)> TryBuySymbol(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow)
         {
-            bool success;
             string error;
             var exchangeResult = await _client.Spot.System.GetExchangeInfoAsync(cancellationToken);
             if (!exchangeResult.Success)
@@ -111,6 +110,7 @@
             decimal testPrice = 0;
             if (PlaceTestOrders)
             {
+                bool success;
                 (success, testPrice, error) = await TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken);
                 if (!success)
                 {

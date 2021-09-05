@@ -5,6 +5,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\.etalii</CompilerGeneratedFilesOutputPath>
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
@@ -160,6 +161,12 @@
     </Compile>
     <Compile Update="Trading\Edge\EdgeList.cs">
       <DependentUpon>EdgeList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffList.Cancel.cs">
+      <DependentUpon>OneOffList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffEdit.CanStart.cs">
+      <DependentUpon>OneOffEdit.razor</DependentUpon>
     </Compile>
   </ItemGroup>
 
