@@ -9,9 +9,12 @@ namespace EtAlii.BinanceMagic.Service
     {
         public async Task Start()
         {
-            await StartClientWhenNeeded();            
+            if (!_trading.IsSuccess && !_trading.IsCancelled)
+            {
+                await StartClientWhenNeeded();            
 
-            _timer = new Timer(RunStepInternal, null, TimeSpan.FromSeconds(30), _trading.SampleInterval);
+                _timer = new Timer(RunStepInternal, null, TimeSpan.FromSeconds(30), _trading.SampleInterval);
+            }
                 
             Changed?.Invoke(this);
         }

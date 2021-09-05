@@ -1,5 +1,7 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
 
@@ -7,20 +9,41 @@ namespace EtAlii.BinanceMagic.Service
     {
         public async Task Stop()
         {
-            await _timer.DisposeAsync();
+            if (_timer != null)
+            {
+                await _timer.DisposeAsync();
+            }
             Changed?.Invoke(this);
         }
 
         public void Cancel()
         {
-            var task = Stop();
-            task.Wait();
-            
-            using var data = new DataContext();
+            var sellAction = new SellAction
+            {
+                Symbol = _trading.Symbol,
+                Price = _trading.CurrentPrice,
+                Quantity = _trading.PurchaseSymbolQuantity,
+                QuotedQuantity = 0m, // not used.
+            };
 
-            Context.Trading.IsCancelled = true;
-            data.OneOffTradings.Attach(Context.Trading).State = EntityState.Modified;
-            data.SaveChanges();
+            var task = Task.Run(async () =>
+            {
+                var (success, symbol, _) = await _client.TrySell(sellAction, _trading.ReferenceSymbol, CancellationToken.None, () => DateTime.Now);
+                if (success)
+                {
+                    var task = Stop();
+                    task.Wait();
+
+                    await using var data = new DataContext();
+
+                    _trading.FinalQuoteQuantity = symbol.QuoteQuantity;
+                    _trading.IsCancelled = true;
+                    data.OneOffTradings.Attach(Context.Trading).State = EntityState.Modified;
+                    await data.SaveChangesAsync();
+                }
+            });
+
+            task.Wait();
             
             Changed?.Invoke(this);
         }
