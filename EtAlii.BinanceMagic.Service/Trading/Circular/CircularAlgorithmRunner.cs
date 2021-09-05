@@ -18,7 +18,7 @@ namespace EtAlii.BinanceMagic.Service
         private IClient _client;
         private Sequence _sequence;
 
-        public event Action Changed;
+        public event Action<IAlgorithmRunner<CircularTransaction, CircularTrading>> Changed;
         
         public CircularAlgorithmRunner(CircularTrading trading, ApplicationContext applicationContext)
         {
@@ -27,7 +27,7 @@ namespace EtAlii.BinanceMagic.Service
             _output = new WebOutput();
         }
 
-        public void Start()
+        public Task Start()
         {
             ITimeManager time;
 
@@ -72,15 +72,18 @@ namespace EtAlii.BinanceMagic.Service
             _sequence.Status.Changed += OnSequenceChanged;
             _loop = new Loop(_sequence);
             _loop.Start();
+
+            return Task.CompletedTask;
         }
 
-        private void OnSequenceChanged(AlgorithmChange obj) => Changed?.Invoke();
+        private void OnSequenceChanged(AlgorithmChange obj) => Changed?.Invoke(this);
 
-        public void Stop()
+        public Task Stop()
         {
             _loop.Stop();
             _client.Stop();
             _sequence.Status.Changed -= OnSequenceChanged;
+            return Task.CompletedTask;
         }
     }
 }

@@ -55,7 +55,7 @@
             }
         }
 
-        protected virtual void OnRunnerChangedInternal()
+        private void OnRunnerChangedInternal(IAlgorithmRunner<TTransaction, TTrading> runner)
         {
             OnRunnerChanged();
             InvokeAsync(StateHasChanged);

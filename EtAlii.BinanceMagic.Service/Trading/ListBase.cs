@@ -11,10 +11,19 @@
         where TTrading : TradingBase, new()
     {
         [Inject] AlgorithmManager AlgorithmManager { get; init; }
-        [Inject] NavigationManager NavigationManager { get; init; }
+        [Inject] protected NavigationManager NavigationManager { get; init; }
         [Inject] protected ApplicationContext ApplicationContext { get; init; }
 
-        protected ObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> Tradings { get; } = new();
+        private readonly ObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> _tradings = new();
+
+        protected readonly ObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> Tradings = new();
+
+        protected ListBase()
+        {
+            Tradings.SubscribeFiltered(_tradings, Filter);
+        }
+
+        protected virtual bool Filter(IAlgorithmRunner<TTransaction, TTrading> runner) => true;
         
         protected abstract string GetViewNavigationUrl(Guid id);
         protected abstract string GetEditNavigationUrl();
@@ -59,14 +68,19 @@
 
                         break;
                     case NotifyCollectionChangedAction.Reset:
-                        Tradings.Clear();
+                        foreach (var runner in _tradings)
+                        {
+                            OnRunnerChanged(runner);
+                            runner.Changed -= OnRunnerChanged;
+                        }
+
+                        _tradings.Clear();
                         ReloadRunners();
                         break;
                 }
             });
         }
-        
-        
+
         private void ReloadRunners()
         {
             var runners = AlgorithmManager.Runners
@@ -79,17 +93,26 @@
         }
         private void RemoveRunner(IAlgorithmRunner<TTransaction, TTrading> runner)
         {
-            Tradings.Remove(runner);
+            OnRunnerChanged(runner);
+            runner.Changed -= OnRunnerChanged;
+            _tradings.Remove(runner);
         }
 
         private void AddRunner(IAlgorithmRunner<TTransaction, TTrading> runner)
         {
-            Tradings.Add(runner);
+            OnRunnerChanged(runner);
+            runner.Changed += OnRunnerChanged;
+            _tradings.Add(runner);
         }
 
         public void Dispose()
         {
             ((INotifyCollectionChanged)AlgorithmManager.Runners).CollectionChanged -= OnRunnersChanged;
+        }
+        
+        protected virtual void OnRunnerChanged(IAlgorithmRunner<TTransaction, TTrading> runner)
+        {
+            Tradings.FilterWhenNeeded(runner, Filter);
         }
     }
 }

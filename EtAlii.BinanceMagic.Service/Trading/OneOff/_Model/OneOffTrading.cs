@@ -1,5 +1,7 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using System;
+
     public class OneOffTrading : TradingBase
     {
         
@@ -10,5 +12,14 @@ namespace EtAlii.BinanceMagic.Service
         public decimal Quantity { get; set; }
 
         public decimal SellPrice { get; set; }
+        
+        public TradeMethod TradeMethod { get; set; } = TradeMethod.BinanceTest;
+        
+        public bool IsCancelled { get; set; }
+        public bool IsSuccess { get; set; }
+        public decimal Profit { get; set; }
+        public decimal Loss { get; set; }
+        
+        public TimeSpan SampleInterval  { get; set; } = TimeSpan.FromMinutes(2);
     }
 }

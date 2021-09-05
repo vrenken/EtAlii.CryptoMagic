@@ -46,7 +46,7 @@
             EditContext = new EditContext(Model);
         }
 
-        protected void Submit()
+        protected virtual void Submit()
         {
             if (Validations.ValidateAll())
             {

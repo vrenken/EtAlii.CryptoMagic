@@ -2,7 +2,7 @@
 
 namespace EtAlii.BinanceMagic.Service
 {
-    public partial class EdgeSequence 
+    public class EdgeSequence 
     {
         // private readonly IClient _client;
         // private readonly ITimeManager _timeManager;

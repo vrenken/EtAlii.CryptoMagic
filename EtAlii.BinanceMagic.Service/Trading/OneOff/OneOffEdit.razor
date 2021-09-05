@@ -12,17 +12,6 @@
                 <CardTitle>@(Id == null ? "Add new one-off trade" : "Edit one-off trade")</CardTitle>
             </CardHeader>
                 <CardBody>
-                    <Validation Validator="@ValidationRule.IsNotEmpty">
-                        <Field>
-                            <FieldLabel>Name</FieldLabel>
-                            <TextEdit 
-                                Placeholder="Enter name" 
-                                Autofocus="true"
-                                @bind-Text="@Model.Name">
-                            </TextEdit>
-                        </Field>
-                    </Validation>
-                    
                     <Field>
                         <FieldLabel>Symbol</FieldLabel>
                         <SymbolTextEdit
@@ -71,6 +60,16 @@
                                     </Addon>
                                 </Addons>
                             <FieldHelp>@($"The money (in {Model.ReferenceSymbol}) to use in the purchase.")</FieldHelp>
+                        </Field>
+                    </Validation>
+                    
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel>Connectivity</FieldLabel>
+                                <RadioGroup TValue="TradeMethod" @bind-CheckedValue="@Model.TradeMethod" Orientation="Orientation.Vertical">
+                                    <Radio TValue="TradeMethod" Value="@(TradeMethod.BinanceLive)">Interact with Binance</Radio>
+                                    <Radio TValue="TradeMethod" Value="@(TradeMethod.BinanceTest)">Test calls to Binance</Radio>
+                                </RadioGroup>
                         </Field>
                     </Validation>
                     

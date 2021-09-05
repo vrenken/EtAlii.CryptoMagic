@@ -27,7 +27,7 @@
             return data.OneOffTradings.Single(t => t.Id == id);
         }
 
-        protected override string GetNavigationUrl(Guid id) => $"/one-off/view/{Model.Id}";
+        protected override string GetNavigationUrl(Guid id) => $"/one-off/list";
 
         private async Task OnFetchPriceClicked()
         {
@@ -56,5 +56,12 @@
         }
 
         private void OnHasValidSymbolChanged(bool hasValidSymbol) => CanFetchPrice = hasValidSymbol;
+
+        protected override void Submit()
+        {
+            Model.Start = DateTime.Now;
+            Model.Name = $"{Model.Symbol} {Model.Quantity}% / 12%"; 
+            base.Submit();
+        }
     }
 }

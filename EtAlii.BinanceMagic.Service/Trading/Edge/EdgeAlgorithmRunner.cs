@@ -1,10 +1,11 @@
 namespace EtAlii.BinanceMagic.Service
 {
     using System;
+    using System.Threading.Tasks;
 
     public class EdgeAlgorithmRunner : IAlgorithmRunner<EdgeTransaction, EdgeTrading>
     {
-        public event Action Changed;
+        public event Action<IAlgorithmRunner<EdgeTransaction, EdgeTrading>> Changed;
         public string Log { get; } = string.Empty;
         public IAlgorithmContext<EdgeTransaction, EdgeTrading> Context { get; }
 
@@ -12,14 +13,16 @@ namespace EtAlii.BinanceMagic.Service
         {
             Context = new AlgorithmContext<EdgeTransaction, EdgeTrading>(trading);
         }
-        public void Start()
+        public Task Start()
         {
-            Changed?.Invoke();
+            Changed?.Invoke(this);
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task Stop()
         {
-            Changed?.Invoke();
+            Changed?.Invoke(this);
+            return Task.CompletedTask;
         }
     }
 }

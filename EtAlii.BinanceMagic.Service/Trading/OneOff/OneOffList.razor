@@ -8,20 +8,72 @@
     <Icon IconName="@("fa-chart-line")"/> One-off tradings
 </Heading>
 
-<ListGroup Margin="DefaultLayout.Margin">
-    <Repeater Items="@Tradings">
-    <ListGroupItem Clicked="@(() => OnTradingSelected(context.Context.Trading.Id))">
-        @context.Context.Trading.Name
-    </ListGroupItem>
-    </Repeater>
-</ListGroup>
+
 @if (ApplicationContext.IsOperational)
 {
-    <ListGroup Margin="DefaultLayout.Margin">
-        <ListGroupItem Clicked="@OnEditSelected">
-            <Icon Name="@("fa-plus")"/> Add
-        </ListGroupItem>
-    </ListGroup>
+    <Row>
+        <Column ColumnSize="DefaultLayout.ItemOneOffColumnWidth">
+            <Card Margin="DefaultLayout.Margin">
+                <CardHeader>
+                    <Icon Name="@("fa-chart-line")" />
+                    Summary 
+                </CardHeader>
+                <CardBody>
+                    <CardText>
+                        Total profit: @($"{_totalProfit:0.00} {ApplicationContext.ReferenceSymbol}")<br/>
+                        Open: @(_totalOpen)x<br/>
+                        Success: @(_totalSuccesses)x<br/>
+                        Failure: @(_totalFailure)x<br/>
+                        <br/>
+                    </CardText>
+                    <Button 
+                        Height="@ButtonHeight"
+                        Width="@ButtonWidth"
+                        Color="Color.Primary" Clicked="@(OnEditSelected)"><Icon Name="@("fa-plus")"/> Add<br/>&nbsp;</Button>
+                </CardBody>
+            </Card>
+        </Column>
+
+        <Repeater Items="@Tradings">
+            <Column ColumnSize="DefaultLayout.ItemOneOffColumnWidth">
+                <Card Margin="DefaultLayout.Margin">
+                    <CardHeader>
+                        @context.Context.Trading.Name 
+                    </CardHeader>
+                    <CardBody>
+                        <CardText>
+                            Purchase: 0.3423 XRP<br/>
+                            Worth: 234.98 USDT<br/>
+                            Target: 15.00% <br/>
+                            Current: 10.12%<br/>
+                            Duration: @(ToTime(DateTime.Now - context.Context.Trading.Start)) <br/>
+                        </CardText>
+                        <Button 
+                            Height="@ButtonHeight"
+                            Width="@ButtonWidth"
+                            Color="Color.Danger" Clicked="@(() => ShowCancelDialog(context))"><Icon Name="@("fa-trash-alt")"/> Cancel<br/>(loss= ~234.87 USDT)</Button>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Repeater>
+
+    </Row>
+    
+    <Modal @ref="_cancelDialogRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>Confirm trade cancellation</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <Paragraph>Cancel trade: @(_runnerToDelete?.Context.Trading.Name)?</Paragraph>
+                <Paragraph>This will cause a loss of @($"{_runnerToDelete?.Context.Trading.Loss:0.00}") @(ApplicationContext.ReferenceSymbol)</Paragraph>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="@CancelCanceled">No</Button>
+                <Button Color="Color.Danger" Clicked="@CancelConfirmed">Yes</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
 }
 else
 {

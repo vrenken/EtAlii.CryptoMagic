@@ -1,11 +1,12 @@
 namespace EtAlii.BinanceMagic.Service
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface IAlgorithmRunner
     {
-        void Start();
-        void Stop();
+        Task Start();
+        Task Stop();
         Guid TradingId { get; }
     }
     
@@ -13,7 +14,7 @@ namespace EtAlii.BinanceMagic.Service
         where TTransaction : TransactionBase<TTrading>
         where TTrading: TradingBase
     {
-        event Action Changed;
+        event Action<IAlgorithmRunner<TTransaction, TTrading>> Changed;
         string Log { get; }
 
         IAlgorithmContext<TTransaction, TTrading> Context { get; }

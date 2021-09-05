@@ -1,8 +1,11 @@
 namespace EtAlii.BinanceMagic.Service.Surfing
 {
+    using System;
+    using System.Threading.Tasks;
+
     public class SurfingAlgorithmRunner : IAlgorithmRunner<SurfingTransaction, SurfingTrading>
     {
-        public event System.Action Changed;
+        public event Action<IAlgorithmRunner<SurfingTransaction, SurfingTrading>> Changed;
         
         public string Log { get; } = string.Empty;
         public IAlgorithmContext<SurfingTransaction, SurfingTrading> Context { get; }
@@ -11,14 +14,16 @@ namespace EtAlii.BinanceMagic.Service.Surfing
         {
             Context = new AlgorithmContext<SurfingTransaction, SurfingTrading>(trading);
         }
-        public void Start()
+        public Task Start()
         {
-            Changed?.Invoke();
+            Changed?.Invoke(this);
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task Stop()
         {
-            Changed?.Invoke();
+            Changed?.Invoke(this);
+            return Task.CompletedTask;
         }
     }
 }

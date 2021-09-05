@@ -1,8 +1,11 @@
 namespace EtAlii.BinanceMagic.Service
 {
+    using System;
+    using System.Threading.Tasks;
+
     public class ExperimentalAlgorithmRunner : IAlgorithmRunner<ExperimentalTransaction, ExperimentalTrading>
     {
-        public event System.Action Changed;
+        public event Action<IAlgorithmRunner<ExperimentalTransaction, ExperimentalTrading>> Changed;
         public string Log => string.Empty;
         public IAlgorithmContext<ExperimentalTransaction, ExperimentalTrading> Context { get; }
 
@@ -10,14 +13,16 @@ namespace EtAlii.BinanceMagic.Service
         {
             Context = new AlgorithmContext<ExperimentalTransaction, ExperimentalTrading>(trading);
         }
-        public void Start()
+        public Task Start()
         {
-            Changed?.Invoke();
+            Changed?.Invoke(this);
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task Stop()
         {
-            Changed?.Invoke();
+            Changed?.Invoke(this);
+            return Task.CompletedTask;
         }
     }
 }

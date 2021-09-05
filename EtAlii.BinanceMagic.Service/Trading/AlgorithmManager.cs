@@ -25,21 +25,27 @@ namespace EtAlii.BinanceMagic.Service
 
         private void OnRunnersChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            var task = Task.Run(async () =>
             {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (IAlgorithmRunner runnerToStart in e.NewItems!)
-                    {
-                        runnerToStart.Start();
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (IAlgorithmRunner runnerToStop in e.OldItems!)
-                    {
-                        runnerToStop.Stop();
-                    }
-                    break;
-            }
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (IAlgorithmRunner runnerToStart in e.NewItems!)
+                        {
+                            await runnerToStart.Start();
+                        }
+
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (IAlgorithmRunner runnerToStop in e.OldItems!)
+                        {
+                            await runnerToStop.Stop();
+                        }
+
+                        break;
+                }
+            });
+            task.Wait();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -55,6 +61,7 @@ namespace EtAlii.BinanceMagic.Service
             allTradings = allTradings
                 .Concat(data.SimpleTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.CircularTradings.Cast<TradingBase>().ToArray())
+                .Concat(data.OneOffTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.SurfingTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.EdgeTradings.Cast<TradingBase>().ToArray())
                 .Concat(data.ExperimentalTradings.Cast<TradingBase>().ToArray())
