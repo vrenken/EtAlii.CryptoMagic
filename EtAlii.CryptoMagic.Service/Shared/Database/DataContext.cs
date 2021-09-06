@@ -23,12 +23,12 @@ namespace EtAlii.CryptoMagic.Service
 
         // The following configures EF to create a Sqlite database file as `C:\blogging.db`.
         // For Mac or Linux, change this to `/tmp/blogging.db` or any other absolute path.
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            options.UseSqlite(@"Data Source=database.db");
+            optionsBuilder.UseSqlite(@"Data Source=database.db");
             
             var loggerFactory = new SerilogLoggerFactory(_logger);
-            options.UseLoggerFactory(loggerFactory);
+            optionsBuilder.UseLoggerFactory(loggerFactory);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

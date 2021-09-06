@@ -72,7 +72,6 @@
                 .Where(t => t.Trading.Id == trading.Id)
                 .Where(t => !t.IsInitialTransaction)
                 .Where(t => t.Completed)
-                .ToArray()
                 .Sum(t => t.Profit);
         }
     }
