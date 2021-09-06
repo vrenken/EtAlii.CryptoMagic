@@ -1,5 +1,11 @@
 # EtAlii.CryptoMagic
 
+# About
+CryptoMagic is a testbed/framework for advanced automated crypto currency trading algorithms. It's current implementation uses the Binance API to conduct the tradings.
+
+Warning: Please make sure to understand the implications of automated trading, especially with code from open source repositories like GitHub.
+This project is in no means liable for any trade losses you might experience.
+
 ## Project status
 
 [![Build](https://github.com/vrenken/EtAlii.CryptoMagic/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/vrenken/EtAlii.CryptoMagic/actions/workflows/build.yml)
