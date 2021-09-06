@@ -4,7 +4,7 @@ namespace EtAlii.CryptoMagic.Service
     using Microsoft.Extensions.Hosting;
     using Serilog;
 
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {

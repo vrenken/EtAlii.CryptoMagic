@@ -11,7 +11,7 @@ namespace EtAlii.CryptoMagic.Service
             
             if (!data.Settings.Any())
             {
-                
+                // Initialize the database.
             }
         }
     }

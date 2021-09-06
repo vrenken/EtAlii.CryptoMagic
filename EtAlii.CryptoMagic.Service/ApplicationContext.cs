@@ -5,7 +5,6 @@ namespace EtAlii.CryptoMagic.Service
 
     public class ApplicationContext
     {
-        public IClient LiveClient => _liveClient;
         private static IClient _liveClient;
         
         public string ReferenceSymbol { get; private set; }
