@@ -33,21 +33,12 @@ jobs:
         id: nbgv
 
       - name: Restore dependencies
-        run: dotnet restore .\EtAlii.CryptoMagic.sln
+        run: dotnet restore 
       - name: Build
-        run: dotnet build --no-restore .\EtAlii.CryptoMagic.sln
+        run: dotnet build -c Release --no-restore
 
-      # Pack.
-#      - name: Pack
-#        shell: powershell
-#        run: >
-#          dotnet pack .\EtAlii.CryptoMagic.sln
-#          --no-restore
-#          /p:PackageVersion=${{ steps.nbgv.outputs.NuGetPackageVersion }}
-#          /p:RepositoryCommit=${{ steps.nbgv.outputs.GitCommitId }}
-#          /p:RepositoryType=git
-#
-#      - name: Test
-#        run: dotnet test --no-build --verbosity normal .\EtAlii.CryptoMagic.sln
-#      - name: Publish
-#        run: dotnet nuget push .\Source\**\*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_ORG_TOKEN }} --source https://api.nuget.org/v3/index.json
+      - name: Publish
+        run: dotnet publish -c Release --no-build
+
+      - name: Docker build
+        run: docker build -t vrenken/etalii-cryptomagic -f ./EtAlii.CryptoMagic/Dockerfile .
