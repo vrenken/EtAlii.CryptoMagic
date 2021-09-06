@@ -1,0 +1,16 @@
+﻿<!-- Stuff that needs to happen at the start of the MSBuild process should go in the .props file. -->
+<Project>
+  <!-- Common properties -->
+  <PropertyGroup>
+    <Authors>Peter Vrenken</Authors>
+    <Company>EtAlii</Company>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <IsTestProject>$(MSBuildProjectName.EndsWith('.Tests'))</IsTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
+</Project>

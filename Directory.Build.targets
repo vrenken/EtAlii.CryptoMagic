@@ -1,0 +1,27 @@
+﻿<!-- Stuff that needs to happen at the end of the MSBuild process should go in the .targets file. -->
+<Project>
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <!-- We want all projects to honor the GitVersioning as specified using the NBGV tool-->
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Condition="!Exists('packages.config')" Label="Nerdbank.GitVersioning (.targets)" >
+      <Version>3.4.231</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" Label="Microsoft.NET.Test.Sdk (.targets)" />
+    <PackageReference Include="xunit" Version="2.4.1" Label="xunit (.targets)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" Label="xunit.runner.visualstudio (.targets)" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Coverlet.Collector" Version="3.1.0" Label="Coverlet.Collector (.targets)" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

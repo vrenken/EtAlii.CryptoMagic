@@ -1,0 +1,62 @@
+name: Analysis
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+      - 'release/**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  sonar_cloud:
+    name: SonarCloud analysis
+    runs-on: windows-latest
+    steps:
+        # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.302
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis - also needed by NBGV
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner --version 5.1.0
+
+        # NBGV Versioning setup.
+      - name: Versioning
+        uses: dotnet/nbgv@master
+        id: nbgv
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          dotnet test --verbosity normal .\Source\EtAlii.CryptoMagic.sln --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"EtAlii.CryptoMagic" /o:"vrenken" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**\coverage.opencover.xml" /v:"${{ steps.nbgv.outputs.SimpleVersion }}"
+          dotnet build .\Source\EtAlii.CryptoMagic.sln
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"

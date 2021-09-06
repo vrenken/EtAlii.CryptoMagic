@@ -1,0 +1,42 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+      - 'feature/**'
+  pull_request:
+    branches: [ master ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true   # Stop wasting time caching packages
+  DOTNET_CLI_TELEMETRY_OPTOUT: true         # Disable sending usage data to Microsoft
+
+jobs:
+  build:
+
+    #runs-on: ubuntu-latest
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis - also needed by NBGV
+
+        # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.302
+
+        # Versioning.
+      - name: Versioning
+        uses: dotnet/nbgv@master
+        id: nbgv
+
+      - name: Restore dependencies
+        run: dotnet restore .\Source\EtAlii.CryptoMagic.sln
+      - name: Build
+        run: dotnet build --no-restore .\Source\EtAlii.CryptoMagic.sln
+      - name: Test
+        run: dotnet test --no-build --verbosity normal .\Source\EtAlii.CryptoMagic.sln
