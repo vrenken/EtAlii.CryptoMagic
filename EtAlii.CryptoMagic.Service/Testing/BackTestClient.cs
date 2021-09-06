@@ -134,8 +134,11 @@ namespace EtAlii.CryptoMagic.Service
                 Volume = decimal.Parse(items[7], CultureInfo.InvariantCulture),
             };
         }
-        
-        public void Stop() { }
+
+        public void Stop()
+        {
+            // In case of the BackTestClient there is nothing to stop.  
+        }
         
         private void SetCurrentHistory()
         {
