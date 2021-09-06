@@ -1,0 +1,193 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ProjectGuid>A298EC74-0496-450A-8AF3-308AF89830FC</ProjectGuid>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\.etalii</CompilerGeneratedFilesOutputPath>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EtAlii.Generators.MicroMachine" Version="1.5.0-preview-0018" />
+    <PackageReference Include="Binance.Net" Version="7.1.2" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
+    <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="stateless" Version="5.11.0" />
+    <PackageReference Include="Trady.Analysis" Version="3.2.8" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
+
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Charts" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Components" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Animate" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Shared\NavMenu.cs">
+      <DependentUpon>NavMenu.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\MainLayout.cs">
+      <DependentUpon>MainLayout.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Experimental\ExperimentalView.cs">
+      <DependentUpon>ExperimentalView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularEdit.cs">
+      <DependentUpon>CircularEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularView.cs">
+      <DependentUpon>CircularView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Configuration\Settings.cs">
+      <DependentUpon>Settings.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Simple\SimpleView.cs">
+      <DependentUpon>SimpleView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Simple\SimpleEdit.cs">
+      <DependentUpon>SimpleEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Transaction.cs">
+      <DependentUpon>Transaction.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\Error.cs">
+      <DependentUpon>Error.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\Algorithm\CircularSequence.cs">
+      <DependentUpon>CircularSequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\Algorithm\ICircularAlgorithm.cs">
+      <DependentUpon>CircularAlgorithm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\Algorithm\ITargetTransactionFinder.cs">
+      <DependentUpon>TargetTransactionFinder.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularTransactionCard.cs">
+      <DependentUpon>CircularTransactionCard.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffEdit.cs">
+      <DependentUpon>OneOffEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Dashboard.cs">
+      <DependentUpon>Dashboard.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromOtherCoin.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromOtherCoin.IsNoSymbolPair.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromOtherCoin.SymbolPair.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.FromUsdt.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Surfing\Algorithm\Sequence.ToUsdt.cs">
+      <DependentUpon>Sequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularListItem.cs">
+      <DependentUpon>CircularListItem.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularList.cs">
+      <DependentUpon>CircularList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\IAlgorithmContext.cs">
+      <DependentUpon>AlgorithmContext.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\ViewBase.Deletion.cs">
+      <DependentUpon>ViewBase.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffView.cs">
+      <DependentUpon>OneOffView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffList.cs">
+      <DependentUpon>OneOffList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\AlgorithmManager.Update.cs">
+      <DependentUpon>AlgorithmManager.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Testing\BackTestClient.Trends.cs">
+      <DependentUpon>BackTestClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\Algorithm\CircularSequence.Generated.cs">
+      <DependentUpon>CircularSequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Experimental\ExperimentalList.cs">
+      <DependentUpon>ExperimentalList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Experimental\ExperimentalEdit.cs">
+      <DependentUpon>ExperimentalEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Simple\SimpleList.cs">
+      <DependentUpon>SimpleList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Circular\CircularView.Chart.cs">
+      <DependentUpon>CircularView.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Edge\Algorithm\EdgeSequence.cs">
+      <DependentUpon>EdgeSequence.puml</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Edge\EdgeEdit.cs">
+      <DependentUpon>EdgeEdit.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\Edge\EdgeList.cs">
+      <DependentUpon>EdgeList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffList.Cancel.cs">
+      <DependentUpon>OneOffList.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Trading\OneOff\OneOffEdit.CanStart.cs">
+      <DependentUpon>OneOffEdit.razor</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Shared\NavMenu.razor.css">
+      <DependentUpon>NavMenu.razor</DependentUpon>
+    </None>
+    <None Remove="database.db" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Trading\Experimental\Algorithm" />
+    <Folder Include="Trading\OneOff\Algorithm" />
+    <Folder Include="Trading\Simple\Algorithm" />
+    <Folder Include="wwwroot\fonts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Trading\Circular\Algorithm\CircularSequence.puml" />
+    <None Include="Trading\Surfing\Algorithm\Sequence.puml" />
+    <None Include="Trading\Edge\Algorithm\EdgeSequence.puml" />
+<!--    <MicroMachine Include="Trading\Surfing\Algorithm\Sequence.puml" />-->
+<!--    <MicroMachine Include="Trading\Edge\Algorithm\EdgeSequence.puml" />-->
+  </ItemGroup>
+</Project>

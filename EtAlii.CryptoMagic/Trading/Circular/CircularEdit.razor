@@ -1,0 +1,179 @@
+﻿@page "/circular/edit/{id?}"
+
+@namespace EtAlii.CryptoMagic
+
+@inherits EditBase<CircularTrading> 
+
+<Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext" StatusChanged="OnValidationChanged">
+<Row>
+    <Column ColumnSize="DefaultLayout.ItemColumnWidth">
+        <Card Margin="DefaultLayout.Margin">
+            <CardHeader>
+                <CardTitle>@(Id == null ? "Add new circular trade" : "Edit circular trade")</CardTitle>
+            </CardHeader>
+                <CardBody>
+
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit 
+                                Placeholder="Enter name" 
+                                Autofocus="true"
+                                @bind-Text="@Model.Name">
+                            </TextEdit>
+                            <FieldHelp>The name with which the trade should be identified.</FieldHelp>
+                        </Field>
+                    </Validation>
+                
+                    <Field>
+                        <FieldLabel>First symbol</FieldLabel>
+                        <SymbolTextEdit
+                            @bind-SelectedValue="@Model.FirstSymbol"
+                            Placeholder="Symbol"/>
+                        <FieldHelp>The first symbol to use for the trade.</FieldHelp>
+                    </Field>
+                
+                    <Field>
+                        <FieldLabel>Second symbol</FieldLabel>
+                        <SymbolTextEdit
+                            @bind-SelectedValue="@Model.SecondSymbol"
+                            Placeholder="Symbol"/>
+                        <FieldHelp>The second symbol to use for the trade.</FieldHelp>
+                    </Field>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 80, 150))">
+                        <Field>
+                            <FieldLabel>Target increase</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit
+                                        TValue="decimal"
+                                        Placeholder="Target increase in %" 
+                                        @bind-Value="@TargetIncreaseInPercentage"
+                                        Min="80"
+                                        Max="150">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The target increase that should be aimed for each cycle.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 80, 1000))">
+                        <Field>
+                            <FieldLabel>Quantity factor</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit
+                                        TValue="decimal"
+                                        Placeholder="Quantity factor in %" 
+                                        @bind-Value="@QuantityFactorInPercentage"
+                                        Min="80"
+                                        Max="1000">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The quantity factor to work with. Most often this is a multiplication of 10 @Model.ReferenceSymbol.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 50, 150))">
+                        <Field>
+                            <FieldLabel>Initial sell factor</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit 
+                                        Placeholder="Initial sell factor in %" 
+                                        @bind-Value="@InitialSellFactorInPercentage"
+                                        Min="50m"
+                                        Max="150m">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The initial sell factor that will  be used to run the first cycle with.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 50, 100))">
+                        <Field>
+                            <FieldLabel>Max quantity to trade</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit 
+                                        Placeholder="Max quantity to trade in %" 
+                                        @bind-Value="@MaxQuantityToTradeInPercentage"
+                                        Min="50"
+                                        Max="100">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The maximum percentage of the previous purchase to trade with in the next cycle.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 3, 50))">
+                        <Field>
+                            <FieldLabel>RSI period</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit 
+                                        Placeholder="Candlestick periods" 
+                                        @bind-Value="@Model.RsiPeriod"
+                                        Min="3"
+                                        Max="50">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The number of periods that should be used in calculating the RSI indicator.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@(e => IsBetweenInclusive(e, 100, 150))">
+                        <Field>
+                            <FieldLabel>Notional minimal correction</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>%</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit 
+                                        Placeholder="Notional minimal correction %"
+                                        @bind-Value="@NotionalMinCorrectionInPercentage"
+                                        Min="100"
+                                        Max="150">
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                            <FieldHelp>The percentage correction to ensure trades stay above the notional minimum value to be traded.</FieldHelp>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel>Connectivity</FieldLabel>
+                                <RadioGroup TValue="TradeMethod" @bind-CheckedValue="@Model.TradeMethod" Orientation="Orientation.Vertical">
+                                    <Radio TValue="TradeMethod" Value="@(TradeMethod.BackTest)">Backtest</Radio>
+                                    <Radio TValue="TradeMethod" Value="@(TradeMethod.BinanceLive)">Interact with Binance</Radio>
+                                    <Radio TValue="TradeMethod" Value="@(TradeMethod.BinanceTest)">Test calls to Binance</Radio>
+                                </RadioGroup>
+                        </Field>
+                    </Validation>
+                    
+                    <Button Color="Color.Primary" Clicked="@Submit" disabled=@IsInvalid>Save</Button>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+</Validations>

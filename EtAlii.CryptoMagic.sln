@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.CryptoMagic.Tests", "EtAlii.CryptoMagic.Tests\EtAlii.CryptoMagic.Tests.csproj", "{1BACC328-F2E9-4A08-B92C-34BC2E60B8DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.CryptoMagic.Service", "EtAlii.CryptoMagic.Service\EtAlii.CryptoMagic.Service.csproj", "{AD1CA3CD-BA03-4546-8286-8869A2979C73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.CryptoMagic", "EtAlii.CryptoMagic\EtAlii.CryptoMagic.csproj", "{AD1CA3CD-BA03-4546-8286-8869A2979C73}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Globals", "_Globals", "{686A8901-2B96-4F1B-B3B6-8E53C611447F}"
 ProjectSection(SolutionItems) = preProject

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   
   <ItemGroup>
-    <ProjectReference Include="..\EtAlii.CryptoMagic.Service\EtAlii.CryptoMagic.Service.csproj" />
+    <ProjectReference Include="..\EtAlii.CryptoMagic\EtAlii.CryptoMagic.csproj" />
   </ItemGroup>
 
 </Project>

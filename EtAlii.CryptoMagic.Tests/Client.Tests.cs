@@ -3,7 +3,6 @@ namespace EtAlii.CryptoMagic.Tests
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using EtAlii.CryptoMagic.Service;
     using Xunit;
 
     public class ClientTests : IClassFixture<TestContext>

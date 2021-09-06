@@ -1,0 +1,27 @@
+﻿@page "/one-off/view/{id?}"
+
+@namespace EtAlii.CryptoMagic
+
+@inherits ViewBase<OneOffTransaction, OneOffTrading, OneOffAlgorithmRunner>
+
+<Row Margin="DefaultLayout.Margin">
+    <Column ColumnSize="ColumnSize.Is1">
+        <Button Color="Color.Primary">
+            <Icon Name="IconName.Pause" />
+            Pause
+        </Button>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is1">
+        <Blazorise.Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"/simple/edit/{Id}")">
+            <Icon Name="@("fa-wrench")"/>
+            Change
+        </Blazorise.Button>
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is4.OnDesktop.IsAuto.OnTablet">
+        <Card>
+            <CardHeader>@Model.Name</CardHeader>
+        </Card>        
+    </Column>
+</Row>
