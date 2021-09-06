@@ -35,8 +35,8 @@ jobs:
         id: nbgv
 
       - name: Restore dependencies
-        run: dotnet restore .\Source\EtAlii.CryptoMagic.sln
+        run: dotnet restore .\EtAlii.CryptoMagic.sln
       - name: Build
-        run: dotnet build --no-restore .\Source\EtAlii.CryptoMagic.sln
+        run: dotnet build --no-restore .\EtAlii.CryptoMagic.sln
       - name: Test
-        run: dotnet test --no-build --verbosity normal .\Source\EtAlii.CryptoMagic.sln
+        run: dotnet test --no-build --verbosity normal .\EtAlii.CryptoMagic.sln
