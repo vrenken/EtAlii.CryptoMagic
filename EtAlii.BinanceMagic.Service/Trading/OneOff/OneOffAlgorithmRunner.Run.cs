@@ -38,6 +38,7 @@ namespace EtAlii.BinanceMagic.Service
                     if (success)
                     {
                         _trading.FinalQuoteQuantity = symbol.QuoteQuantity;
+                        _trading.End = DateTime.Now;
                         _trading.IsSuccess = true;
                     }
                 }

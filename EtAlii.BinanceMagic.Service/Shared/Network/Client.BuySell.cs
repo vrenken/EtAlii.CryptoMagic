@@ -23,6 +23,19 @@
             // }
             // var exchangeInfo = exchangeResult.Data;
 
+            string error;
+            decimal testPrice = 0;
+            if (PlaceTestOrders)
+            {
+                bool success;
+                (success, testPrice, error) = await TryGetPrice(sellAction.Symbol, referenceSymbol, cancellationToken);
+                if (!success)
+                {
+                    _log.Error(error);
+                    return (false, null, error);
+                }
+            }
+
             var orderResponseType = OrderResponseType.Full;
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
             var orderType = OrderType.Market;
@@ -47,7 +60,7 @@
 
             if (sellOrder.Error != null)
             {
-                var error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
+                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
                 _log.Error(error);
                 return (false, null, error);
             }
@@ -57,18 +70,28 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                var error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
+                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
                 _log.Error(error);
                 return (false, null, error);
             }
 
-            var symbolsSold = new Symbol
-            {
-                SymbolName = sellAction.Symbol,
-                Price = sellOrder.Data.Price,
-                QuoteQuantity = sellOrder.Data.QuoteQuantityFilled,
-                Quantity = sellOrder.Data.QuantityFilled
-            };
+            var symbolsSold = PlaceTestOrders
+                ? new Symbol
+                {
+                    SymbolName = sellAction.Symbol,
+                    Price  = testPrice,
+                    QuoteQuantity = sellAction.Quantity * testPrice,
+                    Quantity = sellAction.Quantity,
+                }
+                : new Symbol
+                {
+                    SymbolName = sellAction.Symbol,
+                    Price = sellOrder.Data.Price,
+                    QuoteQuantity = sellOrder.Data.QuoteQuantityFilled,
+                    Quantity = sellOrder.Data.QuantityFilled
+                };
+
+            
             return (true, symbolsSold, null);
         }
 

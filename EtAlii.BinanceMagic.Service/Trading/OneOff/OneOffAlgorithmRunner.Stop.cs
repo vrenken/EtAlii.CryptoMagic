@@ -38,6 +38,7 @@ namespace EtAlii.BinanceMagic.Service
 
                     _trading.FinalQuoteQuantity = symbol.QuoteQuantity;
                     _trading.IsCancelled = true;
+                    _trading.End = DateTime.Now;
                     data.OneOffTradings.Attach(Context.Trading).State = EntityState.Modified;
                     await data.SaveChangesAsync();
                 }
