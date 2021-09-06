@@ -12,6 +12,7 @@
     {
         protected override void OnInitialized()
         {
+            // Initialize the NavMenu.
         }
     }
 }
