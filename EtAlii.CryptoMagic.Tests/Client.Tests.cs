@@ -48,7 +48,7 @@ namespace EtAlii.CryptoMagic.Tests
             Assert.NotNull(client);
         }
                         
-        [Fact]
+        [Fact(Skip = "Only for local testing")]
         public async Task Client_TryConvert()
         {
             // Arrange.
