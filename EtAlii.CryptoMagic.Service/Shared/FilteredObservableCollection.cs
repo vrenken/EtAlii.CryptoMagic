@@ -49,12 +49,9 @@ namespace EtAlii.CryptoMagic.Service
                 case NotifyCollectionChangedAction.Add:
                     foreach (var newItem in e.NewItems!.OfType<TInstance>())
                     {
-                        if (filter(newItem))
+                        if (filter(newItem) && !target.Contains(newItem))
                         {
-                            if (!target.Contains(newItem))
-                            {
-                                target.Add(newItem);
-                            }
+                            target.Add(newItem);
                         }
                     }
 
@@ -62,12 +59,9 @@ namespace EtAlii.CryptoMagic.Service
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var oldItem in e.OldItems!.OfType<TInstance>())
                     {
-                        if (filter(oldItem))
+                        if (filter(oldItem) && target.Contains(oldItem))
                         {
-                            if (target.Contains(oldItem))
-                            {
-                                target.Remove(oldItem);
-                            }
+                            target.Remove(oldItem);
                         }
                     }
 
