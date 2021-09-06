@@ -5,17 +5,14 @@ namespace EtAlii.CryptoMagic.Service
 {
     public class CircularSequence : CircularSequenceBase
     {
-        // private readonly IClient _client;
         private readonly ITimeManager _timeManager;
         private readonly IAlgorithmContext<CircularTransaction, CircularTrading> _context;
         private readonly ITargetTransactionFinder _targetTransactionFinder;
         
         public CircularSequence(
-            // IClient client, 
             ITimeManager timeManager,
             IAlgorithmContext<CircularTransaction, CircularTrading> context)
         {
-            // _client = client;
             _timeManager = timeManager;
             _context = context;
             _targetTransactionFinder = new TargetTransactionFinder(_context);
