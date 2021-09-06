@@ -1,0 +1,34 @@
+﻿@page "/simple/edit/{id?}"
+
+@namespace EtAlii.CryptoMagic.Service
+
+@inherits EditBase<SimpleTrading> 
+
+<Validations @ref="Validations" Mode="ValidationMode.Auto" ValidateOnLoad="false" EditContext="@EditContext" StatusChanged="OnValidationChanged">
+<Row>
+    <Column ColumnSize="DefaultLayout.ItemColumnWidth">
+        <Card Margin="DefaultLayout.Margin">
+            <CardHeader>
+                <CardTitle>@(Id == null ? "Add new simple trade" : "Change simple trade")</CardTitle>
+            </CardHeader>
+                <CardBody>
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit 
+                                Placeholder="Enter name" 
+                                Autofocus="true"
+                                @bind-Text="@Model.Name">
+                                <Feedback>
+                                    <ValidationError>Enter name for trade.</ValidationError>
+                                </Feedback>                            
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    
+                    <Button Color="Color.Primary" Clicked="@Submit" disabled=@IsInvalid>Save</Button>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+</Validations>

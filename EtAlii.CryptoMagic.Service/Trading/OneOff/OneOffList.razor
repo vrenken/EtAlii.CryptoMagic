@@ -1,0 +1,118 @@
+﻿@page "/one-off/list"
+
+@namespace EtAlii.CryptoMagic.Service
+
+@inherits ListBase<OneOffTransaction, OneOffTrading>
+
+<Heading Margin="DefaultLayout.Margin">
+    <Icon IconName="@("fa-chart-line")"/> One-off tradings
+</Heading>
+
+
+@if (ApplicationContext.IsOperational)
+{
+    <Row>
+        <Column ColumnSize="DefaultLayout.ItemOneOffColumnWidth">
+            <Card Margin="DefaultLayout.Margin">
+                <CardHeader>
+                    <Icon Name="@("fa-chart-line")" />
+                    Summary 
+                </CardHeader>
+                <CardBody>
+                    <CardText>
+                        <Table Borderless="true" Narrow="true">
+                            <TableBody>
+                                <TableRow>
+                                    <TableRowCell>Live value: </TableRowCell>
+                                    <TableRowCell>@($"{_totalCurrentProfit:0.00} {ApplicationContext.ReferenceSymbol}")</TableRowCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableRowCell>Total profit: </TableRowCell>
+                                    <TableRowCell>@($"{_totalGuaranteedProfit:0.00} {ApplicationContext.ReferenceSymbol}")</TableRowCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableRowCell>Active: </TableRowCell>
+                                    <TableRowCell>@(_totalOpen) trades</TableRowCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableRowCell>Success: </TableRowCell>
+                                    <TableRowCell>@(_totalSuccesses) trades</TableRowCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableRowCell>Cancelled: </TableRowCell>
+                                    <TableRowCell>@(_totalFailure) trades</TableRowCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </CardText>
+                    <Button 
+                        Height="@ButtonHeight"
+                        Width="@ButtonWidth"
+                        Color="Color.Primary" Clicked="@(OnEditSelected)"><Icon Name="@("fa-plus")"/> Add</Button>
+                </CardBody>
+            </Card>
+        </Column>
+
+        <Repeater Items="@Tradings">
+            <Column ColumnSize="DefaultLayout.ItemOneOffColumnWidth">
+                <Card Margin="DefaultLayout.Margin">
+                    <CardHeader>
+                        @context.Context.Trading.Name 
+                    </CardHeader>
+                    <CardBody>
+                        <CardText>
+                            <Table Borderless="true" Narrow="true">
+                                <TableBody>
+                                    <TableRow>
+                                        <TableRowCell>Purchase value: </TableRowCell>
+                                        <TableRowCell>@($"{context.Context.Trading.PurchaseQuoteQuantity:0.00}") @(context.Context.Trading.ReferenceSymbol)</TableRowCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableRowCell>Current value: </TableRowCell>
+                                        <TableRowCell>@($"{ToCurrentValue(context.Context.Trading):0.00}") @(context.Context.Trading.ReferenceSymbol)</TableRowCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableRowCell>Target: </TableRowCell>
+                                        <TableRowCell>@(ToPercentage(context.Context.Trading.TargetPercentageIncrease))%</TableRowCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableRowCell>Current: </TableRowCell>
+                                        <TableRowCell>@(ToPercentage(context.Context.Trading.CurrentPercentageIncrease))%</TableRowCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableRowCell>Duration: </TableRowCell>
+                                        <TableRowCell>@(ToTime(DateTime.Now - context.Context.Trading.Start))</TableRowCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </CardText>
+                        <Button 
+                            Height="@ButtonHeight"
+                            Width="@ButtonWidth"
+                            Color="@(ToButtonColor(context.Context.Trading))" Clicked="@(() => ShowCancelDialog(context))"><Icon Name="@("fa-trash-alt")"/> Cancel @(ToLossMessage(context.Context.Trading))</Button>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Repeater>
+    </Row>
+    
+    <Modal @ref="_cancelDialogRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>Confirm trade cancellation</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <Paragraph>Cancel trade: @(_runnerToDelete?.Context.Trading.Name)?</Paragraph>
+                <Paragraph>@(ToCancelConfirmationMessage(_runnerToDelete?.Context.Trading))</Paragraph>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="@CancelCanceled">No</Button>
+                <Button Color="Color.Danger" Clicked="@CancelConfirmed">Yes</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+else
+{
+    <Paragraph Margin="DefaultLayout.Margin">Application is not yet configured correctly</Paragraph>
+}

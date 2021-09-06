@@ -1,2 +1,2 @@
-# EtAlii.BinanceMagic
+# EtAlii.CryptoMagic
  

@@ -1,0 +1,14 @@
+@startuml
+'namespace EtAlii.CryptoMagic.Service
+'class EdgeSequence
+'generate partial
+
+title Automatic trading mechanism B: Edge.
+
+state InitialPurchase
+
+[*] --> InitialPurchase : Start
+InitialPurchase --> TrySell : Continue
+TrySell --> [*] : Continue
+
+@enduml

@@ -1,0 +1,40 @@
+﻿@page "/edge/list"
+
+@namespace EtAlii.CryptoMagic.Service
+
+@inherits ListBase<EdgeTransaction, EdgeTrading>
+
+<Row Margin="DefaultLayout.Margin">
+    <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
+        <Heading>
+            <Icon IconName="@("fa-dice")"/> Edge tradings
+        </Heading>
+    </Column>
+</Row>
+
+<ListGroup>
+    <Repeater Items="@Tradings">
+        <Row Margin="DefaultLayout.Margin">
+            <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
+                @* <EdgeListItem Context="@context.Context"/> *@
+            </Column>
+        </Row>
+    </Repeater>
+</ListGroup>
+
+<Row Margin="DefaultLayout.Margin">
+    <Column ColumnSize="ColumnSize.Is11.OnDesktop.IsAuto.OnTablet">
+        @if (ApplicationContext.IsOperational)
+        {
+            <ListGroup>
+                <ListGroupItem Clicked="@OnEditSelected">
+                    <Icon Name="@("fa-plus")"/> Add
+                </ListGroupItem>
+            </ListGroup>
+        }
+        else
+        {
+            <Paragraph>Application is not yet configured correctly</Paragraph>
+        }
+    </Column>
+</Row>

@@ -1,0 +1,74 @@
+@startuml
+'namespace EtAlii.CryptoMagic.Service.Surfing
+'class Sequence
+'generate partial
+
+title Automatic trading mechanism B: Coin surfin'.
+
+[*] --> Start : Start
+Start --> GetSituation : Continue
+Start : OnEntry:
+Start : - Load from disk.
+
+Wait -up-> GetSituation : Continue
+
+state DetermineCoinToBetOn <<choice>>
+GetSituation -down-> DetermineCoinToBetOn : Continue 
+GetSituation -down-> Wait : Error
+note left of DetermineOtherCoinValue
+Calculation of worth is done 
+by comparing the current coin's 
+trend (candlesticks direction)
+with that of the other coin.
+If the stakes for the other coin 
+are better we are better of switching.
+end note
+
+DetermineCoinToBetOn --> Wait : CurrentCoinHasBestTrend
+DetermineCoinToBetOn --> TransferToOtherCoin : OtherCoinHasBetterTrend
+DetermineCoinToBetOn --> TransferToUsdt : AllCoinsHaveDownwardTrends
+DetermineCoinToBetOn --> TransferFromUsdt : NoPreviousCoin
+note left of TransferToUsdt
+In case all coins signal a 
+downwards trend there is 
+no good choice beyond getting as
+ close to 'payout money' as possible
+end note
+state TransferToUsdt {
+    state "SellCurrentCoin" as SellCurrentCoinInUsdtTransfer
+    state "WaitUntilCoinSold" as WaitUntilCoinSoldInUsdtTransfer
+    [*] --> SellCurrentCoinInUsdtTransfer
+    SellCurrentCoinInUsdtTransfer --> WaitUntilCoinSoldInUsdtTransfer : Continue
+    WaitUntilCoinSoldInUsdtTransfer --> [*]
+}
+TransferToUsdt -down-> Wait : Continue
+
+state TransferFromUsdt {
+    state "BuyCurrentCoin" as BuyCurrentCoinInUsdtTransfer
+    state "WaitUntilCoinBought" as WaitUntilCoinBoughtInUsdtTransfer
+    [*] --> BuyCurrentCoinInUsdtTransfer
+    BuyCurrentCoinInUsdtTransfer --> WaitUntilCoinBoughtInUsdtTransfer : Continue
+    WaitUntilCoinBoughtInUsdtTransfer --> [*]
+}
+TransferFromUsdt -down-> Wait : Continue
+
+note right of TransferToOtherCoin
+If another coin has better future predictions 
+it could be wise to transfer the whole
+value of the current coin onto the next one.   
+end note
+state TransferToOtherCoin {
+    state DetermineSymbolPair <<choice>>
+    state "WaitUntilCoinSold" as WaitUntilCoinSoldAsSymbolPair
+    [*] --> DetermineSymbolPair
+    DetermineSymbolPair --> SellCurrentCoin : IsNoSymbolPair
+    DetermineSymbolPair --> SellAsSymbolPair : IsSymbolPair
+    SellAsSymbolPair --> WaitUntilCoinSoldAsSymbolPair : Continue
+    WaitUntilCoinSoldAsSymbolPair --> [*]
+    SellCurrentCoin --> WaitUntilCoinSold : Continue
+    WaitUntilCoinSold --> BuyOtherCoin : Continue
+    BuyOtherCoin --> WaitUntilCoinBought : Continue
+    WaitUntilCoinBought --> [*]
+}
+TransferToOtherCoin -down-> Wait : Continue
+@enduml

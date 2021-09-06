@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.CryptoMagic", "EtAlii.CryptoMagic\EtAlii.CryptoMagic.csproj", "{839E8117-20BF-4E77-844E-441B5A7F159B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.CryptoMagic.Tests", "EtAlii.CryptoMagic.Tests\EtAlii.CryptoMagic.Tests.csproj", "{1BACC328-F2E9-4A08-B92C-34BC2E60B8DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtAlii.CryptoMagic.Service", "EtAlii.CryptoMagic.Service\EtAlii.CryptoMagic.Service.csproj", "{AD1CA3CD-BA03-4546-8286-8869A2979C73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Globals", "_Globals", "{686A8901-2B96-4F1B-B3B6-8E53C611447F}"
+ProjectSection(SolutionItems) = preProject
+	.gitignore = .gitignore
+	Global.json = Global.json
+	README.md = README.md
+EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{839E8117-20BF-4E77-844E-441B5A7F159B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{839E8117-20BF-4E77-844E-441B5A7F159B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{839E8117-20BF-4E77-844E-441B5A7F159B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{839E8117-20BF-4E77-844E-441B5A7F159B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BACC328-F2E9-4A08-B92C-34BC2E60B8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BACC328-F2E9-4A08-B92C-34BC2E60B8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BACC328-F2E9-4A08-B92C-34BC2E60B8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BACC328-F2E9-4A08-B92C-34BC2E60B8DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD1CA3CD-BA03-4546-8286-8869A2979C73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1CA3CD-BA03-4546-8286-8869A2979C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD1CA3CD-BA03-4546-8286-8869A2979C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1CA3CD-BA03-4546-8286-8869A2979C73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

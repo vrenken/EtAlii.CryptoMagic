@@ -1,0 +1,29 @@
+﻿@page "/simple/list"
+
+@namespace EtAlii.CryptoMagic.Service
+
+@inherits ListBase<SimpleTransaction, SimpleTrading>
+
+<Heading Margin="DefaultLayout.Margin">
+    <Icon IconName="@("fa-chart-bar")"/> Simple tradings
+</Heading>
+
+<ListGroup Margin="DefaultLayout.Margin">
+    <Repeater Items="@Tradings">
+        <ListGroupItem Clicked="@(() => OnTradingSelected(context.Context.Trading.Id))">
+            @context.Context.Trading.Name
+        </ListGroupItem>
+    </Repeater>
+</ListGroup>
+@if (ApplicationContext.IsOperational)
+{
+    <ListGroup Margin="DefaultLayout.Margin">
+        <ListGroupItem Clicked="@OnEditSelected">
+            <Icon Name="@("fa-plus")"/> Add
+        </ListGroupItem>
+    </ListGroup>
+}
+else
+{
+    <Paragraph Margin="DefaultLayout.Margin">Application is not yet configured correctly</Paragraph>
+}
