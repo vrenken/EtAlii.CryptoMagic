@@ -2,7 +2,7 @@
 COPY EtAlii.CryptoMagic/bin/Release/net5.0/publish/ cryptomagic/
 WORKDIR /cryptomagic
 
-EXPOSE 5001
+EXPOSE 80
 VOLUME ["/cryptomagic/data"]
 ENV SERILOG_SERVER_URL=http://seq.avalon:5341
 
