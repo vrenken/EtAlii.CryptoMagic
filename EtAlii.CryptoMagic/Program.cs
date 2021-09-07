@@ -20,7 +20,7 @@ namespace EtAlii.CryptoMagic
                 .ConfigureWebHostDefaults(webHostBuilder =>
                 {
                     webHostBuilder
-                        .UseSerilog(Logging.Configure, true)
+                        .UseSerilog((context, loggerConfiguration) => Logging.Configure(context.Configuration, loggerConfiguration), true)
                         .UseStartup<Startup>();
                 });
     }

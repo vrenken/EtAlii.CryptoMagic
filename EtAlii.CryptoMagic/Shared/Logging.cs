@@ -2,18 +2,18 @@ namespace EtAlii.CryptoMagic
 {
     using System;
     using System.Reflection;
-    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Serilog;
 
     public static class Logging
     {
-       public static void Configure(WebHostBuilderContext context, LoggerConfiguration loggerConfiguration)
+       public static void Configure(IConfiguration configuration, LoggerConfiguration loggerConfiguration)
         {
             var executingAssembly = Assembly.GetCallingAssembly();
             var executingAssemblyName = executingAssembly.GetName();
 
             loggerConfiguration.ReadFrom
-                .Configuration(context.Configuration)
+                .Configuration(configuration)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadName()
                 .Enrich.WithThreadId()

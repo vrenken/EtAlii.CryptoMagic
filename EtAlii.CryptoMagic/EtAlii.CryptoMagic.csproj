@@ -62,9 +62,6 @@
     <Compile Update="Trading\Circular\CircularView.cs">
       <DependentUpon>CircularView.razor</DependentUpon>
     </Compile>
-    <Compile Update="Configuration\Settings.cs">
-      <DependentUpon>Settings.razor</DependentUpon>
-    </Compile>
     <Compile Update="Trading\Simple\SimpleView.cs">
       <DependentUpon>SimpleView.razor</DependentUpon>
     </Compile>
