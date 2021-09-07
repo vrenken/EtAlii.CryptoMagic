@@ -1,5 +1,6 @@
 namespace EtAlii.CryptoMagic
 {
+    using System;
     using EtAlii.CryptoMagic.Surfing;
     using Microsoft.EntityFrameworkCore;
     using Serilog;
@@ -25,7 +26,10 @@ namespace EtAlii.CryptoMagic
         // For Mac or Linux, change this to `/tmp/blogging.db` or any other absolute path.
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(@"Data Source=database.db");
+            var databaseFilename = Environment.OSVersion.Platform == PlatformID.Win32NT
+                ? "database.db"
+                : "/cryptomagic/data/database.db";
+            optionsBuilder.UseSqlite($@"Data Source={databaseFilename}");
             
             var loggerFactory = new SerilogLoggerFactory(_logger);
             optionsBuilder.UseLoggerFactory(loggerFactory);

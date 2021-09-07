@@ -2,15 +2,18 @@ namespace EtAlii.CryptoMagic
 {
     using System;
     using System.Reflection;
+    using Microsoft.AspNetCore.Hosting;
     using Serilog;
 
     public static class Logging
     {
-       public static void Configure(LoggerConfiguration loggerConfiguration)
+       public static void Configure(WebHostBuilderContext context, LoggerConfiguration loggerConfiguration)
         {
-            var executingAssemblyName = Assembly.GetCallingAssembly().GetName();
+            var executingAssembly = Assembly.GetCallingAssembly();
+            var executingAssemblyName = executingAssembly.GetName();
 
-            loggerConfiguration.MinimumLevel.Verbose()
+            loggerConfiguration.ReadFrom
+                .Configuration(context.Configuration)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadName()
                 .Enrich.WithThreadId()
@@ -25,13 +28,7 @@ namespace EtAlii.CryptoMagic
                 .Enrich.WithProperty("RootAssemblyName", executingAssemblyName.Name)
                 .Enrich.WithProperty("RootAssemblyVersion", executingAssemblyName.Version)
                 .Enrich.WithMemoryUsage()
-                .Enrich.WithProperty("UniqueProcessId", Guid.NewGuid()) // An int process ID is not enough
-                .WriteTo.Async(writeTo =>
-                {
-                    writeTo.Seq("http://localhost:5341");
-                    //writeTo.Seq("http://vrenken.duckdns.org:5341");
-                    //writeTo.Seq("http://192.168.1.130:5341");
-                });
+                .Enrich.WithProperty("UniqueProcessId", Guid.NewGuid()); // An int process ID is not enough
         }
     }
 }

@@ -13,10 +13,14 @@ namespace EtAlii.CryptoMagic
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((_, builder) =>
+                {
+                    builder.ExpandEnvironmentVariablesInJson();
+                })
                 .ConfigureWebHostDefaults(webHostBuilder =>
                 {
                     webHostBuilder
-                        .UseSerilog((_, loggerConfiguration) => Logging.Configure(loggerConfiguration), true)
+                        .UseSerilog(Logging.Configure, true)
                         .UseStartup<Startup>();
                 });
     }
