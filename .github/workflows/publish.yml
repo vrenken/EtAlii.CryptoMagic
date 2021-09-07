@@ -9,13 +9,13 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true   # Stop wasting time caching packages
   DOTNET_CLI_TELEMETRY_OPTOUT: true         # Disable sending usage data to Microsoft
-  IMAGE_NAME: vrenken/etalii-cryptomagic
+  IMAGE_NAME: vrenken/cryptomagic
 
 jobs:
   publish:
 
-    #runs-on: ubuntu-latest
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    #runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -51,13 +51,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker build
+        if: github.ref != 'refs/heads/main'
         run: |
-          docker push ${{ env.IMAGE_NAME }}:latest
-          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.VersionMajor }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.VersionMajor }}
           docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.VersionMajor }}
-          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.MajorMinorVersion }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.MajorMinorVersion }}
           docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.MajorMinorVersion }}
-          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}
           docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}
 
       - name: Docker build for main branch
