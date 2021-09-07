@@ -63,6 +63,6 @@ jobs:
       - name: Docker build for main branch
         if: github.ref == 'refs/heads/main'
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SemVer2 }}
-          docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SemVer2 }}
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}-preview
+          docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}-preview
           
