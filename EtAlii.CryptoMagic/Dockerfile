@@ -1,6 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:5.0
 COPY EtAlii.CryptoMagic/bin/Release/net5.0/publish/ cryptomagic/
-WORKDIR /CryptoMagic
+WORKDIR /cryptomagic
 
 EXPOSE 5001
 VOLUME ["/cryptomagic/data"]
