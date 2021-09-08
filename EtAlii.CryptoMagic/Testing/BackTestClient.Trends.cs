@@ -11,7 +11,8 @@
     public partial class BackTestClient 
     {
         public Task<(bool success, Trend[] trends, string error)> TryGetTrends(string[] symbols, string referenceSymbol, int period, CancellationToken cancellationToken) => throw new NotSupportedException();
-        
+        public Task<decimal> GetBalance(string symbol) => throw new NotSupportedException();
+
         public Task<(bool success, decimal trend, string error)> TryGetTrend(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken)
         {
             var historyKvp = _history.Single(h => h.Key == symbol);

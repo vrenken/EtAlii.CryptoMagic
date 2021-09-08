@@ -33,5 +33,6 @@ namespace EtAlii.CryptoMagic
         Task<(bool success, Symbol symbolsBought, string error)> TryBuySymbol(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow);
 
         SymbolDefinition[] GetSymbols(string referenceSymbol);
+        Task<decimal> GetBalance(string symbol);
     }
 }

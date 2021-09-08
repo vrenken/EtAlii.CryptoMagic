@@ -69,6 +69,12 @@
                 .ToArray();
         }
 
+        public async Task<decimal> GetBalance(string symbol)
+        {
+            var response = await _client.General.GetUserCoinsAsync();
+            return response.Data.SingleOrDefault(c => c.Coin == symbol)?.Free ?? 0;
+        }
+
         public void Stop()
         {
             _logger.Information("Stopping client");

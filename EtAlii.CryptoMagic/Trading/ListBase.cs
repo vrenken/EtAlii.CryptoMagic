@@ -45,7 +45,10 @@
         {
             ReloadRunners();
             ((INotifyCollectionChanged)AlgorithmManager.Runners).CollectionChanged += OnRunnersChanged;
+            NavigationManager.LocationChanged += (_, _) => OnLocationChanged();
         }
+
+        protected virtual void OnLocationChanged() { }
 
         private void OnRunnersChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

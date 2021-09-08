@@ -18,6 +18,7 @@
         private int _totalOpen;
         private decimal _totalCurrentProfit;
         private decimal _totalGuaranteedProfit;
+        private decimal _referenceSymbolBalance;
 
         protected override void OnRunnerChanged(IAlgorithmRunner<OneOffTransaction, OneOffTrading> runner)
         {
@@ -36,9 +37,31 @@
                 _totalGuaranteedProfit = oneOffTradings
                     .Where(t => t.IsCancelled || t.IsSuccess)
                     .Sum(t => t.FinalQuoteQuantity - t.PurchaseQuoteQuantity);
-                
                 StateHasChanged();
             });
+        }
+
+        private void UpdateReferenceSymbolBalance()
+        {
+            InvokeAsync(async () =>
+            {
+                _referenceSymbolBalance = await ApplicationContext.LiveClient
+                    .GetBalance(ApplicationContext.ReferenceSymbol)
+                    .ConfigureAwait(false);
+                StateHasChanged();
+            });
+        }
+
+        protected override void OnLocationChanged()
+        {
+            base.OnLocationChanged();
+            UpdateReferenceSymbolBalance();
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            UpdateReferenceSymbolBalance();
         }
 
         protected override bool Filter(IAlgorithmRunner<OneOffTransaction, OneOffTrading> runner)

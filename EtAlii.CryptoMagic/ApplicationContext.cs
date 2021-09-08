@@ -10,6 +10,8 @@ namespace EtAlii.CryptoMagic
         public SymbolDefinition[] Symbols { get; private set; }
         public bool IsOperational { get; private set; }
 
+        public IClient LiveClient { get; set; }
+
         public void Initialize()
         {
             using var data = new DataContext();
@@ -20,11 +22,13 @@ namespace EtAlii.CryptoMagic
 
             if (!string.IsNullOrWhiteSpace(binanceApiKey) && !string.IsNullOrWhiteSpace(binanceSecretKey))
             {
-                var liveClient = new Client(new ActionValidator());
-                var task = liveClient.Start(binanceApiKey, binanceSecretKey);
+                LiveClient?.Stop();
+                
+                LiveClient = new Client(new ActionValidator());
+                var task = LiveClient.Start(binanceApiKey, binanceSecretKey);
                 task.Wait();
                 
-                Symbols = liveClient
+                Symbols = LiveClient
                     .GetSymbols(ReferenceSymbol)
                     .ToArray();
                 IsOperational = true;
@@ -35,5 +39,6 @@ namespace EtAlii.CryptoMagic
                 IsOperational = false;
             }
         }
+
     }
 }
