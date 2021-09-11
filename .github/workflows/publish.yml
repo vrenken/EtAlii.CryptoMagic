@@ -53,11 +53,11 @@ jobs:
       - name: Docker build
         if: github.ref != 'refs/heads/main'
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.VersionMajor }}
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.VersionMajor }}
           docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.VersionMajor }}
-          docker tag ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.MajorMinorVersion }}
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.MajorMinorVersion }}
           docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.MajorMinorVersion }}
-          docker tag ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}
           docker push ${{ env.IMAGE_NAME }}:${{ steps.nbgv.outputs.SimpleVersion }}
 
       - name: Docker build for main branch
