@@ -8,6 +8,7 @@ This project is in no means liable for any trade losses you might experience.
 
 ## Project status
 
+[![Dockerhub Image](https://img.shields.io/docker/v/vrenken/cryptomagic)](https://hub.docker.com/r/vrenken/cryptomagic/tags)
 [![Build](https://github.com/vrenken/EtAlii.CryptoMagic/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/vrenken/EtAlii.CryptoMagic/actions/workflows/build.yml)
 [![Analysis](https://github.com/vrenken/EtAlii.CryptoMagic/actions/workflows/analysis.yml/badge.svg)](https://github.com/vrenken/EtAlii.CryptoMagic/actions/workflows/analysis.yml)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![GitHub](https://img.shields.io/github/license/vrenken/EtAlii.CryptoMagic)
