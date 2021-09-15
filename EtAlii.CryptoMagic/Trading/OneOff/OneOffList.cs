@@ -20,6 +20,11 @@
         private decimal _totalGuaranteedProfit;
         private decimal _referenceSymbolBalance;
 
+        public OneOffList()
+        {
+            Tradings.SortingSelector = t => t.Context.Trading.FinalQuoteQuantity - t.Context.Trading.PurchaseQuoteQuantity > 0;
+            Tradings.Descending = false;
+        }
         protected override void OnRunnerChanged(IAlgorithmRunner<OneOffTransaction, OneOffTrading> runner)
         {
             base.OnRunnerChanged(runner);

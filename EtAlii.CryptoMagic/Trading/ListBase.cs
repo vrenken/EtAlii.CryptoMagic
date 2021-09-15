@@ -16,7 +16,7 @@
 
         private readonly ObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> _tradings = new();
 
-        protected readonly ObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> Tradings = new();
+        protected readonly SortableObservableCollection<IAlgorithmRunner<TTransaction, TTrading>> Tradings = new();
 
         protected ListBase()
         {
@@ -116,6 +116,7 @@
         protected virtual void OnRunnerChanged(IAlgorithmRunner<TTransaction, TTrading> runner)
         {
             Tradings.FilterWhenNeeded(runner, Filter);
+            Tradings.Sort();
         }
     }
 }
