@@ -7,7 +7,16 @@ namespace EtAlii.CryptoMagic
 
     public static class Logging
     {
-       public static void Configure(IConfiguration configuration, LoggerConfiguration loggerConfiguration)
+        public static void ConfigureGlobalLogging(IConfiguration configuration)
+        {
+            var logger = new LoggerConfiguration();
+            Configure(configuration, logger);
+            Log.Logger = logger.CreateLogger();
+        }
+
+        public static void ConfigureWebHostLogging(IConfiguration configuration, LoggerConfiguration loggerConfiguration) => Configure(configuration, loggerConfiguration);
+
+        private static void Configure(IConfiguration configuration, LoggerConfiguration loggerConfiguration)
         {
             var executingAssembly = Assembly.GetCallingAssembly();
             var executingAssemblyName = executingAssembly.GetName();

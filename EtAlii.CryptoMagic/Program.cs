@@ -8,6 +8,7 @@ namespace EtAlii.CryptoMagic
     {
         public static void Main(string[] args)
         {
+            
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -16,11 +17,13 @@ namespace EtAlii.CryptoMagic
                 .ConfigureAppConfiguration((_, builder) =>
                 {
                     builder.ExpandEnvironmentVariablesInJson();
+                    var configuration = builder.Build();
+                    Logging.ConfigureGlobalLogging(configuration);
                 })
                 .ConfigureWebHostDefaults(webHostBuilder =>
                 {
                     webHostBuilder
-                        .UseSerilog((context, loggerConfiguration) => Logging.Configure(context.Configuration, loggerConfiguration), true)
+                        .UseSerilog((context, loggerConfiguration) => Logging.ConfigureWebHostLogging(context.Configuration, loggerConfiguration), true)
                         .UseStartup<Startup>();
                 });
     }
