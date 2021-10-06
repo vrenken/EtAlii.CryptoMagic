@@ -4,15 +4,18 @@ namespace EtAlii.CryptoMagic
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using Serilog;
 
-    public partial class OneOffAlgorithmRunner 
+    public partial class OneOffAlgorithmRunner
     {
+        private readonly ILogger _log = Serilog.Log.ForContext<OneOffAlgorithmRunner>();
         private async Task RunStep()
         {
             bool success;
             decimal price;
+            string error;
 
-            (success, price, _) = await _client.TryGetPrice(_trading.Symbol, _trading.ReferenceSymbol, CancellationToken.None);
+            (success, price, error) = await _client.TryGetPrice(_trading.Symbol, _trading.ReferenceSymbol, CancellationToken.None);
 
             if (success)
             {
@@ -26,6 +29,8 @@ namespace EtAlii.CryptoMagic
 
                 if (_trading.CurrentPercentageIncrease > _trading.TargetPercentageIncrease)
                 {
+                    _log.Information("Trade {TradeName} is worth it: {ActualValue} over {TargetValue}", _trading.Name, _trading.CurrentPercentageIncrease, _trading.TargetPercentageIncrease);                    
+
                     var sellAction = new SellAction
                     {
                         Symbol = _trading.Symbol,
@@ -34,19 +39,32 @@ namespace EtAlii.CryptoMagic
                         QuotedQuantity = 0m, // not used.
                     };
                     Symbol symbol;
-                    (success, symbol, _) = await _client.TrySell(sellAction, _trading.ReferenceSymbol, CancellationToken.None, () => DateTime.Now);
+                    (success, symbol, error) = await _client.TrySell(sellAction, _trading.ReferenceSymbol, CancellationToken.None, () => DateTime.Now);
                     if (success)
                     {
                         _trading.FinalQuoteQuantity = symbol.QuoteQuantity;
                         _trading.End = DateTime.Now;
                         _trading.IsSuccess = true;
                     }
+                    else
+                    {
+                        _log.Error("Unable to sell for trade {TradeName}: {ErrorMessage}", _trading.Name, error);                    
+                    }
                 }
+                else
+                {
+                    _log.Information("Trade {TradeName} still not worth it: {ActualValue} instead of {TargetValue}", _trading.Name, _trading.CurrentPercentageIncrease, _trading.TargetPercentageIncrease);                    
+                }
+
                 await using var data = new DataContext();
 
                 data.Entry(_trading).State = EntityState.Modified;
 
                 await data.SaveChangesAsync();
+            }
+            else
+            {
+                _log.Error("For trade {TradeName} the price cannot be retrieved: {ErrorMessage}", _trading.Name, error);                    
             }
 
             Changed?.Invoke(this);
