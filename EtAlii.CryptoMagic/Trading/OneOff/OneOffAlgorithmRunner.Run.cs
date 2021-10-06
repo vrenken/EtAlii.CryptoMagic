@@ -35,7 +35,7 @@ namespace EtAlii.CryptoMagic
                     {
                         Symbol = _trading.Symbol,
                         Price = _trading.CurrentPrice,
-                        Quantity = _trading.PurchaseSymbolQuantity,
+                        Quantity = _trading.PurchaseSymbolQuantity * 0.9999m,
                         QuotedQuantity = 0m, // not used.
                     };
                     Symbol symbol;
