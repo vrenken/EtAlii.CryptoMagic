@@ -22,15 +22,15 @@
     <PackageReference Include="Trady.Analysis" Version="3.2.8" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
 
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Charts" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Components" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Animate" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.3" />
-    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.3" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Charts" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Charts.Streaming" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Components" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Animate" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.9" />
