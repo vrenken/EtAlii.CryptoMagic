@@ -45,6 +45,7 @@ namespace EtAlii.CryptoMagic
                         _trading.FinalQuoteQuantity = symbol.QuoteQuantity;
                         _trading.End = DateTime.Now;
                         _trading.IsSuccess = true;
+                        _log.Information("Trade {TradeName} completed", _trading.Name);                    
                     }
                     else
                     {
