@@ -6,7 +6,7 @@
   <!-- We want all projects to honor the GitVersioning as specified using the NBGV tool-->
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Condition="!Exists('packages.config')" Label="Nerdbank.GitVersioning (.targets)" >
-      <Version>3.4.231</Version>
+      <Version>3.4.244</Version>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
