@@ -6,10 +6,10 @@
 
     public partial class OneOffEdit 
     {
-        private decimal? PurchaseQuoteQuantity
+        private decimal PurchaseQuoteQuantity
         {
             get => Model.PurchaseQuoteQuantity;
-            set => Model.PurchaseQuoteQuantity = value ?? 50;
+            set => Model.PurchaseQuoteQuantity = value;
         }
 
         private decimal TargetPercentageIncrease
