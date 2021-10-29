@@ -177,7 +177,6 @@
     <Folder Include="Trading\Experimental\Algorithm" />
     <Folder Include="Trading\OneOff\Algorithm" />
     <Folder Include="Trading\Simple\Algorithm" />
-    <Folder Include="wwwroot\fonts" />
   </ItemGroup>
 
   <ItemGroup>
