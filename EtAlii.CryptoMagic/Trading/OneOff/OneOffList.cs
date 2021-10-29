@@ -47,7 +47,7 @@
             {
                 _referenceSymbolBalance = await ApplicationContext.LiveClient
                     .GetBalance(ApplicationContext.ReferenceSymbol)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
                 StateHasChanged();
             });
         }
@@ -98,7 +98,7 @@
             var change = trading.FinalQuoteQuantity - trading.PurchaseQuoteQuantity;
             return change <= 0
                 ? $"(loss= ~{Math.Abs(change):0.00} {trading.ReferenceSymbol})"
-                : "";
+                : $"(profit= ~{Math.Abs(change):0.00} {trading.ReferenceSymbol})";
         }
 
         private string ToCancelConfirmationMessage(OneOffTrading trading)
