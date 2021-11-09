@@ -37,6 +37,23 @@
                 e.Status = ValidationStatus.Error;
             }
         }
+        
+        protected void IsLargerInclusive(ValidatorEventArgs e, decimal min)
+        {
+            if (e.Value is decimal d)
+            {
+                e.Status = min <= d ? ValidationStatus.Success : ValidationStatus.Error;
+            }
+            else if (e.Value is int i)
+            {
+                e.Status = min <= i ? ValidationStatus.Success : ValidationStatus.Error;
+            }
+            else
+            {
+                e.Status = ValidationStatus.Error;
+            }
+        }
+
 
         protected void HasQuantity(ValidatorEventArgs e)
         {
