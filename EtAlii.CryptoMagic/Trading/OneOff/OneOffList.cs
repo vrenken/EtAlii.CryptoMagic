@@ -15,7 +15,6 @@
 
         private int _totalSuccesses;
         private int _totalFailure;
-        private int _totalOpen;
         private decimal _totalCurrentProfit;
         private decimal _totalGuaranteedProfit;
         private decimal _referenceSymbolBalance;
@@ -30,7 +29,6 @@
                 var oneOffTradings = await data.OneOffTradings.ToArrayAsync();
                 _totalSuccesses = oneOffTradings.Count(t => t.IsSuccess);
                 _totalFailure = oneOffTradings.Count(t => t.IsCancelled);
-                _totalOpen = oneOffTradings.Count(t => !t.IsCancelled && !t.IsSuccess);
 
                 _totalCurrentProfit = oneOffTradings
                     .Sum(t => t.FinalQuoteQuantity - t.PurchaseQuoteQuantity);

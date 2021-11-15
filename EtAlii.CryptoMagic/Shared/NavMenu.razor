@@ -20,15 +20,17 @@
         </BarBrand>
         <BarMenu>
             <BarStart>
-                <BarItem>
-                    <BarLink To="">
-                        <BarIcon IconName="IconName.Dashboard" />
-                        Dashboard
-                    </BarLink>
-                </BarItem>
+                @* <BarItem> *@
+                @*     <BarLink To="/dashboard"> *@
+                @*         <BarIcon IconName="IconName.Dashboard" /> *@
+                @*         Dashboard *@
+                @*     </BarLink> *@
+                @* </BarItem> *@
+                
                 
                 <BarItem>
-                    <BarLink To="/one-off/list">
+                    <BarLink To="/">
+                    @* <BarLink To="/one-off/list"> *@
                         <BarIcon IconName="@("fa-chart-line")"/>
                         One-off
                     </BarLink>
@@ -36,37 +38,39 @@
                                 
                 <BarItem>
                     <BarLink To="/one-off/progress">
+                        <BarIcon IconName="@("fa-tasks")"/>
                         Progress
                     </BarLink>
                 </BarItem>
                 
-                <BarItem>
-                    <BarLink To="/simple/list">
-                        <BarIcon IconName="@("fa-chart-bar")" />
-                        Simple
-                    </BarLink>
-                </BarItem>
-                
-                <BarItem>                    
-                    <BarLink To="/circular/list">
-                        <BarIcon IconName="@("fa-infinity")"/>
-                        Circular
-                    </BarLink>
-                </BarItem>
-                
-                <BarItem>                    
-                    <BarLink To="/edge/list">
-                        <BarIcon IconName="@("fa-dice")"/>
-                        Edge
-                    </BarLink>
-                </BarItem>
-                
-                <BarItem>                    
-                    <BarLink To="/experimental/list">
-                        <BarIcon IconName="@("fa-flask")" />
-                        Experimental 
-                    </BarLink>
-                </BarItem>
+                @* *@
+                @* <BarItem> *@
+                @*     <BarLink To="/simple/list"> *@
+                @*         <BarIcon IconName="@("fa-chart-bar")" /> *@
+                @*         Simple *@
+                @*     </BarLink> *@
+                @* </BarItem> *@
+                @* *@
+                @* <BarItem>                     *@
+                @*     <BarLink To="/circular/list"> *@
+                @*         <BarIcon IconName="@("fa-infinity")"/> *@
+                @*         Circular *@
+                @*     </BarLink> *@
+                @* </BarItem> *@
+                @* *@
+                @* <BarItem>                     *@
+                @*     <BarLink To="/edge/list"> *@
+                @*         <BarIcon IconName="@("fa-dice")"/> *@
+                @*         Edge *@
+                @*     </BarLink> *@
+                @* </BarItem> *@
+                @* *@
+                @* <BarItem>                     *@
+                @*     <BarLink To="/experimental/list"> *@
+                @*         <BarIcon IconName="@("fa-flask")" /> *@
+                @*         Experimental  *@
+                @*     </BarLink> *@
+                @* </BarItem> *@
 
             </BarStart>
             <BarEnd>
