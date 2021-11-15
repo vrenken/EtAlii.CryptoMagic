@@ -164,6 +164,9 @@
     <Compile Update="Trading\OneOff\OneOffEdit.CanStart.cs">
       <DependentUpon>OneOffEdit.razor</DependentUpon>
     </Compile>
+    <Compile Update="Trading\OneOff\OneOffProgressDashboard.cs">
+      <DependentUpon>OneOffProgressDashboard.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
