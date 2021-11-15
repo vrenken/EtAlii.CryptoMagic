@@ -35,10 +35,6 @@
                                     <TableRowCell>@($"{_referenceSymbolBalance:0.00} {ApplicationContext.ReferenceSymbol}")</TableRowCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableRowCell>Active: </TableRowCell>
-                                    <TableRowCell>@(_totalOpen) trades</TableRowCell>
-                                </TableRow>
-                                <TableRow>
                                     <TableRowCell>Success: </TableRowCell>
                                     <TableRowCell>@(_totalSuccesses) trades</TableRowCell>
                                 </TableRow>
@@ -52,7 +48,7 @@
                     <Button 
                         Height="@ButtonHeight"
                         Width="@ButtonWidth"
-                        Color="Color.Primary" Clicked="@(OnEditSelected)"><Icon Name="@("fa-plus")"/> Add</Button>
+                        Color="Color.Primary" Clicked="@(OnEditSelected)"><Icon Name="@("fa-plus")"/> Add<br/>&nbsp;</Button>
                 </CardBody>
             </Card>
         </Column>
@@ -87,17 +83,13 @@
                                         <TableRowCell>Duration: </TableRowCell>
                                         <TableRowCell>@(ToTime(DateTime.Now - context.Context.Trading.Start))</TableRowCell>
                                     </TableRow>
-                                    <TableRow>
-                                        <TableRowCell>&nbsp;</TableRowCell>
-                                        <TableRowCell>&nbsp;</TableRowCell>
-                                    </TableRow>
                                 </TableBody>
                             </Table>
                         </CardText>
                         <Button 
                             Height="@ButtonHeight"
                             Width="@ButtonWidth"
-                            Color="@(ToButtonColor(context.Context.Trading))" Clicked="@(() => ShowCancelDialog(context))"><Icon Name="@("fa-trash-alt")"/> Cancel @(ToLossMessage(context.Context.Trading))</Button>
+                            Color="@(ToButtonColor(context.Context.Trading))" Clicked="@(() => ShowCancelDialog(context))"><Icon Name="@("fa-trash-alt")"/> Cancel<br/>@(ToLossMessage(context.Context.Trading))</Button>
                     </CardBody>
                 </Card>
             </Column>
