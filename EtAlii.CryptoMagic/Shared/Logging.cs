@@ -1,12 +1,17 @@
 namespace EtAlii.CryptoMagic
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
     using Microsoft.Extensions.Configuration;
     using Serilog;
 
     public static class Logging
     {
+        [SuppressMessage(
+            category: "Sonar Code Smell",
+            checkId: "S4792:Configuring loggers is security-sensitive",
+            Justification = "Not mission critical - we need logging.")]
         public static void ConfigureGlobalLogging(IConfiguration configuration)
         {
             var logger = new LoggerConfiguration();
