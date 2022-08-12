@@ -20,11 +20,10 @@ namespace EtAlii.CryptoMagic
                     var configuration = builder.Build();
                     Logging.ConfigureGlobalLogging(configuration);
                 })
+                .UseSerilog((context, loggerConfiguration) => Logging.ConfigureWebHostLogging(context.Configuration, loggerConfiguration), true)
                 .ConfigureWebHostDefaults(webHostBuilder =>
                 {
-                    webHostBuilder
-                        .UseSerilog((context, loggerConfiguration) => Logging.ConfigureWebHostLogging(context.Configuration, loggerConfiguration), true)
-                        .UseStartup<Startup>();
+                    webHostBuilder.UseStartup<Startup>();
                 });
     }
 }

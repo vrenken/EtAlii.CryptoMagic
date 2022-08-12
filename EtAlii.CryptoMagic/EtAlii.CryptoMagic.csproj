@@ -11,13 +11,13 @@
   <ItemGroup>
     <PackageReference Include="EtAlii.Generators.MicroMachine" Version="1.5.0-preview-0018" />
     <PackageReference Include="Binance.Net" Version="8.1.7" />
-    <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="stateless" Version="5.11.0" />
     <PackageReference Include="Trady.Analysis" Version="3.2.8" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
@@ -31,12 +31,15 @@
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.7" />
     <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.7" />
     <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.8" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Nerdbank.GitVersioning">
+      <Version>3.5.109</Version>
     </PackageReference>
   </ItemGroup>
 

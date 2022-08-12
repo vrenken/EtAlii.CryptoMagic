@@ -5,7 +5,7 @@ namespace EtAlii.CryptoMagic
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Net;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Binance.Net.Objects.Models.Spot;
@@ -50,7 +50,23 @@ namespace EtAlii.CryptoMagic
             _folder = folder;
         }
 
-        public Task Start(string apiKey, string secretKey)
+        private static async Task DownloadFileAsync(HttpClient httpClient, string uri, string outputPath)
+        {
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out _))
+            {
+                throw new InvalidOperationException("URI is invalid.");
+            }
+
+            if (!File.Exists(outputPath))
+            {
+                throw new FileNotFoundException("File not found.", nameof(outputPath));
+            }
+
+            byte[] fileBytes = await httpClient.GetByteArrayAsync(uri);
+            await File.WriteAllBytesAsync(outputPath, fileBytes);
+        }
+        
+        public async Task Start(string apiKey, string secretKey)
         {
             _output.WriteLine("Preparing back-testing...");
 
@@ -69,14 +85,14 @@ namespace EtAlii.CryptoMagic
                 {
                     var url = $"https://www.cryptodatadownload.com/cdd/{fileName}";
                     _output.WriteLine($"Downloading {url}");
-                    using var client = new WebClient();
-                    client.DownloadFile(url, fullFileName);
+                    using var client = new HttpClient();
+                    await DownloadFileAsync(client, url, fullFileName);
                 }
                 _output.WriteLine($"Reading from file {fileName}");
                 
                 _output.WriteLine($"Splitting in lines");
 
-                var lines = File.ReadAllLines(fullFileName);
+                var lines = await File.ReadAllLinesAsync(fullFileName);
                 
                 _output.WriteLine($"Converting to objects");
 
@@ -88,15 +104,11 @@ namespace EtAlii.CryptoMagic
             }
 
             var startTimes = _history.Select(h => h.Value
-                    .Select(e => e.To)
-                    .OrderBy(moment => moment)
-                    .First())
+                    .Select(e => e.To).MinBy(moment => moment))
                 .ToArray();
 
             var endTimes = _history.Select(h => h.Value
-                    .Select(e => e.To)
-                    .OrderByDescending(moment => moment)
-                    .First())
+                    .Select(e => e.To).MaxBy(moment => moment))
                 .ToArray();
 
             _output.WriteLine("History found:");
@@ -110,7 +122,6 @@ namespace EtAlii.CryptoMagic
             Moment = startTimes[0];
             
             _output.WriteLine("Ready for back-testing");
-            return Task.CompletedTask;
         }
 
         public SymbolDefinition[] GetSymbols(string referenceSymbol) => throw new NotSupportedException();
