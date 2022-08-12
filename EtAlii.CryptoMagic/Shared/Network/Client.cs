@@ -4,10 +4,10 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Binance.Net;
+    using Binance.Net.Clients;
     using Binance.Net.Enums;
     using Binance.Net.Objects;
-    using Binance.Net.Objects.Spot.MarketData;
+    using Binance.Net.Objects.Models.Spot;
     using CryptoExchange.Net.Authentication;
     using CryptoExchange.Net.Objects;
     using Serilog;
@@ -36,9 +36,12 @@
             {
                 var options = new BinanceClientOptions
                 {
-                    RateLimitingBehaviour = RateLimitingBehaviour.Wait,
+                    SpotApiOptions =
+                    {
+                        RateLimitingBehaviour = RateLimitingBehaviour.Wait,
+                        TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
+                    },
                     ApiCredentials = new ApiCredentials(apiKey, secretKey),
-                    TradeRulesBehaviour = TradeRulesBehaviour.AutoComply,
                 };
                 _client?.Dispose();
                 
@@ -47,7 +50,7 @@
                 _clientApiKey = apiKey;
                 _clientSecretKey = secretKey;
                 
-                var startResult = await _client.Spot.UserStream.StartUserStreamAsync();
+                var startResult = await _client.SpotApi.Account.StartUserStreamAsync();
 
                 if (!startResult.Success)
                 {
@@ -61,7 +64,7 @@
 
         public SymbolDefinition[] GetSymbols(string referenceSymbol)
         {
-            var response = _client.Spot.System.GetExchangeInfoAsync();
+            var response = _client.SpotApi.ExchangeData.GetExchangeInfoAsync();
             response.Wait();
             return response.Result.Data.Symbols
                 .Where(s => s.QuoteAsset == referenceSymbol)
@@ -71,8 +74,9 @@
 
         public async Task<decimal> GetBalance(string symbol)
         {
-            var response = await _client.General.GetUserCoinsAsync();
-            return response.Data.SingleOrDefault(c => c.Coin == symbol)?.Free ?? 0;
+            var response = await _client.SpotApi.Account.GetUserAssetsAsync();
+            return response.Data.SingleOrDefault(c => c.Asset == symbol)?.Available ?? 0;
+            //return response.Data.SingleOrDefault(c => c.Coin == symbol)?.Free ?? 0;            
         }
 
         public void Stop()
@@ -84,7 +88,7 @@
         public async Task<(bool success, decimal price, string error)> TryGetPrice(string symbol, string referenceSymbol, CancellationToken cancellationToken)
         {
             var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
-            var result = await _client.Spot.Market.GetPriceAsync(symbolComparedToReference, cancellationToken);
+            var result = await _client.SpotApi.ExchangeData.GetPriceAsync(symbolComparedToReference, cancellationToken);
             if (result.Error != null)
             {
                 return (false, decimal.Zero, $"Failure fetching price for {symbol}: {result.Error}");
@@ -96,7 +100,7 @@
         public async Task<(bool success, decimal makerFee, decimal takerFee, string error)> TryGetTradeFees(string symbol, string referenceSymbol, CancellationToken cancellationToken)
         {
             var coinComparedToReference = $"{symbol}{referenceSymbol}"; 
-            var result = await _client.Spot.Market.GetTradeFeeAsync(coinComparedToReference, null, cancellationToken);
+            var result = await _client.SpotApi.ExchangeData.GetTradeFeeAsync(coinComparedToReference, null, cancellationToken);
             if (result.Error != null)
             {
                 return (false, 0m, 0m, $"Failure fetching trade fees for {symbol}: {result.Error}");
@@ -108,7 +112,7 @@
         
         public async Task<(bool success, BinanceExchangeInfo exchangeInfo, string error)> TryGetExchangeInfo(CancellationToken cancellationToken)
         {
-            var exchangeResult = await _client.Spot.System.GetExchangeInfoAsync(cancellationToken);
+            var exchangeResult = await _client.SpotApi.ExchangeData.GetExchangeInfoAsync(cancellationToken);
             if (!exchangeResult.Success)
             {
                 return (false, null, $"Failed to fetch exchange info: {exchangeResult.Error}");
@@ -124,19 +128,21 @@
 
         public async Task<(bool success, string error)> TryHasSufficientQuota(string symbol, decimal minimumValue)
         {
-            var result = await _client.General.GetUserCoinsAsync();
+            var result = await _client.SpotApi.Account.GetUserAssetsAsync();
             if (!result.Success)
             {
                 return (false, $"Failure checking for quota of {symbol}: {result.Error}");
             }
 
-            var coin = result.Data.SingleOrDefault(c => c.Coin == symbol);
+            //var coin = result.Data.SingleOrDefault(c => c.Coin == symbol);
+            var coin = result.Data.SingleOrDefault(c => c.Asset == symbol);
             if (coin == null)
             {
                 return (false, $"Failure checking for quota of {symbol}: Coin not found");
             }
 
-            return (coin.Free > minimumValue, null);
+            return (coin.Available > minimumValue, null);
+            // return (coin.Free > minimumValue, null);            
         }
     }
 }

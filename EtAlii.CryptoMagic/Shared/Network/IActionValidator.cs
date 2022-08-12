@@ -2,8 +2,8 @@ namespace EtAlii.CryptoMagic
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Binance.Net;
-    using Binance.Net.Objects.Spot.MarketData;
+    using Binance.Net.Clients;
+    using Binance.Net.Objects.Models.Spot;
 
     public interface IActionValidator
     {

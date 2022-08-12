@@ -20,9 +20,8 @@
             var history = historyKvp.Value.SingleOrDefault(entry => entry.From < Moment && Moment <= entry.To);
             if (history == null)
             {
-                var error = "No history";
-                _log.Error(error);
-                return Task.FromResult((false, 0m, error));
+                _log.Error("No history");
+                return Task.FromResult((false, 0m, "No history"));
             }
 
             var index = Array.IndexOf(historyKvp.Value, history);

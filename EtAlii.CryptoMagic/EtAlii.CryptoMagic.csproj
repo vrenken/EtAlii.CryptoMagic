@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="EtAlii.Generators.MicroMachine" Version="1.5.0-preview-0018" />
-    <PackageReference Include="Binance.Net" Version="7.2.5" />
+    <PackageReference Include="Binance.Net" Version="8.1.7" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />

@@ -3,8 +3,8 @@ namespace EtAlii.CryptoMagic
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Binance.Net;
-    using Binance.Net.Objects.Spot.MarketData;
+    using Binance.Net.Clients;
+    using Binance.Net.Objects.Models.Spot;
 
     public class ActionValidator : IActionValidator
     {
@@ -13,7 +13,7 @@ namespace EtAlii.CryptoMagic
         {
             var symbol = exchangeInfo.Symbols.Single(s => s.BaseAsset == action.Symbol && s.QuoteAsset == referenceCoin);
 
-            var priceResult = await client.Spot.Market.GetPriceAsync(symbol.Name, cancellationToken);
+            var priceResult = await client.SpotApi.ExchangeData.GetPriceAsync(symbol.Name, cancellationToken);
             var price = priceResult.Data.Price;
             if (symbol.PriceFilter is var priceFilter)
             {

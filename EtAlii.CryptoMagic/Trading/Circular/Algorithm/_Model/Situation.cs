@@ -1,6 +1,6 @@
 ﻿namespace EtAlii.CryptoMagic
 {
-    using Binance.Net.Objects.Spot.MarketData;
+    using Binance.Net.Objects.Models.Spot;
 
     public record Situation
     {

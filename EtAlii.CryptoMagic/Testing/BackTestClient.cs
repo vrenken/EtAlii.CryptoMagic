@@ -8,7 +8,7 @@ namespace EtAlii.CryptoMagic
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using Binance.Net.Objects.Spot.MarketData;
+    using Binance.Net.Objects.Models.Spot;
     using Serilog;
 
     public partial class BackTestClient : IClient
@@ -154,9 +154,8 @@ namespace EtAlii.CryptoMagic
 
             if (history == null)
             {
-                var error = "No history";
-                _log.Error(error);
-                return Task.FromResult((false, 0m, error));
+                _log.Error("No history");
+                return Task.FromResult((false, 0m, "No history"));
             }
             
             var price = (history.Close + history.Open) / 2m;

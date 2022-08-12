@@ -3,7 +3,7 @@ namespace EtAlii.CryptoMagic
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Binance.Net.Objects.Spot.MarketData;
+    using Binance.Net.Objects.Models.Spot;
     using EtAlii.CryptoMagic.Surfing;
 
     public interface IClient

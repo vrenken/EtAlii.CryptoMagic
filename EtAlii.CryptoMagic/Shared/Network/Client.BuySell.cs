@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
     using Binance.Net;
     using Binance.Net.Enums;
-    using Binance.Net.Objects.Spot.SpotData;
+    using Binance.Net.Objects.Models.Spot;
     using Serilog;
 
     public partial class Client
@@ -31,14 +31,13 @@
                 (success, testPrice, error) = await TryGetPrice(sellAction.Symbol, referenceSymbol, cancellationToken);
                 if (!success)
                 {
-                    _log.Error(error);
                     return (false, null, error);
                 }
             }
 
             var orderResponseType = OrderResponseType.Full;
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
-            var orderType = OrderType.Market;
+            var orderType = SpotOrderType.Market;
 
             // if (!_validator.TryValidate(_client, sellAction, "Sell", referenceCoin, exchangeInfo, cancellationToken, out sellAction, out error))
             // {
@@ -54,15 +53,14 @@
 
             // ReSharper disable ExpressionIsAlwaysNull
             var sellOrder = PlaceTestOrders
-                ? await _client.Spot.Order.PlaceTestOrderAsync(sellSymbol, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : await _client.Spot.Order.PlaceOrderAsync(sellSymbol, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? await _client.SpotApi.Trading.PlaceTestOrderAsync(sellSymbol, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken)
+                : await _client.SpotApi.Trading.PlaceOrderAsync(sellSymbol, OrderSide.Sell, orderType, sellAction.Quantity, null, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (sellOrder.Error != null)
             {
-                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure placing sell order for {Symbol}: {Error}", sellAction.Symbol, sellOrder.Error);
+                return (false, null, $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}");
             }
 
             var isSold = PlaceTestOrders
@@ -70,9 +68,8 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure placing sell order for {Symbol}: {Status}", sellAction.Symbol, sellOrder.Data.Status);
+                return (false, null, $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}");
             }
 
             var symbolsSold = PlaceTestOrders
@@ -121,12 +118,11 @@
         public async Task<(bool success, Symbol symbolsBought, string error)> TryBuySymbol(BuyAction buyAction, string referenceSymbol, CancellationToken cancellationToken, Func<DateTime> getNow)
         {
             string error;
-            var exchangeResult = await _client.Spot.System.GetExchangeInfoAsync(cancellationToken);
+            var exchangeResult = await _client.SpotApi.ExchangeData.GetExchangeInfoAsync(cancellationToken);
             if (!exchangeResult.Success)
             {
-                error = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failed to fetch exchange info: {Error}", exchangeResult.Error);
+                return (false, null, $"Failed to fetch exchange info: {exchangeResult.Error}");
             }
             var exchangeInfo = exchangeResult.Data;
 
@@ -137,14 +133,13 @@
                 (success, testPrice, error) = await TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken);
                 if (!success)
                 {
-                    _log.Error(error);
                     return (false, null, error);
                 }
             }
 
             var orderResponseType = OrderResponseType.Full;
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
-            var orderType = OrderType.Market;
+            var orderType = SpotOrderType.Market;
 
             // if(!_validator.TryValidate(_client, buyAction, "Buy", referenceCoin, exchangeInfo, cancellationToken, out buyAction, out error))
             // {
@@ -160,15 +155,14 @@
 
             // ReSharper disable ExpressionIsAlwaysNull
             var buyOrder = PlaceTestOrders
-                ? await _client.Spot.Order.PlaceTestOrderAsync(buySymbol, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : await _client.Spot.Order.PlaceOrderAsync(buySymbol, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? await _client.SpotApi.Trading.PlaceTestOrderAsync(buySymbol, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken)
+                : await _client.SpotApi.Trading.PlaceOrderAsync(buySymbol, OrderSide.Buy, orderType, null, buyPrice, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (buyOrder.Error != null)
             {
-                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure placing buy order for {Symbol}: {Error}", buyAction.Symbol, buyOrder.Error);
+                return (false, null, $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}");
             }
 
             var isBought = PlaceTestOrders
@@ -176,9 +170,8 @@
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
             {
-                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure placing buy order for {Symbol}: {Status}", buyAction.Symbol, buyOrder.Data.Status);
+                return (false, null, $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}");
             }
 
             var symbolsBought = PlaceTestOrders
@@ -205,12 +198,11 @@
             string error;
             decimal buyPrice = 0m;
             decimal sellPrice = 0m;
-            var exchangeResult = await _client.Spot.System.GetExchangeInfoAsync(cancellationToken);
+            var exchangeResult = await _client.SpotApi.ExchangeData.GetExchangeInfoAsync(cancellationToken);
             if (!exchangeResult.Success)
             {
-                error = $"Failed to fetch exchange info: {exchangeResult.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failed to fetch exchange info: {Error}", exchangeResult.Error);
+                return (false, null, $"Failed to fetch exchange info: {exchangeResult.Error}");
             }
             var exchangeInfo = exchangeResult.Data;
 
@@ -219,32 +211,28 @@
                 (success, buyPrice, error) = await TryGetPrice(buyAction.Symbol, referenceSymbol, cancellationToken);
                 if (!success)
                 {
-                    _log.Error(error);
                     return (false, null, error);
                 }
 
                 (success, sellPrice, error) = await TryGetPrice(sellAction.Symbol, referenceSymbol, cancellationToken);
                 if (!success)
                 {
-                    _log.Error(error);
                     return (false, null, error);
                 }
             }
             
             var orderResponseType = OrderResponseType.Full;
             var timeInForce = (TimeInForce?) null;// TimeInForce.FillOrKill;
-            var orderType = OrderType.Market;
+            var orderType = SpotOrderType.Market;
 
             (success, _, error) = await _validator.TryValidate(_client, sellAction, "Sell", referenceSymbol, exchangeInfo, cancellationToken); 
             if (!success)
             {
-                _log.Error(error);
                 return (false, null, error);
             }
             (success, _, error) = await _validator.TryValidate(_client, buyAction, "Buy", referenceSymbol, exchangeInfo, cancellationToken);
             if(!success)
             {
-                _log.Error(error);
                 return (false, null, error);
             }
             
@@ -252,15 +240,14 @@
 
             // ReSharper disable ExpressionIsAlwaysNull
             var sellOrder = PlaceTestOrders
-                ? await _client.Spot.Order.PlaceTestOrderAsync(sellCoin, OrderSide.Sell, orderType, null, sellAction.QuotedQuantity, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : await _client.Spot.Order.PlaceOrderAsync(sellCoin, OrderSide.Sell, orderType, null, sellAction.QuotedQuantity, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? await _client.SpotApi.Trading.PlaceTestOrderAsync(sellCoin, OrderSide.Sell, orderType, null, sellAction.QuotedQuantity, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken)
+                : await _client.SpotApi.Trading.PlaceOrderAsync(sellCoin, OrderSide.Sell, orderType, null, sellAction.QuotedQuantity, sellAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (sellOrder.Error != null)
             {
-                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure placing sell order for {Symbol}: {Error}", sellAction.Symbol, sellOrder.Error);
+                return (false, null, $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Error}");
             }
 
             var isSold = PlaceTestOrders
@@ -268,25 +255,23 @@
                 : sellOrder.Data.Status == OrderStatus.Filled;
             if (!isSold)
             {
-                error = $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure placing sell order for {Symbol}: {Status}", sellAction.Symbol, sellOrder.Data.Status);
+                return (false, null, $"Failure placing sell order for {sellAction.Symbol}: {sellOrder.Data.Status}");
             }
             
             var buyCoin = $"{buyAction.Symbol}{referenceSymbol}";
 
             // ReSharper disable ExpressionIsAlwaysNull
             var buyOrder = PlaceTestOrders
-                ? await _client.Spot.Order.PlaceTestOrderAsync(buyCoin, OrderSide.Buy, orderType, null, buyAction.QuotedQuantity, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken)
-                : await _client.Spot.Order.PlaceOrderAsync(buyCoin, OrderSide.Buy, orderType, null, buyAction.QuotedQuantity, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, cancellationToken);
+                ? await _client.SpotApi.Trading.PlaceTestOrderAsync(buyCoin, OrderSide.Buy, orderType, null, buyAction.QuotedQuantity, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken)
+                : await _client.SpotApi.Trading.PlaceOrderAsync(buyCoin, OrderSide.Buy, orderType, null, buyAction.QuotedQuantity, buyAction.TransactionId, null, timeInForce, null, null, orderResponseType, null, null, cancellationToken);
             // ReSharper restore ExpressionIsAlwaysNull
 
             if (buyOrder.Error != null)
             {
-                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}";
-                _log.Error(error);
+                _log.Error("Failure placing buy order for {Symbol}: {Error}", buyAction.Symbol, buyOrder.Error);
                 await RollbackOrder(sellOrder.Data, cancellationToken);
-                return (false, null, error);
+                return (false, null, $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Error}");
             }
 
             var isBought = PlaceTestOrders
@@ -294,10 +279,9 @@
                 : buyOrder.Data.Status == OrderStatus.Filled;
             if (!isBought)
             {
-                error = $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}";
-                _log.Error(error);
+                _log.Error("Failure placing buy order for {Symbol}: {Status}", buyAction.Symbol, buyOrder.Data.Status);
                 await RollbackOrder(sellOrder.Data, cancellationToken);
-                return (false, null, error);
+                return (false, null, $"Failure placing buy order for {buyAction.Symbol}: {buyOrder.Data.Status}");
             }
 
             var coinsSold = PlaceTestOrders
@@ -342,7 +326,7 @@
         
         private async Task RollbackOrder(BinancePlacedOrder order, CancellationToken cancellationToken)
         {
-            var cancelOrder = await _client.Spot.Order.CancelOrderAsync(order.Symbol, order.OrderId, order.ClientOrderId, ct: cancellationToken);
+            var cancelOrder = await _client.SpotApi.Trading.CancelOrderAsync(order.Symbol, order.Id, order.ClientOrderId, ct: cancellationToken);
             if (cancelOrder.Error != null)
             {
                 var message = $"Failure cancelling order for {order.ClientOrderId}: {cancelOrder.Error}";

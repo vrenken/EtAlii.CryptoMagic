@@ -17,7 +17,6 @@
             var (success, instance, error) = await TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken);
             if (!success)
             {
-                _log.Error(error);
                 return (false, 0m, error);
             }
 
@@ -27,30 +26,28 @@
         private async Task<(bool success, Trend trend, string error)> TryGetTrendInternal(string symbol, string referenceSymbol, int period, CancellationToken cancellationToken)
         {
             var symbolComparedToReference = $"{symbol}{referenceSymbol}"; 
-            var response = await _client.Spot.Market.GetKlinesAsync(symbolComparedToReference, KlineInterval.OneMinute, limit:period * 2, ct: cancellationToken);
+            var response = await _client.SpotApi.ExchangeData.GetKlinesAsync(symbolComparedToReference, KlineInterval.OneMinute, limit:period * 2, ct: cancellationToken);
             if (response.Error != null)
             {
-                var error = $"Failure fetching candlestick data for {symbol}: {response.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure fetching candlestick data for {Symbol}: {Error}", symbol, response.Error);
+                return (false, null, $"Failure fetching candlestick data for {symbol}: {response.Error}");
             }
 
-            var priceResponse = await _client.Spot.Market.GetPriceAsync(symbolComparedToReference, cancellationToken);
+            var priceResponse = await _client.SpotApi.ExchangeData.GetPriceAsync(symbolComparedToReference, cancellationToken);
             if (priceResponse.Error != null)
             {
-                var error = $"Failure fetching price data for {symbol}: {response.Error}";
-                _log.Error(error);
-                return (false, null, error);
+                _log.Error("Failure fetching price data for {Symbol}: {Error}", symbol, response.Error);
+                return (false, null, $"Failure fetching price data for {symbol}: {response.Error}");
             }
 
             var candles = response.Data.Select(k => new Candle
             (
                 dateTime: k.CloseTime,
-                open: k.Open,
-                high: k.High,
-                low: k.Low,
-                close: k.Close,
-                volume: k.BaseVolume
+                open: k.OpenPrice,
+                high: k.HighPrice,
+                low: k.LowPrice,
+                close: k.ClosePrice,
+                volume: k.TakerBuyBaseVolume //k.BaseVolume
             )).ToArray();
             var rsiSequence = candles.Rsi(period).ToArray();
             var rsi = rsiSequence.Last().Tick;
@@ -59,10 +56,10 @@
             var trend = new Trend
             {
                 Symbol = symbol,
-                Open = data.Open,
-                High = data.High,
-                Low = data.Low,
-                Close = data.Close,
+                Open = data.OpenPrice,
+                High = data.HighPrice,
+                Low = data.LowPrice,
+                Close = data.ClosePrice,
                 //Change = data.Close - data.Open,
                 Rsi = rsi!.Value,
                 Price = priceResponse.Data.Price
@@ -79,7 +76,6 @@
                 var (success, trend, error) = await TryGetTrendInternal(symbol, referenceSymbol, period, cancellationToken);
                 if (!success)
                 {
-                    _log.Error(error);
                     return (false, null, error);
                 }
                 result.Add(trend);
