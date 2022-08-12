@@ -50,7 +50,7 @@
 
         protected virtual async Task Submit()
         {
-            if (Validations.ValidateAll())
+            if (await Validations.ValidateAll())
             {
                 if (await CanSubmit())
                 {

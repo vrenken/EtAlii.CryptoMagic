@@ -2,6 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
+    using System.Threading.Tasks;
     using Blazorise;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
@@ -25,9 +26,9 @@
             _editContext = new EditContext(_model);
         }
 
-        private void Submit()
+        private async Task Submit()
         {
-            if (_validations.ValidateAll())
+            if (await _validations.ValidateAll())
             {
                 using var data = new DataContext();
 

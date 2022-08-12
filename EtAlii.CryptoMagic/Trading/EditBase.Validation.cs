@@ -16,7 +16,7 @@
             if (!_isValidating)
             {
                 _isValidating = true;
-                IsInvalid = !Validations.ValidateAll();
+                IsInvalid = !await Validations.ValidateAll();
                 await IsInvalidChanged.InvokeAsync(IsInvalid);
                 _isValidating = false;
             }

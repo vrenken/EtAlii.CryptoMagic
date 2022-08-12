@@ -185,7 +185,7 @@
                 BackgroundColor = _backgroundColors[0],
                 BorderColor = _borderColors[0],
                 Fill = false,
-                LineTension = 0,
+                //LineTension = 0,
                 //BorderDash = new List<int> { 8, 4 },
             };
         }
@@ -202,7 +202,7 @@
                 BackgroundColor = _backgroundColors[1],
                 BorderColor = _borderColors[1],
                 Fill = false,
-                LineTension = 0,
+                //LineTension = 0,
                 //CubicInterpolationMode = "monotone",
             };
         }
@@ -219,7 +219,7 @@
                 BackgroundColor = _backgroundColors[2],
                 BorderColor = _borderColors[2],
                 Fill = false,
-                LineTension = 0,
+                //LineTension = 0,
                 //CubicInterpolationMode = "monotone",
             };
         }
