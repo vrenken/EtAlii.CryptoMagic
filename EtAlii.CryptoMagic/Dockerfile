@@ -1,5 +1,5 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:5.0
-COPY EtAlii.CryptoMagic/bin/Release/net5.0/publish/ cryptomagic/
+﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0
+COPY EtAlii.CryptoMagic/bin/Release/net6.0/publish/ cryptomagic/
 WORKDIR /cryptomagic
 
 EXPOSE 80
