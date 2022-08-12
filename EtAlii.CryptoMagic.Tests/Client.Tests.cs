@@ -31,7 +31,7 @@ namespace EtAlii.CryptoMagic.Tests
         }
                 
         [Fact]
-        public void Client_Start()
+        public async Task Client_Start()
         {
             // Arrange.
             var actionValidator = new ActionValidator();
@@ -41,7 +41,7 @@ namespace EtAlii.CryptoMagic.Tests
             };
             
             // Act.
-            client.Start("ApiKey", "SecretKey");
+            await client.Start("ApiKey", "SecretKey").ConfigureAwait(false);
             
             // Assert.
             Assert.NotNull(client);

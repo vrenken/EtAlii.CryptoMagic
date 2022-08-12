@@ -40,7 +40,7 @@
             bool success;
             decimal price;
             string error;
-            (success, price, error) = await client.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None);
+            (_, price, _) = await client.TryGetPrice(Model.Symbol, Model.ReferenceSymbol, CancellationToken.None);
 
             var buyAction = new BuyAction
             {
