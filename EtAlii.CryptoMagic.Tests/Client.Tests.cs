@@ -41,10 +41,10 @@ namespace EtAlii.CryptoMagic.Tests
             };
             
             // Act.
-            await client.Start("ApiKey", "SecretKey").ConfigureAwait(false);
+            var act = new Func<Task>(async () => await client.Start("ApiKey", "SecretKey").ConfigureAwait(false));
             
             // Assert.
-            Assert.NotNull(client);
+            await Assert.ThrowsAsync<InvalidOperationException>(act).ConfigureAwait(false);
         }
                         
         [Fact(Skip = "Only for local testing")]
