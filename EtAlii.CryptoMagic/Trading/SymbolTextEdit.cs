@@ -34,7 +34,7 @@
         {
             EditContext.Validate();
             
-            HasValidSymbol = text == null;
+            HasValidSymbol = ReferenceEquals(text, "");
             HasValidSymbolChanged.InvokeAsync(HasValidSymbol);
         }
 
